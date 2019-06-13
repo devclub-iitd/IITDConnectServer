@@ -1,0 +1,28 @@
+{
+  "name": "iitd-connect-server",
+  "version": "0.0.1",
+  "repository": "https://github.com/codeboy5/iitd-connect-server.git",
+  "scripts": {
+    "start": "node dist/server.js",
+    "tslint": "tslint -c tslint.json -p tsconfig.json",
+    "build": "tsc && npm run tslint",
+    "watch-node": "nodemon dist/server.js",
+    "watch-ts": "tsc -w",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TypeScript,Node\" -c \"cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\""
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.5.15"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.0",
+    "@types/mongoose": "^5.5.6",
+    "@types/node": "^12.0.8",
+    "concurrently": "^4.1.0",
+    "nodemon": "^1.19.1",
+    "ts-node": "^8.2.0",
+    "tslint": "^5.17.0",
+    "typescript": "^3.5.1"
+  }
+}
