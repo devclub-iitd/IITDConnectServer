@@ -1,8 +1,19 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, model, Model, Document } from "mongoose";
 import mongooseUniqueValidator from "mongoose-unique-validator";
 import { isEmail } from "validator";
 
-const userSchema = new mongoose.Schema(
+interface IUser extends Document {
+  name: string;
+  email: string;
+  password: string;
+  privilege: string;
+  subscribedBodies: mongoose.Types.ObjectId[];
+  subscribedEvents: mongoose.Types.ObjectId[];
+  canCreate: boolean;
+  createdEvents: mongoose.Types.ObjectId[];
+}
+
+const userSchema: Schema = new Schema(
   {
     name: {
       type: String,
@@ -15,6 +26,10 @@ const userSchema = new mongoose.Schema(
       unique: true,
       validate: [isEmail, "Invalid Email"],
       lowercase: true
+    },
+    emailValidated: {
+      type: Boolean,
+      default: false
     },
     password: {
       type: String,
@@ -29,7 +44,7 @@ const userSchema = new mongoose.Schema(
     subscribedBodies: {
       type: [
         {
-          type: Schema.Types.ObjectId,
+          type: mongoose.Schema.Types.ObjectId,
           ref: "Body"
         }
       ]
@@ -37,7 +52,7 @@ const userSchema = new mongoose.Schema(
     subscribedEvents: {
       type: [
         {
-          type: Schema.Types.ObjectId,
+          type: mongoose.Schema.Types.ObjectId,
           ref: "Event"
         }
       ]
@@ -49,7 +64,7 @@ const userSchema = new mongoose.Schema(
     createdEvents: {
       type: [
         {
-          type: Schema.Types.ObjectId,
+          type: mongoose.Schema.Types.ObjectId,
           ref: "Event"
         }
       ]
@@ -60,6 +75,6 @@ const userSchema = new mongoose.Schema(
 
 userSchema.plugin(mongooseUniqueValidator, { message: "Is Already Taken." });
 
-const User = mongoose.model("User", userSchema);
+const User: Model<IUser> = model<IUser>("User", userSchema);
 
 export default User;

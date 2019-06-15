@@ -4,7 +4,7 @@ import { signUp } from "../controllers/user";
 const router = express.Router();
 
 router.post(
-  "/user",
+  "/",
   [
     check("email")
       .isEmail()
@@ -13,5 +13,7 @@ router.post(
   ],
   signUp
 );
+
+router.post("/login", []);
 
 export default router;

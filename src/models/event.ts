@@ -1,4 +1,14 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, model, Model, Document } from "mongoose";
+
+interface IEvent extends Document {
+  name: string;
+  createdBy: mongoose.Types.ObjectId;
+  about: string;
+  body: mongoose.Types.ObjectId;
+  startDate: Date;
+  endDate: Date;
+  participants: mongoose.Types.ObjectId[];
+}
 
 const eventSchema = new Schema(
   {
@@ -32,6 +42,6 @@ const eventSchema = new Schema(
   { timestamps: true }
 );
 
-const Event = mongoose.model("Event", eventSchema);
+const Event: Model<IEvent> = model<IEvent>("Event", eventSchema);
 
 export default Event;

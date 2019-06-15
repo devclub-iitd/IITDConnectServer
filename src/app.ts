@@ -2,21 +2,25 @@ import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import expressValidator from "express-validator";
+import { MONGODB_URI } from "./utils/secrets";
 
 import eventRouter from "./routes/event";
-import userRouter from "./routes/user";
+import userRouter from "./routes/users";
+
+require("./utils/secrets");
 
 const app = express();
 
 mongoose.Promise = global.Promise;
 mongoose
-  .connect("", { useNewUrlParser: true })
+  .connect(MONGODB_URI, { useNewUrlParser: true })
   .then(() => {
     console.log("Connect To MongoDB");
   })
   .catch(err => {
     console.log("Error Connecting to MongoDB" + err);
   });
+mongoose.set("useCreateIndex", true);
 
 app.set("port", process.env.PORT || 5000);
 app.use(bodyParser.json());
@@ -28,6 +32,6 @@ app.get("/", (_req, res) => {
 });
 
 app.use("/api/events", eventRouter);
-app.use("/api/user", userRouter);
+app.use("/api/users", userRouter);
 
 export default app;

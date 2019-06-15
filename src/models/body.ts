@@ -1,4 +1,11 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, model, Model, Document } from "mongoose";
+
+interface IBody extends Document {
+  name: string;
+  about: string;
+  dept: string;
+  events: mongoose.Types.ObjectId[];
+}
 
 const bodySchema = new Schema({
   name: {
@@ -24,6 +31,6 @@ const bodySchema = new Schema({
   }
 });
 
-const Body = mongoose.model("Body", bodySchema);
+const Body: Model<IBody> = model<IBody>("Body", bodySchema);
 
 export default Body;
