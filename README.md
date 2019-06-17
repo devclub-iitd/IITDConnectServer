@@ -20,15 +20,16 @@
 
 ### Body
 
-````JSON
+```JSON
 {
   "body": {
-    "name": "hackathon",
-    "about": "campus hackathon",
+    "name": "devclub",
+    "about": "software development",
     "department": "CSE",
-    "events" : [Event]
+    "events" : [event],
   }
 }
+```
 
 ## Endpoints
 
@@ -49,7 +50,7 @@ Example request body:
     "password": "jakejake"
   }
 }
-````
+```
 
 Required fields: `email`, `password`
 
