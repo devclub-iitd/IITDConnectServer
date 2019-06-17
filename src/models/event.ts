@@ -8,6 +8,9 @@ interface IEvent extends Document {
   startDate: Date;
   endDate: Date;
   participants: mongoose.Types.ObjectId[];
+  venue: string;
+  imageLink: string;
+  updates: mongoose.Types.ObjectId[];
 }
 
 const eventSchema = new Schema(
@@ -26,6 +29,13 @@ const eventSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Body"
     },
+    venue: {
+      type: String,
+      required: true
+    },
+    imageLink: {
+      type: String
+    },
     startDate: {
       type: Date,
       required: true,
@@ -37,6 +47,14 @@ const eventSchema = new Schema(
     },
     participants: {
       type: [{ type: Schema.Types.ObjectId, ref: "User" }]
+    },
+    updates: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Update"
+        }
+      ]
     }
   },
   { timestamps: true }
