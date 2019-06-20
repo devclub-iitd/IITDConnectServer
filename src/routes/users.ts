@@ -1,6 +1,7 @@
 import express from "express";
 import { check } from "express-validator/check";
 import { signUp } from "../controllers/user";
+
 const router = express.Router();
 
 router.post(

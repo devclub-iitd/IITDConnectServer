@@ -17,27 +17,20 @@
     "dotenv": "^8.0.0",
     "express": "^4.17.1",
     "express-jwt": "^5.3.1",
-    "express-validator": "^5.3.1",
-    "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.5.15",
+    "express-validator": "^6.0.0",
+    "mongoose": "^5.6.0",
     "mongoose-unique-validator": "^2.0.3",
-    "nodemailer": "^6.2.1",
     "validator": "^11.0.0"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.2",
-    "@types/dotenv": "^6.1.1",
-    "@types/express": "^4.17.0",
-    "@types/express-jwt": "^0.0.42",
-    "@types/jsonwebtoken": "^8.3.2",
-    "@types/mongoose": "^5.5.6",
-    "@types/mongoose-unique-validator": "^1.0.1",
-    "@types/node": "^12.0.8",
-    "@types/validator": "^10.11.1",
     "concurrently": "^4.1.0",
     "nodemon": "^1.19.1",
-    "ts-node": "^8.2.0",
     "tslint": "^5.17.0",
-    "typescript": "^3.5.1"
+    "typescript": "^3.5.2",
+    "@typescript-eslint/eslint-plugin": "^1.10.2",
+    "@typescript-eslint/parser": "^1.10.2",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-typescript": "^4.0.0",
+    "eslint-plugin-import": "^2.17.3"
   }
 }
