@@ -16,15 +16,15 @@ const auth = {
   required: jwt({
     secret: JWT_SECRET,
     getToken: getTokenFromHeader,
-    // userProperty: "payload"
-    requestProperty: "payload"
+    userProperty: "payload"
+    // requestProperty: "payload"
   }),
   optional: jwt({
     secret: JWT_SECRET,
     getToken: getTokenFromHeader,
     credentialsRequired: false,
-    // userProperty: "payload"
-    requestProperty: "payload"
+    userProperty: "payload"
+    // requestProperty: "payload"
   })
 };
 

@@ -8,9 +8,11 @@ interface IUser extends Document {
   password: string;
   privilege: string;
   subscribedBodies: mongoose.Types.ObjectId[];
-  subscribedEvents: mongoose.Types.ObjectId[];
+  // subscribedEvents: mongoose.Types.ObjectId[];
   canCreate: boolean;
   createdEvents: mongoose.Types.ObjectId[];
+  staredEvents: mongoose.Types.ObjectId[];
+  // star: (id: string) => null;
 }
 
 const userSchema: Schema = new Schema(
@@ -49,7 +51,19 @@ const userSchema: Schema = new Schema(
         }
       ]
     },
-    subscribedEvents: {
+    // subscribedEvents: {
+    //   type: [
+    //     {
+    //       type: mongoose.Schema.Types.ObjectId,
+    //       ref: "Event"
+    //     }
+    //   ]
+    // },
+    canCreate: {
+      type: Boolean,
+      default: false
+    },
+    createdEvents: {
       type: [
         {
           type: mongoose.Schema.Types.ObjectId,
@@ -57,11 +71,7 @@ const userSchema: Schema = new Schema(
         }
       ]
     },
-    canCreate: {
-      type: Boolean,
-      default: false
-    },
-    createdEvents: {
+    staredEvents: {
       type: [
         {
           type: mongoose.Schema.Types.ObjectId,
@@ -74,6 +84,31 @@ const userSchema: Schema = new Schema(
 );
 
 userSchema.plugin(mongooseUniqueValidator, { message: "Is Already Taken." });
+
+// userSchema.methods.star = function(id: string) {
+//   if (this.staredEvents.indexOf(id) === -1) {
+//     this.staredEvents.push(id);
+//   }
+//   return this.save();
+// };
+
+// userSchema.methods.unstar = function(id: string) {
+//   this.staredEvents.remove(id);
+//   return this.save();
+// };
+
+// userSchema.methods.isStarred = function(id: string) {
+//   return this.staredEvents.indexOf(id) !== -1;
+// };
+
+// userSchema.methods.subscribeToBody = function(id: string) {
+//   if (this.subscribedBodies.indexOf(id) === -1) {
+//     this.subscribedBodies.push(id);
+//   }
+//   return this.save();
+// };
+
+//TODO: Add The Method To Unsubscribe To A Body
 
 const User: Model<IUser> = model<IUser>("User", userSchema);
 
