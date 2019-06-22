@@ -1,14 +1,12 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import expressValidator from "express-validator";
 import cors from "cors";
 import lusca from "lusca";
-// import dotenv from "dotenv";
-import morgan from "morgan";
+import compression from "compression";
 import { MONGODB_URI } from "./utils/secrets";
-
-// dotenv.config();
+// import { CustomError } from "./types/custom";
 
 import routes from "./routes";
 
@@ -28,14 +26,13 @@ mongoose
 mongoose.set("useCreateIndex", true);
 
 app.set("port", process.env.PORT || 5000);
-app.use(morgan("dev"));
+app.use(compression());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: true,
-    methods: "GET,PUT,DELETE,POST",
-    exposedHeaders: ["x-auth-token"]
+    methods: "GET,PUT,DELETE,POST"
   })
 );
 app.use(
@@ -48,5 +45,12 @@ app.use(expressValidator());
 
 //* Takes Care of All The Routing
 app.use(routes);
+
+// app.use((err: CustomError, req: Request, res: Response, next: NextFunction) => {
+//   res.status(err.status || 500);
+//   let e = new Error(err.message);
+//   e.name = err.name;
+//   res.send(e);
+// });
 
 export default app;

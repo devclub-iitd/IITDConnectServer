@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
 import userRouter from "./users";
 import eventRouter from "./event";
 const router = express.Router();

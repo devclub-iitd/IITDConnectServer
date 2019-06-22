@@ -9,10 +9,12 @@ if (fs.existsSync("src/.env")) {
   console.log("No Such File Exists");
 }
 
-export const FACEBOOK_CLIENTID = process.env.FACEBOOK_CLIENTID;
-export const FACEBOOK_SECRET = process.env.FACEBOOK_SECRET;
+export const FACEBOOK_CLIENTID =
+  process.env.FACEBOOK_CLIENTID || "430839157468333";
+export const FACEBOOK_SECRET =
+  process.env.FACEBOOK_SECRET || "fff3a85d075fcc209dde18d19fa4fe1c";
 
-// export const
+export const GOOGLE_CLIENT_ID = "";
 
 export const JWT_SECRET = process.env.JWT_SECRET || "secret";
 export const MONGODB_URI =

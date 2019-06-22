@@ -13,6 +13,8 @@ interface IUser extends Document {
   createdEvents: mongoose.Types.ObjectId[];
   staredEvents: mongoose.Types.ObjectId[];
   // star: (id: string) => null;
+  iitdEmail: string;
+  emailValidated: boolean;
 }
 
 const userSchema: Schema = new Schema(
@@ -33,9 +35,14 @@ const userSchema: Schema = new Schema(
       type: Boolean,
       default: false
     },
-    password: {
+    iitdEmail: {
       type: String,
-      required: true
+      lowercase: true,
+      unique: true,
+      validate: [isEmail, "Invalid Email"]
+    },
+    hash: {
+      type: String
     },
     privilege: {
       type: String,
