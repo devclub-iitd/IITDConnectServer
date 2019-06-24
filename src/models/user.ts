@@ -2,7 +2,7 @@ import mongoose, { Schema, model, Model, Document } from "mongoose";
 import mongooseUniqueValidator from "mongoose-unique-validator";
 import { isEmail } from "validator";
 
-interface IUser extends Document {
+export interface UserImpl extends Document {
   name: string;
   email: string;
   password: string;
@@ -117,6 +117,6 @@ userSchema.plugin(mongooseUniqueValidator, { message: "Is Already Taken." });
 
 //TODO: Add The Method To Unsubscribe To A Body
 
-const User: Model<IUser> = model<IUser>("User", userSchema);
+const User: Model<UserImpl> = model<UserImpl>("User", userSchema);
 
 export default User;

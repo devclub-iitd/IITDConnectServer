@@ -1,6 +1,6 @@
 import mongoose, { Schema, model, Model, Document } from "mongoose";
 
-interface IUpdate extends Document {
+interface UpdateImpl extends Document {
   message: string;
   event: mongoose.Types.ObjectId;
 }
@@ -19,6 +19,6 @@ const updateSchema = new Schema(
   { timestamps: true }
 );
 
-const Update: Model<IUpdate> = model<IUpdate>("Update", updateSchema);
+const Update: Model<UpdateImpl> = model<UpdateImpl>("Update", updateSchema);
 
 export default Update;

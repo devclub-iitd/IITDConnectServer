@@ -1,37 +1,34 @@
 import express from "express";
 import { check } from "express-validator/check";
-import { signUp, login } from "../../controllers/user";
+import {
+  faceBookLogin,
+  googleLogin,
+  addUserInformation,
+  getUser
+} from "../../controllers/user";
 import auth from "../../middleware/auth";
+
 const router = express.Router();
 
-//* Register A User
+router.post("/users/facebookLogin", [check("code").exists()], faceBookLogin);
+
+router.post("/users/googleLogin", [check("code").exists()], googleLogin);
+
 router.post(
-  "/users",
+  "/users/addUserInformation",
   [
+    //TODO: Add Regex Search For The Email
     check("email")
-      .isEmail()
       .exists()
-      .withMessage("Not a Valid Email Address")
+      .isEmail()
+      .withMessage("Enter A Valid Email Address")
   ],
-  signUp
+  addUserInformation
 );
 
-//* Login For A User
-router.post(
-  "/users/login",
-  [
-    check("email")
-      .isEmail()
-      .exists()
-      .withMessage("Not A Valid Email Address")
-  ],
-  login
-);
-
-//TODO: Requires Authentication and Respond with Users Auth JSON
+//TODO: Requires Authentication and Respond with Users Auth JSON(Current Logged In User)
 router.get("/user", auth.required);
 
-//TODO: Requires Authentication and Updates The Users Information
-router.put("/user", auth.required);
+router.get("/users/:id", auth.required, getUser);
 
 export default router;

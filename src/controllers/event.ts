@@ -1,8 +1,28 @@
-import Event from "../models/event";
-import User from "../models/user";
-// import Body from "../models/body";
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { validationResult } from "express-validator/check";
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
+import Event, { EventImpl } from "../models/event";
+import User, { UserImpl } from "../models/user";
+import Body from "../models/body";
+// import Body from "../models/body";
+
+const toArticleJSON = (event: EventImpl, user: UserImpl) => {
+  const isStarred = user.staredEvents.some(starId => {
+    return starId.toString() === event.id.toString();
+  });
+  if (event.body instanceof Body) {
+    return {
+      name: event.name,
+      about: event.about,
+      body: event.body,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      stared: isStarred,
+      image: event.imageLink,
+      venue: event.venue
+    };
+  }
+};
 
 export const createEvent = async (req: Request, res: Response) => {
   const errors = validationResult(req);
@@ -25,56 +45,95 @@ export const createEvent = async (req: Request, res: Response) => {
       message: "Event Created Successfully"
     });
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     //TODO: Send The Error In A Proper Structure
     return res.status(500).send("Connection Issue");
   }
 };
 
 export const getEvent = async (req: Request, res: Response) => {
-  const id = req.params.id;
-  try {
-    const event = await Event.findById(id);
-    if (!event) {
-      return "No Such Event";
-    }
-    return res.status(200).json({
-      message: "Found The Event",
-      data: {
-        event: {
-          name: event.name,
-          about: event
-        }
+  return Promise.all([
+    User.findById(req.payload.id),
+    Event.findById(req.params.id).populate("body")
+  ])
+    .then(([user, event]) => {
+      if (user !== null && event !== null) {
+        return res.status(200).json(toArticleJSON(event, user));
       }
-    });
-  } catch (error) {
-    return error;
+      return null;
+    })
+    .catch(() => res.status(400).json({ message: "Error" }));
+};
+
+export const getEvents = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  //TODO: IF WE WANT TO ADD THE OPTION TO FILTER BY DEPARTMENT OR YEAR OR ANYTHING
+  let query = {};
+  try {
+    const [events, user] = await Promise.all([
+      Event.find(query)
+        .sort({ endDate: "desc" })
+        .populate("body")
+        .exec(),
+      User.findById(req.payload.id)
+    ]);
+    if (user !== null) {
+      return res.status(200).json({
+        events: events.map(event => toArticleJSON(event, user))
+      });
+    }
+    return null;
+  } catch (err) {
+    next(err);
   }
 };
 
-export const getAllEvents = async (req: Request, res: Response) => {
-  let query = {};
-  //* Pagination
-  let limit = 20;
-  let offset = 0;
-  if (typeof req.query.limit !== "undefined") {
-    limit = req.query.limit;
-  }
-  if (typeof req.query.offset !== "undefined") {
-    offset = req.query.offset;
-  }
-
+export const toggleStar = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const events = await Event.find(query)
-      .limit(limit)
-      .skip(offset)
-      .sort({ endDate: "desc" })
-      .exec();
+    const user = await User.findById(req.payload.id);
+    if (user === null) {
+      //! JWT WAS INVALID
+      return null;
+    }
+    const index = user.staredEvents.indexOf(req.params.id);
+    if (index === -1) {
+      user.staredEvents.push(req.params.id);
+    } else {
+      user.staredEvents.splice(index, 1);
+    }
+    await user.save();
     return res.status(200).json({
-      message: "All The Events",
-      data: events
+      message: "Successfully Toggled Star"
     });
   } catch (error) {
-    return error;
+    next(error);
   }
+  // User.findById(req.payload.id)
+  //   .then(user => {
+  //     if (user === null) {
+  //       return null;
+  //     }
+  //     const index = user.staredEvents.indexOf(req.params.id);
+  //     if (index === -1) {
+  //       user.staredEvents.push(req.params.id);
+  //     } else {
+  //       user.staredEvents.splice(index, 1);
+  //     }
+  //     return user.save();
+  //   })
+  //   .then(() => {
+  //     return res.status(200).json({
+  //       message: "Successfully Toggled"
+  //     });
+  //   })
+  //   .catch((err: Error) => {
+  //     next(err);
+  //   });
 };

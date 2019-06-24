@@ -1,6 +1,6 @@
 import mongoose, { Schema, model, Model, Document } from "mongoose";
 
-interface IBody extends Document {
+export interface BodyImpl extends Document {
   name: string;
   about: string;
   dept: string;
@@ -31,6 +31,6 @@ const bodySchema = new Schema({
   }
 });
 
-const Body: Model<IBody> = model<IBody>("Body", bodySchema);
+const Body: Model<BodyImpl> = model<BodyImpl>("Body", bodySchema);
 
 export default Body;

@@ -1,4 +1,4 @@
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import expressValidator from "express-validator";
@@ -8,20 +8,20 @@ import compression from "compression";
 import { MONGODB_URI } from "./utils/secrets";
 // import { CustomError } from "./types/custom";
 
+import logRequest from "./middleware/logRequest";
+
 import routes from "./routes";
 
-require("./utils/secrets");
+// require("./utils/secrets");
 
 const app = express();
 
 mongoose.Promise = global.Promise;
 mongoose
   .connect(MONGODB_URI, { useNewUrlParser: true })
-  .then(() => {
-    console.log("Connect To MongoDB");
-  })
-  .catch(err => {
-    console.log("Error Connecting to MongoDB" + err);
+  .then(() => {})
+  .catch(() => {
+    process.exit();
   });
 mongoose.set("useCreateIndex", true);
 
@@ -42,6 +42,7 @@ app.use(
   })
 );
 app.use(expressValidator());
+app.use(logRequest);
 
 //* Takes Care of All The Routing
 app.use(routes);

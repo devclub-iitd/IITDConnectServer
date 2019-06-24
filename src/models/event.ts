@@ -1,7 +1,7 @@
 import mongoose, { Schema, model, Model, Document } from "mongoose";
 import User from "./user";
 
-interface IEvent extends Document {
+export interface EventImpl extends Document {
   name: string;
   createdBy: mongoose.Types.ObjectId;
   about: string;
@@ -12,7 +12,7 @@ interface IEvent extends Document {
   venue: string;
   imageLink: string;
   updates: mongoose.Types.ObjectId[];
-  staredCount: number;
+  // staredCount: number;
 }
 
 const eventSchema = new Schema(
@@ -57,11 +57,11 @@ const eventSchema = new Schema(
           ref: "Update"
         }
       ]
-    },
-    staredCount: {
-      type: Number,
-      default: 0
     }
+    // staredCount: {
+    //   type: Number,
+    //   default: 0
+    // }
   },
   { timestamps: true }
 );
@@ -74,13 +74,13 @@ const eventSchema = new Schema(
 //   };
 // };
 
-eventSchema.methods.updateStaredCount = async function() {
-  const count = await User.count({
-    staredEvents: { $in: [this._id] }
-  });
-  this.staredCount = count;
-};
+// eventSchema.methods.updateStaredCount = async function() {
+//   const count = await User.count({
+//     staredEvents: { $in: [this._id] }
+//   });
+//   this.staredCount = count;
+// };
 
-const Event: Model<IEvent> = model<IEvent>("Event", eventSchema);
+const Event: Model<EventImpl> = model<EventImpl>("Event", eventSchema);
 
 export default Event;
