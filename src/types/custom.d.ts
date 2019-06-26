@@ -8,8 +8,7 @@ declare global {
       };
     }
   }
+  interface Error {
+    status: number;
+  }
 }
-
-// export class CustomError extends Error {
-//   status: number;
-// }

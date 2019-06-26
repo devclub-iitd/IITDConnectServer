@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { validationResult } from "express-validator/check";
 import { Request, Response, NextFunction } from "express";
@@ -10,18 +11,28 @@ const toArticleJSON = (event: EventImpl, user: UserImpl) => {
   const isStarred = user.staredEvents.some(starId => {
     return starId.toString() === event.id.toString();
   });
-  if (event.body instanceof Body) {
-    return {
-      name: event.name,
-      about: event.about,
-      body: event.body,
-      startDate: event.startDate,
-      endDate: event.endDate,
-      stared: isStarred,
-      image: event.imageLink,
-      venue: event.venue
-    };
-  }
+  // if (event.body instanceof Body) {
+  //   return {
+  //     name: event.name,
+  //     about: event.about,
+  //     body: event.body,
+  //     startDate: event.startDate,
+  //     endDate: event.endDate,
+  //     stared: isStarred,
+  //     image: event.imageLink,
+  //     venue: event.venue
+  //   };
+  // }
+  return {
+    name: event.name,
+    about: event.about,
+    body: event.body,
+    startDate: event.startDate,
+    endDate: event.endDate,
+    stared: isStarred,
+    image: event.imageLink,
+    venue: event.venue
+  };
 };
 
 export const createEvent = async (req: Request, res: Response) => {
@@ -39,13 +50,13 @@ export const createEvent = async (req: Request, res: Response) => {
     if (!user) {
       return res.sendStatus(401);
     }
-    const newEvent = new Event({ ...req.body.event, createdBy: user });
+    const newEvent = new Event({ ...req.body, createdBy: user });
     await newEvent.save();
     return res.status(200).json({
       message: "Event Created Successfully"
     });
   } catch (error) {
-    // console.log(error);
+    console.log(error);
     //TODO: Send The Error In A Proper Structure
     return res.status(500).send("Connection Issue");
   }
@@ -54,11 +65,13 @@ export const createEvent = async (req: Request, res: Response) => {
 export const getEvent = async (req: Request, res: Response) => {
   return Promise.all([
     User.findById(req.payload.id),
-    Event.findById(req.params.id).populate("body")
+    Event.findById(req.params.id)
   ])
     .then(([user, event]) => {
-      if (user !== null && event !== null) {
-        return res.status(200).json(toArticleJSON(event, user));
+      if (user && event) {
+        return res.status(200).json({
+          event: event
+        });
       }
       return null;
     })
@@ -75,12 +88,12 @@ export const getEvents = async (
   try {
     const [events, user] = await Promise.all([
       Event.find(query)
-        .sort({ endDate: "desc" })
-        .populate("body")
+        // .sort({ endDate: "desc" })
+        // .populate("body")
         .exec(),
       User.findById(req.payload.id)
     ]);
-    if (user !== null) {
+    if (user) {
       return res.status(200).json({
         events: events.map(event => toArticleJSON(event, user))
       });
@@ -89,6 +102,7 @@ export const getEvents = async (
   } catch (err) {
     next(err);
   }
+  return null;
 };
 
 export const toggleStar = async (
@@ -115,6 +129,7 @@ export const toggleStar = async (
   } catch (error) {
     next(error);
   }
+  return null;
   // User.findById(req.payload.id)
   //   .then(user => {
   //     if (user === null) {

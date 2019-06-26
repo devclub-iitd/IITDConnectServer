@@ -170,3 +170,79 @@
 {"message":"Logging initialized at debug level","level":"debug"}
 {"message":"Logging initialized at debug level","level":"debug"}
 {"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"ip":"::1","userId":"-","method":"GET","body":{},"params":{},"statusCode":404,"responseTime":8,"level":"info","message":"::1 GET / - 404 8ms"}
+{"ip":"::1","userId":"-","method":"GET","body":{},"params":{},"statusCode":404,"responseTime":1,"level":"info","message":"::1 GET / - 404 1ms"}
+{"ip":"::1","userId":"-","method":"GET","body":{},"params":{},"statusCode":404,"responseTime":0,"level":"info","message":"::1 GET / - 404 0ms"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"ip":"::1","userId":"-","method":"GET","body":{},"params":{},"statusCode":404,"responseTime":7,"level":"info","message":"::1 GET / - 404 7ms"}
+{"ip":"::1","userId":"-","method":"GET","body":{},"params":{},"statusCode":404,"responseTime":2,"level":"info","message":"::1 GET /api - 404 2ms"}
+{"ip":"::1","userId":"-","method":"GET","body":{},"params":{},"statusCode":401,"responseTime":1,"level":"info","message":"::1 GET /api/user - 401 1ms"}
+{"ip":"::1","userId":"-","method":"GET","body":{},"params":{},"statusCode":404,"responseTime":1,"level":"info","message":"::1 GET /api/users/ - 404 1ms"}
+{"ip":"::1","userId":"-","method":"GET","body":{},"params":{},"statusCode":401,"responseTime":1,"level":"info","message":"::1 GET /api/users/5 - 401 1ms"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"ip":"::1","userId":"-","method":"POST","body":{"code":"4/cwHRhtBPDJMtypx737TdPOZAgflJKLFFlRDaQqcPzpbTzvPm-5P46SSf3NsKG9Y8uepdMNY_i4PCluMhoze8Lpk"},"params":{},"statusCode":500,"responseTime":1900,"level":"info","message":"::1 POST /api/users/googleLogin - 500 1900ms"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"ip":"::1","userId":"-","method":"POST","body":{"code":"AQCy4wyx0yQ2q1OgHM9VEI4lq2E3nr-FuWwvRRbEmDB9-K3-1ncs6BlBlkO1kH0VAKD2hkwYmlXyP8gjQSEkQ2BpPjiJspqaT-2wtMTCAtGeWene06-Sx-2dVaAcIxLCnlZjFji-GjZ2h1-Ie6eG1BaqoSpNYgaPDf7aKNZhtgJzqYujGo62q99OfGhIGqflbJFlipdbYiNXy5ICiEefdt3pH5RIJyt-Z7YiCbsNHV9yPYjSbqfWjghNzcObLY5lG7KuU6qB-77RfzownSKRjqP1IZojMiNx8bvL1pBM71ARbWK4Y_InGrhO-xiLmrqsfDATYNTcjOouljul5KGzkO_D"},"params":{},"statusCode":500,"responseTime":312,"level":"info","message":"::1 POST /api/users/facebookLogin - 500 312ms"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"ip":"::1","userId":"-","method":"POST","body":{"code":"AQCy4wyx0yQ2q1OgHM9VEI4lq2E3nr-FuWwvRRbEmDB9-K3-1ncs6BlBlkO1kH0VAKD2hkwYmlXyP8gjQSEkQ2BpPjiJspqaT-2wtMTCAtGeWene06-Sx-2dVaAcIxLCnlZjFji-GjZ2h1-Ie6eG1BaqoSpNYgaPDf7aKNZhtgJzqYujGo62q99OfGhIGqflbJFlipdbYiNXy5ICiEefdt3pH5RIJyt-Z7YiCbsNHV9yPYjSbqfWjghNzcObLY5lG7KuU6qB-77RfzownSKRjqP1IZojMiNx8bvL1pBM71ARbWK4Y_InGrhO-xiLmrqsfDATYNTcjOouljul5KGzkO_D"},"params":{},"statusCode":500,"responseTime":352,"level":"info","message":"::1 POST /api/users/facebookLogin - 500 352ms"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"ip":"::1","userId":"-","method":"POST","body":{"code":"4%2FcwGQh4BOkl-dOPzO3NwkUFOqXh5Fp83FSfyKZADa_gIR54s3j3SEmUuZ__obrcsiDjfj8jqUSF-YL3O_VG2izNU"},"params":{},"statusCode":404,"responseTime":6,"level":"info","message":"::1 POST /users/googleLogin - 404 6ms"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"ip":"::1","userId":"-","method":"POST","body":{"code":"4%2FcwGQh4BOkl-dOPzO3NwkUFOqXh5Fp83FSfyKZADa_gIR54s3j3SEmUuZ__obrcsiDjfj8jqUSF-YL3O_VG2izNU"},"params":{},"statusCode":200,"responseTime":31,"level":"info","message":"::1 POST /api/users/googleLogin - 200 31ms"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"ip":"::1","userId":"-","method":"POST","body":{"code":"4%2FcwGQh4BOkl-dOPzO3NwkUFOqXh5Fp83FSfyKZADa_gIR54s3j3SEmUuZ__obrcsiDjfj8jqUSF-YL3O_VG2izNU"},"params":{},"statusCode":200,"responseTime":16,"level":"info","message":"::1 POST /api/users/googleLogin - 200 16ms"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"ip":"::1","userId":"-","method":"POST","body":{"code":"4%2FcwGQh4BOkl-dOPzO3NwkUFOqXh5Fp83FSfyKZADa_gIR54s3j3SEmUuZ__obrcsiDjfj8jqUSF-YL3O_VG2izNU"},"params":{},"statusCode":200,"responseTime":356,"level":"info","message":"::1 POST /api/users/googleLogin - 200 356ms"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"ip":"::1","userId":"-","method":"POST","body":{"code":"4%2FcwGQh4BOkl-dOPzO3NwkUFOqXh5Fp83FSfyKZADa_gIR54s3j3SEmUuZ__obrcsiDjfj8jqUSF-YL3O_VG2izNU"},"params":{},"statusCode":200,"responseTime":255,"level":"info","message":"::1 POST /api/users/googleLogin - 200 255ms"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"ip":"::1","userId":"-","method":"POST","body":{"code":"4%2FcwGQh4BOkl-dOPzO3NwkUFOqXh5Fp83FSfyKZADa_gIR54s3j3SEmUuZ__obrcsiDjfj8jqUSF-YL3O_VG2izNU"},"params":{},"statusCode":200,"responseTime":258,"level":"info","message":"::1 POST /api/users/googleLogin - 200 258ms"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"ip":"::1","userId":"-","method":"POST","body":{"code":"4%2FcwGQh4BOkl-dOPzO3NwkUFOqXh5Fp83FSfyKZADa_gIR54s3j3SEmUuZ__obrcsiDjfj8jqUSF-YL3O_VG2izNU"},"params":{},"statusCode":200,"responseTime":367,"level":"info","message":"::1 POST /api/users/googleLogin - 200 367ms"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"ip":"::1","userId":"-","method":"GET","body":{},"params":{},"statusCode":401,"responseTime":7,"level":"info","message":"::1 GET /api/users/facebookLogin - 401 7ms"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"ip":"::1","userId":"-","method":"GET","body":{},"params":{},"statusCode":200,"responseTime":366,"level":"info","message":"::1 GET /api/users/facebookLogin - 200 366ms"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"ip":"::1","userId":"-","method":"POST","body":{"name":"Hackathon","about":"Hackathon For First Year Students","venue":"LHC"},"params":{},"statusCode":500,"responseTime":194,"level":"info","message":"::1 POST /api/addEvent - 500 194ms"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"ip":"::1","userId":"-","method":"POST","body":{"name":"Hackathon","about":"Hackathon For First Year Students","venue":"LHC"},"params":{},"statusCode":500,"responseTime":200,"level":"info","message":"::1 POST /api/addEvent - 500 200ms"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}
+{"message":"Logging initialized at debug level","level":"debug"}

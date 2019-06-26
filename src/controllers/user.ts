@@ -1,20 +1,22 @@
+/* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { Request, Response, NextFunction } from "express";
 import { validationResult } from "express-validator/check";
 import jwt from "jsonwebtoken";
-import axios from "axios";
-// import { OAuth2Client } from "google-auth-library";
-import { google } from "googleapis";
+import rp from "request-promise";
 import uuid from "uuid/v5";
 import nodemailer from "nodemailer";
+import { OAuth2Client } from "google-auth-library";
 import {
   JWT_SECRET,
   FACEBOOK_CLIENTID,
-  FACEBOOK_SECRET
+  FACEBOOK_SECRET,
+  GOOGLE_CLIENT_ID
 } from "../utils/secrets";
 import User from "../models/user";
 import { createError, createResponse } from "../utils/helpers";
 
+//TODO: Configire A Real SMTP Server
 const transporter = nodemailer.createTransport({
   host: "smtp.ethereal.email",
   port: 587,
@@ -25,133 +27,6 @@ const transporter = nodemailer.createTransport({
 });
 
 //! Receive The Code From The Frontend
-export const faceBookLogin = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const codeFromFacebook = req.body.code;
-  //!  redirect_uri:- This argument is required and must be the same as the original request_uri that you used when starting the OAuth login process.
-  axios
-    .get("https://graph.facebook.com/v3.3/oauth/access_token?", {
-      params: {
-        client_id: FACEBOOK_CLIENTID,
-        redirect_uri: "",
-        client_secret: FACEBOOK_SECRET,
-        code: codeFromFacebook
-      }
-    })
-    .then(response => {
-      const acessToken = response.data["access_token"];
-      if (acessToken === "") {
-        throw createError(
-          401,
-          "Unauthorized",
-          `Invalid Code : ${codeFromFacebook}`
-        );
-      }
-      return acessToken;
-    })
-    .then(acessToken => {
-      return axios.get("https://graph.facebook.com/me", {
-        params: {
-          access_token: acessToken,
-          fields: "email,name"
-        }
-      });
-    })
-    .then(response => {
-      const userDetails = response.data;
-      return Promise.all([
-        User.findOne({ email: userDetails["emails"] }),
-        userDetails
-      ]);
-    })
-    .then(([user, userDetails]) => {
-      if (!user) {
-        const newUser = new User({
-          email: userDetails["email"],
-          name: userDetails["name"]
-        });
-        return newUser.save();
-      }
-      return user;
-    })
-    .then(createdUser => {
-      const payload = {
-        id: createdUser._id
-      };
-      const token = jwt.sign(payload, JWT_SECRET, {
-        expiresIn: "7d"
-      });
-      const respData = {
-        token
-      };
-      res.send(createResponse("Login Successful", respData));
-    })
-    .catch(err => next(err));
-};
-
-export const googleLogin = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const codeFromGoogle: string = req.body.code;
-  // const client = new OAuth2Client(GOOGLE_CLIENT_ID);
-  // const ticket = await client.verifyIdToken({
-  //   idToken: tokenFromGoogle,
-  //   audience: GOOGLE_CLIENT_ID
-  // });
-  // const userId = ticket.getUserId();
-  const oauth2Client = new google.auth.OAuth2({
-    clientId: "",
-    clientSecret: "",
-    redirectUri: ""
-  });
-  //TODO: Add Error Handling
-  const { tokens } = await oauth2Client.getToken(codeFromGoogle);
-  oauth2Client.setCredentials(tokens);
-  const people = google.people({
-    version: "v1",
-    auth: oauth2Client
-  });
-  const response = await people.people.get({
-    resourceName: "people/me",
-    personFields: "emailAddresses,names"
-  });
-  let email = "";
-  let name = "";
-  if (response.data["emailAddresses"] !== undefined) {
-    email = response.data["emailAddresses"][0].value as string;
-  }
-  if (response.data["names"] !== undefined) {
-    name = response.data["names"][0].displayName as string;
-  }
-  User.findOne({
-    email: email
-  })
-    .then(user => {
-      if (!user) {
-        const newUser = new User({ email, name });
-        return newUser.save();
-      }
-      return user;
-    })
-    .then(createdUser => {
-      const payload = {
-        id: createdUser._id
-      };
-      const token = jwt.sign(payload, JWT_SECRET, {
-        expiresIn: "7d"
-      });
-      const respData = {
-        token
-      };
-      res.send(createResponse("Login Successful", respData));
-    })
-    .catch(err => next(err));
-};
 
 export const addUserInformation = async (
   req: Request,
@@ -161,15 +36,21 @@ export const addUserInformation = async (
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     // console.log(errors.array());
+    console.log(errors.array());
     throw createError(400, "Invalid Information", "Information is not Valid ");
   }
   const { email, department, entryNumber } = req.body;
+  console.log(req.body);
   const user = await User.findOne({
     $or: [{ iitdEmail: email }, { entryNumber: entryNumber }]
   });
   if (user) {
     //* Entry Number Already In Use
-    return res.status(420).send("Entry Number or Email Is Already In Use");
+    throw createError(
+      401,
+      "Invalid Details",
+      "Email or Entry Number Already In Use"
+    );
   }
   const hash = uuid(email, uuid.DNS);
   User.findByIdAndUpdate(
@@ -184,7 +65,7 @@ export const addUserInformation = async (
   )
     .then(user => {
       if (!user) {
-        throw createError(401, "Unauthorized", "Information/JWT is Invalid");
+        throw createError(401, "Unauthorized", "Invalid Information");
       }
       //! Send a Confirmation Email
       // const link="http://"+req.get('host')+"/verify?id="+;
@@ -199,7 +80,7 @@ export const addUserInformation = async (
           ">Click here to verify</a>"
       });
     })
-    .then(_info => {
+    .then(() => {
       return res
         .status(200)
         .json({ message: "We Have Sent An Email For Confirmation" });
@@ -235,4 +116,122 @@ export const getUser = async (req: Request, res: Response) => {
   return res.status(200).json({
     name: user.name
   });
+};
+
+export const googleLogin = (req: Request, res: Response) => {
+  const token = req.body.code;
+  const client = new OAuth2Client(GOOGLE_CLIENT_ID);
+  client
+    .verifyIdToken({
+      idToken: token,
+      audience: GOOGLE_CLIENT_ID
+    })
+    .then(ticket => {
+      const payload = ticket.getPayload();
+      let userId: string;
+      if (payload) {
+        console.log(payload);
+        userId = payload["sub"];
+        return Promise.all([
+          User.findOne({
+            googleID: userId
+          }),
+          userId
+        ]);
+      }
+      throw new Error("Invalid UserId");
+    })
+    .then(([user, userId]) => {
+      if (user === null) {
+        const newUser = new User({
+          googleID: userId
+        });
+        return newUser.save();
+      }
+      return user;
+    })
+    .then(createdUser => {
+      const payload = {
+        id: createdUser._id
+      };
+      const token = jwt.sign(payload, JWT_SECRET, {
+        expiresIn: "7d"
+      });
+      const respData = {
+        token
+      };
+      res.send(createResponse("Login Successful", respData));
+    })
+    .catch(err => {
+      console.log(err);
+      return res.send("Fail");
+    });
+};
+
+export const facebookLogin = (req: Request, res: Response) => {
+  const code: string = req.body.code;
+  var options = {
+    method: "GET",
+    url: "https://graph.facebook.com/v3.3/oauth/access_token",
+    qs: {
+      code: `${code}`,
+      client_id: `${FACEBOOK_CLIENTID}`,
+      client_secret: `${FACEBOOK_SECRET}`,
+      redirect_uri: "https://www.facebook.com/connect/login_success.html"
+    },
+    headers: {
+      "cache-control": "no-cache",
+      Connection: "keep-alive",
+      "accept-encoding": "gzip, deflate",
+      cookie:
+        "fr=1ku81bPaFPh4R72zk..BdEcFJ.FY.AAA.0.0.BdEcPd.AWXWwKG9; sb=ScERXSwW8fJ7CseWB-7kr2O9",
+      Host: "graph.facebook.com",
+      "Cache-Control": "no-cache",
+      Accept: "*/*"
+    }
+  };
+  rp(options)
+    .then(r => {
+      let resp = JSON.parse(r);
+      let options = {
+        method: "GET",
+        url: "https://graph.facebook.com/me",
+        qs: {
+          access_token: resp.access_token,
+          fields: "id,name"
+        }
+      };
+      return rp(options);
+    })
+    .then(response => {
+      let resp = JSON.parse(response);
+      return Promise.all([User.findOne({ facebookID: resp.id }), resp]);
+    })
+    .then(([user, details]) => {
+      if (!user) {
+        const newUser = new User({
+          facebookID: details.id,
+          name: details.name
+        });
+        return newUser.save();
+      }
+      return user;
+    })
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    .then(_createdUser => {
+      // const payload = {
+      //   id: createdUser._id
+      // };
+      // const token = jwt.sign(payload, JWT_SECRET, {
+      //   expiresIn: "7d"
+      // });
+      // const respData = {
+      //   token
+      // };
+      // res.send(createResponse("Login Successful", respData));
+      res.send("Success");
+    })
+    .catch(() => {
+      res.send("Fail");
+    });
 };

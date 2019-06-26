@@ -1,9 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-interface ErrorImpl {
-  e: Error;
-  status: number;
-}
-
 export const createResponse = (
   message: string,
   data: any
@@ -12,13 +7,13 @@ export const createResponse = (
 };
 
 export const createError = (
-  status: number,
+  _status: number,
   name: string,
   message: string
-): ErrorImpl => {
+): Error => {
   const e = new Error();
   // (e as any).status = status;
   e.name = name;
   e.message = message;
-  return { status, e };
+  return e;
 };

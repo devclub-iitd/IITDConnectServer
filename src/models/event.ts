@@ -1,5 +1,4 @@
 import mongoose, { Schema, model, Model, Document } from "mongoose";
-import User from "./user";
 
 export interface EventImpl extends Document {
   name: string;
@@ -40,12 +39,12 @@ const eventSchema = new Schema(
     },
     startDate: {
       type: Date,
-      required: true,
+      // required: true,
       default: Date.now
     },
     endDate: {
-      type: Date,
-      required: true
+      type: Date
+      // required: true
     },
     participants: {
       type: [{ type: Schema.Types.ObjectId, ref: "User" }]

@@ -9,3 +9,5 @@ router.get("/", auth.required, getAllBodies);
 router.get("/:id", auth.required, getBody);
 
 router.post("/:id/subscribe", auth.required, toggleSubscribe);
+
+export default router;

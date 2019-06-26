@@ -1,16 +1,17 @@
+/* eslint-disable no-console */
 import { Request, Response, NextFunction } from "express";
 import logger from "../utils/logger";
 
-function logRequest(req: Request, res: Response, next: NextFunction) {
+function logRequest(req: Request, res: Response, next: NextFunction): void {
   // http://www.senchalabs.org/connect/responseTime.html
   const start = new Date();
 
-  console.log("logRequest middleware entered ", (<any>res)._responseTime);
-  if ((<any>res)._responseTime) {
+  console.log("logRequest middleware entered ", (res as any)._responseTime);
+  if ((res as any)._responseTime) {
     return next();
   }
 
-  (<any>res)._responseTime = true;
+  (res as any)._responseTime = true;
 
   const ip =
     req.header("x-forwarded-for") ||
@@ -18,7 +19,7 @@ function logRequest(req: Request, res: Response, next: NextFunction) {
     "";
 
   // install a listener for when the response is finished
-  res.on("finish", function() {
+  res.on("finish", function(): void {
     // the request was handled, print the log entry
     console.log("Request handled");
     const responseTime = new Date().getTime() - start.getTime();

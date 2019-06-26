@@ -1,36 +1,37 @@
 import mongoose, { Schema, model, Model, Document } from "mongoose";
-import mongooseUniqueValidator from "mongoose-unique-validator";
+// import mongooseUniqueValidator from "mongoose-unique-validator";
 import { isEmail } from "validator";
 
 export interface UserImpl extends Document {
   name: string;
-  email: string;
   password: string;
   privilege: string;
   subscribedBodies: mongoose.Types.ObjectId[];
-  // subscribedEvents: mongoose.Types.ObjectId[];
   canCreate: boolean;
   createdEvents: mongoose.Types.ObjectId[];
   staredEvents: mongoose.Types.ObjectId[];
-  // star: (id: string) => null;
   iitdEmail: string;
   emailValidated: boolean;
+  facebookID: string;
+  googleID: string;
+  entryNumber: string;
+  department: string;
 }
 
 const userSchema: Schema = new Schema(
   {
     name: {
-      type: String,
-      required: true
+      type: String
     },
-    // Add Regex Check For iitd email id
-    email: {
+    facebookID: String,
+    googleID: String,
+    department: {
       type: String,
-      required: true,
-      unique: true,
-      validate: [isEmail, "Invalid Email"],
-      lowercase: true
+      uppercase: true,
+      //* More To Be Added
+      enum: ["CSE", "EE"]
     },
+    entryNumber: String,
     emailValidated: {
       type: Boolean,
       default: false
@@ -38,7 +39,6 @@ const userSchema: Schema = new Schema(
     iitdEmail: {
       type: String,
       lowercase: true,
-      unique: true,
       validate: [isEmail, "Invalid Email"]
     },
     hash: {
@@ -47,8 +47,7 @@ const userSchema: Schema = new Schema(
     privilege: {
       type: String,
       lowercase: true,
-      enum: ["admin", "organizer", "participant"],
-      required: true
+      enum: ["admin", "organizer", "participant"]
     },
     subscribedBodies: {
       type: [
@@ -58,14 +57,6 @@ const userSchema: Schema = new Schema(
         }
       ]
     },
-    // subscribedEvents: {
-    //   type: [
-    //     {
-    //       type: mongoose.Schema.Types.ObjectId,
-    //       ref: "Event"
-    //     }
-    //   ]
-    // },
     canCreate: {
       type: Boolean,
       default: false
@@ -89,8 +80,6 @@ const userSchema: Schema = new Schema(
   },
   { timestamps: true }
 );
-
-userSchema.plugin(mongooseUniqueValidator, { message: "Is Already Taken." });
 
 // userSchema.methods.star = function(id: string) {
 //   if (this.staredEvents.indexOf(id) === -1) {

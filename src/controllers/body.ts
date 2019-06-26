@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { Request, Response, NextFunction } from "express";
-import { validationResult } from "express-validator/check";
+// import { validationResult } from "express-validator/check";
 
 import User, { UserImpl } from "../models/user";
 import Body, { BodyImpl } from "../models/body";

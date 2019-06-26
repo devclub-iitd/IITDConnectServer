@@ -1,7 +1,7 @@
 import express from "express";
 import { check } from "express-validator/check";
 import {
-  faceBookLogin,
+  facebookLogin,
   googleLogin,
   addUserInformation,
   getUser
@@ -10,9 +10,9 @@ import auth from "../../middleware/auth";
 
 const router = express.Router();
 
-router.post("/users/facebookLogin", [check("code").exists()], faceBookLogin);
+router.post("/users/facebookLogin", facebookLogin);
 
-router.post("/users/googleLogin", [check("code").exists()], googleLogin);
+router.post("/users/googleLogin", googleLogin);
 
 router.post(
   "/users/addUserInformation",
@@ -23,6 +23,7 @@ router.post(
       .isEmail()
       .withMessage("Enter A Valid Email Address")
   ],
+  auth.required,
   addUserInformation
 );
 
