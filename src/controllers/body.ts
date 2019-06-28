@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { Request, Response, NextFunction } from "express";
+import { createError } from "../utils/helpers";
 // import { validationResult } from "express-validator/check";
 
 import User, { UserImpl } from "../models/user";
@@ -53,23 +54,23 @@ export const toggleSubscribe = async (
   res: Response,
   next: NextFunction
 ) => {
-  try {
-    const user = await User.findById(req.payload.id);
-    if (user === null) {
-      //! JWT WAS INVALID
-      return null;
-    }
-    const index = user.subscribedBodies.indexOf(req.params.id);
-    if (index === -1) {
-      user.subscribedBodies.push(req.params.id);
-    } else {
-      user.subscribedBodies.splice(index, 1);
-    }
-    await user.save();
-    return res.status(200).json({
-      message: "Successfully Toggled Subscribe"
-    });
-  } catch (error) {
-    next(error);
-  }
+  User.findById(req.payload.id)
+    .then(user => {
+      if (user === null) {
+        throw createError(401, "Unauthorized", "Invalid Login Credentials");
+      }
+      const index = user.subscribedBodies.indexOf(req.params.id);
+      if (index === -1) {
+        user.subscribedBodies.push(req.params.id);
+      } else {
+        user.subscribedBodies.splice(index, 1);
+      }
+      return user.save();
+    })
+    .then(() => {
+      return res.status(200).json({
+        message: "Successfully Subscribed"
+      });
+    })
+    .catch(e => next(e));
 };
