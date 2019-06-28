@@ -1,9 +1,19 @@
-export const createResponse = (message: string, data: any) => {
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export const createResponse = (
+  message: string,
+  data: any
+): { message: string; data: any } => {
   return { message, data };
 };
 
-export const createError = (status: number, name: string, message: string) => {
-  const err = new Error(message);
-  err.name = name;
-  return { status, err };
+export const createError = (
+  _status: number,
+  name: string,
+  message: string
+): Error => {
+  const e = new Error();
+  // (e as any).status = status;
+  e.name = name;
+  e.message = message;
+  return e;
 };

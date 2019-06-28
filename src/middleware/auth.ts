@@ -2,7 +2,7 @@ import { Request } from "express";
 import jwt from "express-jwt";
 import { JWT_SECRET } from "../utils/secrets";
 
-const getTokenFromHeader = (req: Request) => {
+const getTokenFromHeader = (req: Request): string | null => {
   if (
     req.headers.authorization &&
     req.headers.authorization.split(" ")[0] === "Bearer"
@@ -16,15 +16,15 @@ const auth = {
   required: jwt({
     secret: JWT_SECRET,
     getToken: getTokenFromHeader,
-    // userProperty: "payload"
-    requestProperty: "payload"
+    userProperty: "payload"
+    // requestProperty: "payload"
   }),
   optional: jwt({
     secret: JWT_SECRET,
     getToken: getTokenFromHeader,
     credentialsRequired: false,
-    // userProperty: "payload"
-    requestProperty: "payload"
+    userProperty: "payload"
+    // requestProperty: "payload"
   })
 };
 

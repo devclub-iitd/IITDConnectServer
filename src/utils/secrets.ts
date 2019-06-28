@@ -3,13 +3,17 @@ import fs from "fs";
 // import path from "path";
 
 if (fs.existsSync("src/.env")) {
-  console.log("Found The File");
   dotenv.config({ path: "src/.env" });
-} else {
-  console.log("No Such File Exists");
 }
+
+export const FACEBOOK_CLIENTID = process.env.FACEBOOK_CLIENTID;
+export const FACEBOOK_SECRET = process.env.FACEBOOK_SECRET;
+
+export const GOOGLE_CLIENT_ID =
+  process.env.GOOGLE_CLIENTID ||
+  "205021812271-u4ig83ckb55gamgg4t26ctifsvvds9bi.apps.googleusercontent.com";
 
 export const JWT_SECRET = process.env.JWT_SECRET || "secret";
 export const MONGODB_URI =
   process.env.MONGODB_URI ||
-  "mongodb://saksham:saksham5@ds012188.mlab.com:12188/iitd-connect";
+  "mongodb://saksham:saksham5@ds343887.mlab.com:43887/iitd-connect";

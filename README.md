@@ -1,1 +1,1 @@
-# iitd-connect-server
+# iitd-connect-server API Spec

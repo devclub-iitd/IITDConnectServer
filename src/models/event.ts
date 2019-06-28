@@ -1,6 +1,6 @@
 import mongoose, { Schema, model, Model, Document } from "mongoose";
 
-interface IEvent extends Document {
+export interface EventImpl extends Document {
   name: string;
   createdBy: mongoose.Types.ObjectId;
   about: string;
@@ -8,6 +8,10 @@ interface IEvent extends Document {
   startDate: Date;
   endDate: Date;
   participants: mongoose.Types.ObjectId[];
+  venue: string;
+  imageLink: string;
+  updates: mongoose.Types.ObjectId[];
+  // staredCount: number;
 }
 
 const eventSchema = new Schema(
@@ -26,22 +30,56 @@ const eventSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Body"
     },
+    venue: {
+      type: String,
+      required: true
+    },
+    imageLink: {
+      type: String
+    },
     startDate: {
       type: Date,
-      required: true,
+      // required: true,
       default: Date.now
     },
     endDate: {
-      type: Date,
-      required: true
+      type: Date
+      // required: true
     },
     participants: {
       type: [{ type: Schema.Types.ObjectId, ref: "User" }]
+    },
+    updates: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Update"
+        }
+      ]
     }
+    // staredCount: {
+    //   type: Number,
+    //   default: 0
+    // }
   },
   { timestamps: true }
 );
 
-const Event: Model<IEvent> = model<IEvent>("Event", eventSchema);
+// eventSchema.methods.eventJSOn = function() {
+//   return {
+//     name: this.name,
+//     about: this.about,
+//     body: this.body
+//   };
+// };
+
+// eventSchema.methods.updateStaredCount = async function() {
+//   const count = await User.count({
+//     staredEvents: { $in: [this._id] }
+//   });
+//   this.staredCount = count;
+// };
+
+const Event: Model<EventImpl> = model<EventImpl>("Event", eventSchema);
 
 export default Event;
