@@ -3,7 +3,8 @@ import {
   createEvent,
   getEvents,
   getEvent,
-  toggleStar
+  toggleStar,
+  addUpdate
 } from "../../controllers/event";
 import auth from "../../middleware/auth";
 
@@ -20,5 +21,7 @@ router.get("/:id", auth.required, getEvent);
 
 //* Star/UnStar An Event
 router.post("/:id/star", auth.required, toggleStar);
+
+router.post("/:id/addUpdate", auth.required, addUpdate);
 
 export default router;

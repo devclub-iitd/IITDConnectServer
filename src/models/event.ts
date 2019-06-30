@@ -49,6 +49,14 @@ const eventSchema = new Schema(
     participants: {
       type: [{ type: Schema.Types.ObjectId, ref: "User" }]
     },
+    // updates: {
+    //   type: [
+    //     {
+    //       time: Date.now(),
+    //       message: String
+    //     }
+    //   ]
+    // }
     updates: {
       type: [
         {

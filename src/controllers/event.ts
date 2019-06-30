@@ -1,10 +1,12 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
+import admin from "firebase-admin";
 import { validationResult } from "express-validator/check";
 import { Request, Response, NextFunction } from "express";
 import { createError, createResponse } from "../utils/helpers";
 import Event, { EventImpl } from "../models/event";
 import User, { UserImpl } from "../models/user";
+import Update from "../models/update";
 // import Body from "../models/body";
 
 const toEventJSON = (event: EventImpl, user: UserImpl) => {
@@ -144,4 +146,39 @@ export const toggleStar = async (
       });
     })
     .catch(e => next(e));
+};
+
+export const addUpdate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  Event.findById(req.params.id)
+    .then(event => {
+      if (event === null) {
+        throw createError(400, "Invalid", "No Such Event Exists");
+      }
+      const newUpdate = new Update(req.body);
+      return Promise.all([newUpdate.save(), event]);
+    })
+    .then(([update, event]) => {
+      event.updates.push(update.id);
+      return event.save();
+    })
+    .then(() => {
+      const message = {
+        topic: "DevClub",
+        notification: {
+          title: "Notification Title",
+          body: "Notification Body"
+        }
+      };
+      return admin.messaging().send(message);
+    })
+    .then(() => {
+      return res.json({
+        message: "Update Added Successfully"
+      });
+    })
+    .catch(err => next(err));
 };
