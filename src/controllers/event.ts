@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import admin from "firebase-admin";
+import slug from "slug";
 import { validationResult } from "express-validator/check";
 import { Request, Response, NextFunction } from "express";
 import { createError, createResponse } from "../utils/helpers";
@@ -54,7 +55,15 @@ export const createEvent = async (
     if (user === null) {
       throw createError(401, "Unauthorized", "Invalid");
     }
-    const newEvent = new Event({ ...req.body, createdBy: user });
+    const topic =
+      slug(req.body.name) +
+      "-" +
+      ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
+    const newEvent = new Event({
+      ...req.body,
+      createdBy: user,
+      topicName: topic
+    });
     newEvent
       .save()
       .then(event => {
@@ -122,32 +131,6 @@ export const getEvents = async (
     });
 };
 
-export const toggleStar = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  User.findById(req.payload.id)
-    .then(user => {
-      if (user === null) {
-        throw createError(401, "Unauthorized", "Invalid Login Credentials");
-      }
-      const index = user.staredEvents.indexOf(req.params.id);
-      if (index === -1) {
-        user.staredEvents.push(req.params.id);
-      } else {
-        user.staredEvents.splice(index, 1);
-      }
-      return user.save();
-    })
-    .then(() => {
-      return res.status(200).json({
-        message: "Successfully Toggled"
-      });
-    })
-    .catch(e => next(e));
-};
-
 export const addUpdate = async (
   req: Request,
   res: Response,
@@ -181,4 +164,45 @@ export const addUpdate = async (
       });
     })
     .catch(err => next(err));
+};
+
+export const toggleStar = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  return Promise.all([
+    User.findById(req.payload.id),
+    Event.findById(req.params.id)
+  ])
+    .then(([user, event]) => {
+      if (user === null || event === null) {
+        throw createError(401, "Unauthorized", "Invalid Login Credentials");
+      }
+      const index = user.staredEvents.indexOf(req.params.id);
+      if (index === -1) {
+        user.staredEvents.push(req.params.id);
+        return Promise.all([
+          user.save(),
+          admin
+            .messaging()
+            .subscribeToTopic(user.fcmRegistrationToken, event.topicName)
+        ]);
+      } else {
+        user.staredEvents.splice(index, 1);
+        return Promise.all([
+          user.save(),
+          admin
+            .messaging()
+            .unsubscribeFromTopic(user.fcmRegistrationToken, event.topicName)
+        ]);
+      }
+    })
+    .then(([, response]) => {
+      console.log("Successfully subscribed to topic:", response);
+      return res.status(200).json({
+        message: "Successfully Subscribed"
+      });
+    })
+    .catch(e => next(e));
 };

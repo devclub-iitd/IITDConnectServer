@@ -1,4 +1,4 @@
-import mongoose, { Schema, model, Model, Document } from "mongoose";
+import { Schema, model, Model, Document } from "mongoose";
 
 interface UpdateImpl extends Document {
   body: string;

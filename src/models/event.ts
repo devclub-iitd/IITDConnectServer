@@ -11,6 +11,7 @@ export interface EventImpl extends Document {
   venue: string;
   imageLink: string;
   updates: mongoose.Types.ObjectId[];
+  topicName: string;
   // staredCount: number;
 }
 
@@ -64,7 +65,8 @@ const eventSchema = new Schema(
           ref: "Update"
         }
       ]
-    }
+    },
+    topicName: String
     // staredCount: {
     //   type: Number,
     //   default: 0
