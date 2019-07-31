@@ -5,11 +5,19 @@ import expressValidator from "express-validator";
 import cors from "cors";
 import lusca from "lusca";
 import compression from "compression";
+import admin from "firebase-admin";
 import { MONGODB_URI } from "./utils/secrets";
 
-// import logRequest from "./middleware/logRequest";
-
 import routes from "./routes";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const serviceAccount = require("../serviceAccountKey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://iitd-connect-b0113.firebaseio.com"
+});
+
+// import logRequest from "./middleware/logRequest";
 
 const app = express();
 

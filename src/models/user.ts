@@ -16,6 +16,7 @@ export interface UserImpl extends Document {
   googleID: string;
   entryNumber: string;
   department: string;
+  fcmRegistrationToken: string;
 }
 
 const userSchema: Schema = new Schema(
@@ -41,6 +42,7 @@ const userSchema: Schema = new Schema(
       lowercase: true,
       validate: [isEmail, "Invalid Email"]
     },
+    fcmRegistrationToken: String,
     hash: {
       type: String
     },

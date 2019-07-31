@@ -1,20 +1,25 @@
-import mongoose, { Schema, model, Model, Document } from "mongoose";
+import { Schema, model, Model, Document } from "mongoose";
 
 interface UpdateImpl extends Document {
-  message: string;
-  event: mongoose.Types.ObjectId;
+  body: string;
+  title: string;
+  // event: mongoose.Types.ObjectId;
 }
 
 const updateSchema = new Schema(
   {
-    message: {
+    body: {
       type: String,
       required: true
     },
-    event: {
-      type: Schema.Types.ObjectId,
-      ref: "Event"
+    title: {
+      type: String,
+      required: true
     }
+    // event: {
+    //   type: Schema.Types.ObjectId,
+    //   ref: "Event"
+    // }
   },
   { timestamps: true }
 );

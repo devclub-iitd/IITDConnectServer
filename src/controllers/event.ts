@@ -1,13 +1,16 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
+import admin from "firebase-admin";
+import slug from "slug";
 import { validationResult } from "express-validator/check";
 import { Request, Response, NextFunction } from "express";
+import { createError, createResponse } from "../utils/helpers";
 import Event, { EventImpl } from "../models/event";
 import User, { UserImpl } from "../models/user";
-import Body from "../models/body";
+import Update from "../models/update";
 // import Body from "../models/body";
 
-const toArticleJSON = (event: EventImpl, user: UserImpl) => {
+const toEventJSON = (event: EventImpl, user: UserImpl) => {
   const isStarred = user.staredEvents.some(starId => {
     return starId.toString() === event.id.toString();
   });
@@ -35,7 +38,11 @@ const toArticleJSON = (event: EventImpl, user: UserImpl) => {
   };
 };
 
-export const createEvent = async (req: Request, res: Response) => {
+export const createEvent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({
@@ -44,22 +51,39 @@ export const createEvent = async (req: Request, res: Response) => {
     });
   }
 
-  try {
-    const user = await User.findById(req.payload.id);
-    // const body = await Body.findOne({});
-    if (!user) {
-      return res.sendStatus(401);
+  User.findById(req.payload.id).then(user => {
+    if (user === null) {
+      throw createError(401, "Unauthorized", "Invalid");
     }
-    const newEvent = new Event({ ...req.body, createdBy: user });
-    await newEvent.save();
-    return res.status(200).json({
-      message: "Event Created Successfully"
+    const topic =
+      slug(req.body.name) +
+      "-" +
+      ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
+    const newEvent = new Event({
+      ...req.body,
+      createdBy: user,
+      topicName: topic
     });
-  } catch (error) {
-    console.log(error);
-    //TODO: Send The Error In A Proper Structure
-    return res.status(500).send("Connection Issue");
-  }
+    newEvent
+      .save()
+      .then(event => {
+        const respData = {
+          event: {
+            name: event.name,
+            about: event.about,
+            body: event.body,
+            startDate: event.startDate,
+            endDate: event.endDate,
+            image: event.imageLink,
+            venue: event.venue
+          }
+        };
+        return res.send(createResponse("Event Created Successfully", respData));
+      })
+      .catch(err => {
+        next(err);
+      });
+  });
 };
 
 export const getEvent = async (req: Request, res: Response) => {
@@ -69,11 +93,12 @@ export const getEvent = async (req: Request, res: Response) => {
   ])
     .then(([user, event]) => {
       if (user && event) {
-        return res.status(200).json({
-          event: event
-        });
+        const respData = {
+          event: toEventJSON(event, user)
+        };
+        return res.send(createResponse("Found Event", respData));
       }
-      return null;
+      throw createError(401, "Unauthorized", "Invalid");
     })
     .catch(() => res.status(400).json({ message: "Error" }));
 };
@@ -85,24 +110,60 @@ export const getEvents = async (
 ) => {
   //TODO: IF WE WANT TO ADD THE OPTION TO FILTER BY DEPARTMENT OR YEAR OR ANYTHING
   let query = {};
-  try {
-    const [events, user] = await Promise.all([
-      Event.find(query)
-        // .sort({ endDate: "desc" })
-        // .populate("body")
-        .exec(),
-      User.findById(req.payload.id)
-    ]);
-    if (user) {
-      return res.status(200).json({
-        events: events.map(event => toArticleJSON(event, user))
+  return Promise.all([
+    Event.find(query)
+      // .sort({ endDate: "desc" })
+      // .populate("body")
+      .exec(),
+    User.findById(req.payload.id)
+  ])
+    .then(([events, user]) => {
+      if (user === null) {
+        throw createError(401, "Unauthorized", "Invalid");
+      }
+      const respData = {
+        events: events.map(event => toEventJSON(event, user))
+      };
+      res.send(createResponse("Events Found", respData));
+    })
+    .catch(e => {
+      next(e);
+    });
+};
+
+export const addUpdate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  Event.findById(req.params.id)
+    .then(event => {
+      if (event === null) {
+        throw createError(400, "Invalid", "No Such Event Exists");
+      }
+      const newUpdate = new Update(req.body);
+      return Promise.all([newUpdate.save(), event]);
+    })
+    .then(([update, event]) => {
+      event.updates.push(update.id);
+      return event.save();
+    })
+    .then(() => {
+      const message = {
+        topic: "DevClub",
+        notification: {
+          title: "Notification Title",
+          body: "Notification Body"
+        }
+      };
+      return admin.messaging().send(message);
+    })
+    .then(() => {
+      return res.json({
+        message: "Update Added Successfully"
       });
-    }
-    return null;
-  } catch (err) {
-    next(err);
-  }
-  return null;
+    })
+    .catch(err => next(err));
 };
 
 export const toggleStar = async (
@@ -110,45 +171,38 @@ export const toggleStar = async (
   res: Response,
   next: NextFunction
 ) => {
-  try {
-    const user = await User.findById(req.payload.id);
-    if (user === null) {
-      //! JWT WAS INVALID
-      return null;
-    }
-    const index = user.staredEvents.indexOf(req.params.id);
-    if (index === -1) {
-      user.staredEvents.push(req.params.id);
-    } else {
-      user.staredEvents.splice(index, 1);
-    }
-    await user.save();
-    return res.status(200).json({
-      message: "Successfully Toggled Star"
-    });
-  } catch (error) {
-    next(error);
-  }
-  return null;
-  // User.findById(req.payload.id)
-  //   .then(user => {
-  //     if (user === null) {
-  //       return null;
-  //     }
-  //     const index = user.staredEvents.indexOf(req.params.id);
-  //     if (index === -1) {
-  //       user.staredEvents.push(req.params.id);
-  //     } else {
-  //       user.staredEvents.splice(index, 1);
-  //     }
-  //     return user.save();
-  //   })
-  //   .then(() => {
-  //     return res.status(200).json({
-  //       message: "Successfully Toggled"
-  //     });
-  //   })
-  //   .catch((err: Error) => {
-  //     next(err);
-  //   });
+  return Promise.all([
+    User.findById(req.payload.id),
+    Event.findById(req.params.id)
+  ])
+    .then(([user, event]) => {
+      if (user === null || event === null) {
+        throw createError(401, "Unauthorized", "Invalid Login Credentials");
+      }
+      const index = user.staredEvents.indexOf(req.params.id);
+      if (index === -1) {
+        user.staredEvents.push(req.params.id);
+        return Promise.all([
+          user.save(),
+          admin
+            .messaging()
+            .subscribeToTopic(user.fcmRegistrationToken, event.topicName)
+        ]);
+      } else {
+        user.staredEvents.splice(index, 1);
+        return Promise.all([
+          user.save(),
+          admin
+            .messaging()
+            .unsubscribeFromTopic(user.fcmRegistrationToken, event.topicName)
+        ]);
+      }
+    })
+    .then(([, response]) => {
+      console.log("Successfully subscribed to topic:", response);
+      return res.status(200).json({
+        message: "Successfully Subscribed"
+      });
+    })
+    .catch(e => next(e));
 };

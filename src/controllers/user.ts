@@ -35,17 +35,13 @@ export const addUserInformation = async (
 ) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    // console.log(errors.array());
-    console.log(errors.array());
-    throw createError(400, "Invalid Information", "Information is not Valid ");
+    return res.status(400).json({ errors: errors.array() });
   }
   const { email, department, entryNumber } = req.body;
-  console.log(req.body);
   const user = await User.findOne({
     $or: [{ iitdEmail: email }, { entryNumber: entryNumber }]
   });
   if (user) {
-    //* Entry Number Already In Use
     throw createError(
       401,
       "Invalid Details",
@@ -68,7 +64,6 @@ export const addUserInformation = async (
         throw createError(401, "Unauthorized", "Invalid Information");
       }
       //! Send a Confirmation Email
-      // const link="http://"+req.get('host')+"/verify?id="+;
       const link = `http://${req.get("host")}/user/verify/${hash}`;
       return transporter.sendMail({
         from: '"DevClub 👻" <dev@example.com>', // sender address
@@ -86,7 +81,6 @@ export const addUserInformation = async (
         .json({ message: "We Have Sent An Email For Confirmation" });
     })
     .catch(err => next(err));
-  return null;
 };
 
 export const verifyUser = async (
@@ -105,20 +99,33 @@ export const verifyUser = async (
     .catch(err => next(err));
 };
 
-export const getUser = async (req: Request, res: Response) => {
-  const user = await User.findById(req.params.id);
-  if (user === null) {
-    //! Invalid UserId
-    return res.status(404).json({
-      error: "User Not Found"
+export const getUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  User.findById(req.params.id)
+    .then(user => {
+      if (user === null) {
+        throw createError(401, "Unauthorized", "No Such User Found");
+      }
+      const respData = {
+        user: {
+          name: user.name
+        }
+      };
+      return res.send(createResponse("User Found", respData));
+    })
+    .catch(e => {
+      next(e);
     });
-  }
-  return res.status(200).json({
-    name: user.name
-  });
 };
 
-export const googleLogin = (req: Request, res: Response) => {
+export const googleLogin = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const token = req.body.code;
   const client = new OAuth2Client(GOOGLE_CLIENT_ID);
   client
@@ -129,17 +136,20 @@ export const googleLogin = (req: Request, res: Response) => {
     .then(ticket => {
       const payload = ticket.getPayload();
       let userId: string;
-      if (payload) {
-        console.log(payload);
-        userId = payload["sub"];
-        return Promise.all([
-          User.findOne({
-            googleID: userId
-          }),
-          userId
-        ]);
+      if (typeof payload === "undefined") {
+        throw createError(
+          400,
+          "Invalid Login Credentials",
+          "The User Credentials Provided Were Invalid"
+        );
       }
-      throw new Error("Invalid UserId");
+      userId = payload["sub"];
+      return Promise.all([
+        User.findOne({
+          googleID: userId
+        }),
+        userId
+      ]);
     })
     .then(([user, userId]) => {
       if (user === null) {
@@ -163,12 +173,15 @@ export const googleLogin = (req: Request, res: Response) => {
       res.send(createResponse("Login Successful", respData));
     })
     .catch(err => {
-      console.log(err);
-      return res.send("Fail");
+      next(err);
     });
 };
 
-export const facebookLogin = (req: Request, res: Response) => {
+export const facebookLogin = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const code: string = req.body.code;
   var options = {
     method: "GET",
@@ -217,21 +230,19 @@ export const facebookLogin = (req: Request, res: Response) => {
       }
       return user;
     })
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    .then(_createdUser => {
-      // const payload = {
-      //   id: createdUser._id
-      // };
-      // const token = jwt.sign(payload, JWT_SECRET, {
-      //   expiresIn: "7d"
-      // });
-      // const respData = {
-      //   token
-      // };
-      // res.send(createResponse("Login Successful", respData));
-      res.send("Success");
+    .then(createdUser => {
+      const payload = {
+        id: createdUser._id
+      };
+      const token = jwt.sign(payload, JWT_SECRET, {
+        expiresIn: "7d"
+      });
+      const respData = {
+        token
+      };
+      res.send(createResponse("Login Successful", respData));
     })
-    .catch(() => {
-      res.send("Fail");
+    .catch(e => {
+      next(e);
     });
 };
