@@ -173,6 +173,7 @@ export const googleLogin = (
       res.send(createResponse("Login Successful", respData));
     })
     .catch(err => {
+      console.log(err);
       next(err);
     });
 };
@@ -183,39 +184,48 @@ export const facebookLogin = (
   next: NextFunction
 ) => {
   const code: string = req.body.code;
-  var options = {
+  // var options = {
+  //   method: "GET",
+  //   url: "https://graph.facebook.com/v3.3/oauth/access_token",
+  //   qs: {
+  //     code: `${code}`,
+  //     client_id: `${FACEBOOK_CLIENTID}`,
+  //     client_secret: `${FACEBOOK_SECRET}`,
+  //     redirect_uri: "https://www.facebook.com/connect/login_success.html"
+  //   },
+  //   headers: {
+  //     "cache-control": "no-cache",
+  //     Connection: "keep-alive",
+  //     "accept-encoding": "gzip, deflate",
+  //     cookie:
+  //       "fr=1ku81bPaFPh4R72zk..BdEcFJ.FY.AAA.0.0.BdEcPd.AWXWwKG9; sb=ScERXSwW8fJ7CseWB-7kr2O9",
+  //     Host: "graph.facebook.com",
+  //     "Cache-Control": "no-cache",
+  //     Accept: "*/*"
+  //   }
+  // };
+  // rp(options)
+  //   .then(r => {
+  //     let resp = JSON.parse(r);
+  //     let options = {
+  //       method: "GET",
+  //       url: "https://graph.facebook.com/me",
+  //       qs: {
+  //         access_token: resp.access_token,
+  //         fields: "id,name"
+  //       }
+  //     };
+  //     return rp(options);
+  //   })
+  let options = {
     method: "GET",
-    url: "https://graph.facebook.com/v3.3/oauth/access_token",
+    url: "https://graph.facebook.com/me",
     qs: {
-      code: `${code}`,
-      client_id: `${FACEBOOK_CLIENTID}`,
-      client_secret: `${FACEBOOK_SECRET}`,
-      redirect_uri: "https://www.facebook.com/connect/login_success.html"
-    },
-    headers: {
-      "cache-control": "no-cache",
-      Connection: "keep-alive",
-      "accept-encoding": "gzip, deflate",
-      cookie:
-        "fr=1ku81bPaFPh4R72zk..BdEcFJ.FY.AAA.0.0.BdEcPd.AWXWwKG9; sb=ScERXSwW8fJ7CseWB-7kr2O9",
-      Host: "graph.facebook.com",
-      "Cache-Control": "no-cache",
-      Accept: "*/*"
+      access_token: code,
+      fields: "id,name"
     }
   };
   rp(options)
-    .then(r => {
-      let resp = JSON.parse(r);
-      let options = {
-        method: "GET",
-        url: "https://graph.facebook.com/me",
-        qs: {
-          access_token: resp.access_token,
-          fields: "id,name"
-        }
-      };
-      return rp(options);
-    })
     .then(response => {
       let resp = JSON.parse(response);
       return Promise.all([User.findOne({ facebookID: resp.id }), resp]);
@@ -231,12 +241,14 @@ export const facebookLogin = (
       return user;
     })
     .then(createdUser => {
+      console.log(createdUser.name);
       const payload = {
         id: createdUser._id
       };
       const token = jwt.sign(payload, JWT_SECRET, {
         expiresIn: "7d"
       });
+      console.log(token);
       const respData = {
         token
       };

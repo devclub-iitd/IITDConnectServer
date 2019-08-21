@@ -1,4 +1,5 @@
-import express from "express";
+/* eslint-disable no-console */
+import express, { Response } from "express";
 import { check } from "express-validator/check";
 import {
   facebookLogin,
@@ -11,6 +12,11 @@ import auth from "../../middleware/auth";
 const router = express.Router();
 
 router.post("/users/facebookLogin", facebookLogin);
+
+// router.post("/users/googleLogin", (_, res: Response) => {
+//   console.log("HELLO WORLD");
+//   return res.send("Tumkiiiiiii");
+// });
 
 router.post("/users/googleLogin", googleLogin);
 

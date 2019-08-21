@@ -10,6 +10,9 @@ import User, { UserImpl } from "../models/user";
 import Update from "../models/update";
 // import Body from "../models/body";
 
+//TODO! :- start and end time, just body name and id
+//TODO! :- add the functionality to delete,edit event , delete update
+
 const toEventJSON = (event: EventImpl, user: UserImpl) => {
   const isStarred = user.staredEvents.some(starId => {
     return starId.toString() === event.id.toString();
@@ -86,6 +89,16 @@ export const createEvent = async (
   });
 };
 
+export const deleteEvent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  Event.findByIdAndRemove(req.body.eventId).then(e => {
+    return res.send("Event Was Successfully Removed");
+  });
+};
+
 export const getEvent = async (req: Request, res: Response) => {
   return Promise.all([
     User.findById(req.payload.id),
@@ -108,7 +121,7 @@ export const getEvents = async (
   res: Response,
   next: NextFunction
 ) => {
-  //TODO: IF WE WANT TO ADD THE OPTION TO FILTER BY DEPARTMENT OR YEAR OR ANYTHING
+  //!TODO IF WE WANT TO ADD THE OPTION TO FILTER BY DEPARTMENT OR YEAR OR ANYTHING
   let query = {};
   return Promise.all([
     Event.find(query)
