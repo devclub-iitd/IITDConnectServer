@@ -7,6 +7,7 @@ import { Request, Response, NextFunction } from "express";
 import { createError, createResponse } from "../utils/helpers";
 import Event, { EventImpl } from "../models/event";
 import User, { UserImpl } from "../models/user";
+import Body, { BodyImpl } from "../models/body";
 import Update from "../models/update";
 // import Body from "../models/body";
 
@@ -54,8 +55,11 @@ export const createEvent = async (
     });
   }
 
-  User.findById(req.payload.id).then(user => {
-    if (user === null) {
+  return Promise.all([
+    Body.findById(req.body.body),
+    User.findById(req.payload.id)
+  ]).then(([body, user]) => {
+    if (user === null || body == null) {
       throw createError(401, "Unauthorized", "Invalid");
     }
     const topic =
@@ -70,6 +74,10 @@ export const createEvent = async (
     newEvent
       .save()
       .then(event => {
+        body.events.push(event.id);
+        return Promise.all([event, body.save()]);
+      })
+      .then(([event]) => {
         const respData = {
           event: {
             name: event.name,

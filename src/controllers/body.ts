@@ -2,7 +2,8 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { Request, Response, NextFunction } from "express";
 import admin from "firebase-admin";
-import { createError } from "../utils/helpers";
+import { createError, createResponse } from "../utils/helpers";
+
 // import { validationResult } from "express-validator/check";
 
 import User, { UserImpl } from "../models/user";
@@ -18,6 +19,27 @@ const toBodyJSON = (body: BodyImpl, user: UserImpl) => {
     department: body.dept,
     isSub: isSub
   };
+};
+
+export const addBody = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const newBody = new Body(req.body);
+  newBody
+    .save()
+    .then(body => {
+      const respData = {
+        body: {
+          name: body.name
+        }
+      };
+      return res.send(createResponse("Body Created Successfully", respData));
+    })
+    .catch(err => {
+      next(err);
+    });
 };
 
 export const getAllBodies = (

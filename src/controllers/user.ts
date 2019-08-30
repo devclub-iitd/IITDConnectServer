@@ -109,12 +109,12 @@ export const getUser = async (
       if (user === null) {
         throw createError(401, "Unauthorized", "No Such User Found");
       }
-      const respData = {
-        user: {
-          name: user.name
-        }
-      };
-      return res.send(createResponse("User Found", respData));
+      // const respData = {
+      //   user: {
+      //     name: user.name
+      //   }
+      // };
+      return res.send(createResponse("User Found", user));
     })
     .catch(e => {
       next(e);
