@@ -17,7 +17,8 @@ const toBodyJSON = (body: BodyImpl, user: UserImpl) => {
     name: body.name,
     about: body.about,
     department: body.dept,
-    isSub: isSub
+    isSub: isSub,
+    id: body._id
   };
 };
 
