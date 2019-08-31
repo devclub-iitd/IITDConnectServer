@@ -184,77 +184,136 @@ export const facebookLogin = (
   next: NextFunction
 ) => {
   const code: string = req.body.code;
-  // var options = {
-  //   method: "GET",
-  //   url: "https://graph.facebook.com/v3.3/oauth/access_token",
-  //   qs: {
-  //     code: `${code}`,
-  //     client_id: `${FACEBOOK_CLIENTID}`,
-  //     client_secret: `${FACEBOOK_SECRET}`,
-  //     redirect_uri: "https://www.facebook.com/connect/login_success.html"
-  //   },
-  //   headers: {
-  //     "cache-control": "no-cache",
-  //     Connection: "keep-alive",
-  //     "accept-encoding": "gzip, deflate",
-  //     cookie:
-  //       "fr=1ku81bPaFPh4R72zk..BdEcFJ.FY.AAA.0.0.BdEcPd.AWXWwKG9; sb=ScERXSwW8fJ7CseWB-7kr2O9",
-  //     Host: "graph.facebook.com",
-  //     "Cache-Control": "no-cache",
-  //     Accept: "*/*"
-  //   }
-  // };
-  // rp(options)
-  //   .then(r => {
-  //     let resp = JSON.parse(r);
-  //     let options = {
-  //       method: "GET",
-  //       url: "https://graph.facebook.com/me",
-  //       qs: {
-  //         access_token: resp.access_token,
-  //         fields: "id,name"
-  //       }
-  //     };
-  //     return rp(options);
-  //   })
-  let options = {
+  let newOptions = {
     method: "GET",
-    url: "https://graph.facebook.com/me",
+    url: "https://graph.facebook.com/v3.3/oauth/access_token",
     qs: {
-      access_token: code,
-      fields: "id,name"
+      code: `${code}`,
+      client_id: "826437701076131",
+      client_secret: "380272230a23a7710876a11ede955d2c",
+      redirect_uri: "https://www.facebook.com/connect/login_success.html"
     }
   };
-  rp(options)
-    .then(response => {
-      let resp = JSON.parse(response);
-      return Promise.all([User.findOne({ facebookID: resp.id }), resp]);
+  rp(newOptions)
+    .then(r => {
+      let resp = JSON.parse(r);
+      return resp;
     })
-    .then(([user, details]) => {
-      if (!user) {
-        const newUser = new User({
-          facebookID: details.id,
-          name: details.name
+    .then(code => {
+      let options = {
+        method: "GET",
+        url: "https://graph.facebook.com/me",
+        qs: {
+          access_token: code.access_token,
+          fields: "id,name"
+        }
+      };
+      rp(options)
+        .then(response => {
+          let resp = JSON.parse(response);
+          return Promise.all([User.findOne({ facebookID: resp.id }), resp]);
+        })
+        .then(([user, details]) => {
+          if (!user) {
+            const newUser = new User({
+              facebookID: details.id,
+              name: details.name
+            });
+            return newUser.save();
+          }
+          return user;
+        })
+        .then(createdUser => {
+          console.log(createdUser.name);
+          const payload = {
+            id: createdUser._id
+          };
+          const token = jwt.sign(payload, JWT_SECRET, {
+            expiresIn: "7d"
+          });
+          console.log(token);
+          const respData = {
+            token
+          };
+          res.send(createResponse("Login Successful", respData));
+        })
+        .catch(e => {
+          next(e);
         });
-        return newUser.save();
-      }
-      return user;
-    })
-    .then(createdUser => {
-      console.log(createdUser.name);
-      const payload = {
-        id: createdUser._id
-      };
-      const token = jwt.sign(payload, JWT_SECRET, {
-        expiresIn: "7d"
-      });
-      console.log(token);
-      const respData = {
-        token
-      };
-      res.send(createResponse("Login Successful", respData));
-    })
-    .catch(e => {
-      next(e);
     });
 };
+
+// var options = {
+//   method: "GET",
+//   url: "https://graph.facebook.com/v3.3/oauth/access_token",
+//   qs: {
+//     code: `${code}`,
+//     client_id: `${FACEBOOK_CLIENTID}`,
+//     client_secret: `${FACEBOOK_SECRET}`,
+//     redirect_uri: "https://www.facebook.com/connect/login_success.html"
+//   },
+//   headers: {
+//     "cache-control": "no-cache",
+//     Connection: "keep-alive",
+//     "accept-encoding": "gzip, deflate",
+//     cookie:
+//       "fr=1ku81bPaFPh4R72zk..BdEcFJ.FY.AAA.0.0.BdEcPd.AWXWwKG9; sb=ScERXSwW8fJ7CseWB-7kr2O9",
+//     Host: "graph.facebook.com",
+//     "Cache-Control": "no-cache",
+//     Accept: "*/*"
+//   }
+// };
+// rp(options)
+//   .then(r => {
+//     let resp = JSON.parse(r);
+//     let options = {
+//       method: "GET",
+//       url: "https://graph.facebook.com/me",
+//       qs: {
+//         access_token: resp.access_token,
+//         fields: "id,name"
+//       }
+//     };
+//     return rp(options);
+//   })
+
+// let options = {
+//   method: "GET",
+//   url: "https://graph.facebook.com/me",
+//   qs: {
+//     access_token: code,
+//     fields: "id,name"
+//   }
+// };
+// rp(options)
+//   .then(response => {
+//     let resp = JSON.parse(response);
+//     return Promise.all([User.findOne({ facebookID: resp.id }), resp]);
+//   })
+//   .then(([user, details]) => {
+//     if (!user) {
+//       const newUser = new User({
+//         facebookID: details.id,
+//         name: details.name
+//       });
+//       return newUser.save();
+//     }
+//     return user;
+//   })
+//   .then(createdUser => {
+//     console.log(createdUser.name);
+//     const payload = {
+//       id: createdUser._id
+//     };
+//     const token = jwt.sign(payload, JWT_SECRET, {
+//       expiresIn: "7d"
+//     });
+//     console.log(token);
+//     const respData = {
+//       token
+//     };
+//     res.send(createResponse("Login Successful", respData));
+//   })
+//   .catch(e => {
+//     next(e);
+//   });

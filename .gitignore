@@ -10,3 +10,4 @@ node_modules/
 dist/
 .vscode
 serviceAccountKey.json
+client_secret.json

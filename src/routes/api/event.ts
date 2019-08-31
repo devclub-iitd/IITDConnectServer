@@ -4,7 +4,8 @@ import {
   getEvents,
   getEvent,
   toggleStar,
-  addUpdate
+  addUpdate,
+  deleteEvent
 } from "../../controllers/event";
 import auth from "../../middleware/auth";
 
@@ -24,6 +25,9 @@ router.get("/", auth.required, getEvents);
 
 //* Get An Event
 router.get("/:id", auth.required, getEvent);
+
+//* Delete An Event
+router.delete("/:id", auth.required, deleteEvent);
 
 //* Star/UnStar An Event
 router.post("/:id/star", auth.required, toggleStar);

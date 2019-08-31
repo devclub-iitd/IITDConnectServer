@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import admin from "firebase-admin";
 import slug from "slug";
-import { validationResult } from "express-validator/check";
+import { validationResult, body } from "express-validator/check";
 import { Request, Response, NextFunction } from "express";
 import { createError, createResponse } from "../utils/helpers";
 import Event, { EventImpl } from "../models/event";
@@ -18,28 +18,28 @@ const toEventJSON = (event: EventImpl, user: UserImpl) => {
   const isStarred = user.staredEvents.some(starId => {
     return starId.toString() === event.id.toString();
   });
-  // if (event.body instanceof Body) {
-  //   return {
-  //     name: event.name,
-  //     about: event.about,
-  //     body: event.body,
-  //     startDate: event.startDate,
-  //     endDate: event.endDate,
-  //     stared: isStarred,
-  //     image: event.imageLink,
-  //     venue: event.venue
-  //   };
-  // }
-  return {
-    name: event.name,
-    about: event.about,
-    body: event.body,
-    startDate: event.startDate,
-    endDate: event.endDate,
-    stared: isStarred,
-    image: event.imageLink,
-    venue: event.venue
-  };
+  if (event.body instanceof Body) {
+    return {
+      name: event.name,
+      about: event.about,
+      body: event.body,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      stared: isStarred,
+      image: event.imageLink,
+      venue: event.venue
+    };
+  }
+  // return {
+  //   name: event.name,
+  //   about: event.about,
+  //   body: event.body,
+  //   startDate: event.startDate,
+  //   endDate: event.endDate,
+  //   stared: isStarred,
+  //   image: event.imageLink,
+  //   venue: event.venue
+  // };
 };
 
 export const createEvent = async (
@@ -102,9 +102,13 @@ export const deleteEvent = async (
   res: Response,
   next: NextFunction
 ) => {
-  Event.findByIdAndRemove(req.body.eventId).then(e => {
-    return res.send("Event Was Successfully Removed");
-  });
+  const event = await Event.findById(req.params.id);
+  if (event == null) {
+    return res.send("Invalid");
+  }
+  await Body.update({ _id: event.body }, { $pull: { events: event.id } });
+  await event.remove();
+  return res.send("Event Was Successfully Removed");
 };
 
 export const getEvent = async (req: Request, res: Response) => {
@@ -129,12 +133,16 @@ export const getEvents = async (
   res: Response,
   next: NextFunction
 ) => {
-  //!TODO IF WE WANT TO ADD THE OPTION TO FILTER BY DEPARTMENT OR YEAR OR ANYTHING
-  let query = {};
+  //!TODO IF WE WANT TO ADD THE OPTION TO FILTER BY CLUB OR YEAR OR ANYTHING
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let query: any = {};
+  if (typeof req.query.body !== "undefined") {
+    query.body = req.query.body;
+  }
   return Promise.all([
     Event.find(query)
       // .sort({ endDate: "desc" })
-      // .populate("body")
+      .populate("body")
       .exec(),
     User.findById(req.payload.id)
   ])
