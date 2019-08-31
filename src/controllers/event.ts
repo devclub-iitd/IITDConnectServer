@@ -42,6 +42,35 @@ const toEventJSON = (event: EventImpl, user: UserImpl) => {
   }
 };
 
+const toSingleEventJSON = (event: EventImpl, user: UserImpl) => {
+  const isStarred = user.staredEvents.some(starId => {
+    return starId.toString() === event.id.toString();
+  });
+  const isSub = user.subscribedBodies.some(bodyId => {
+    return bodyId.toString() === event.body.toString();
+  });
+  if (event.body instanceof Body) {
+    return {
+      id: event.id,
+      name: event.name,
+      about: event.about,
+      body: {
+        name: event.body.name,
+        about: event.body.about,
+        id: event.body.id,
+        department: event.body.dept,
+        isSub: isSub
+      },
+      updates: event.updates,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      stared: isStarred,
+      image: event.imageLink,
+      venue: event.venue
+    };
+  }
+};
+
 export const createEvent = async (
   req: Request,
   res: Response,
@@ -104,20 +133,20 @@ export const deleteEvent = async (
 };
 
 export const getEvent = async (req: Request, res: Response) => {
-  return Promise.all([
+  const [user, event] = await Promise.all([
     User.findById(req.payload.id),
     Event.findById(req.params.id)
-  ])
-    .then(([user, event]) => {
-      if (user && event) {
-        const respData = {
-          event: toEventJSON(event, user)
-        };
-        return res.send(createResponse("Found Event", respData));
-      }
-      throw createError(401, "Unauthorized", "Invalid");
-    })
-    .catch(() => res.status(400).json({ message: "Error" }));
+      .populate("body")
+      .populate("updates")
+      .exec()
+  ]);
+  if (user == null || event == null) {
+    return res.status(400).json({ message: "Error" });
+  }
+  const respData = {
+    event: toSingleEventJSON(event, user)
+  };
+  return res.send(respData);
 };
 
 export const getEvents = async (
@@ -152,6 +181,7 @@ export const getEvents = async (
     });
 };
 
+//TODO: ADD THE SUPPORT FOR PUSH NOTIFICATIONS
 export const addUpdate = async (
   req: Request,
   res: Response,
@@ -170,20 +200,23 @@ export const addUpdate = async (
       return event.save();
     })
     .then(() => {
-      const message = {
-        topic: "DevClub",
-        notification: {
-          title: "Notification Title",
-          body: "Notification Body"
-        }
-      };
-      return admin.messaging().send(message);
-    })
-    .then(() => {
       return res.json({
         message: "Update Added Successfully"
       });
+      // const message = {
+      //   topic: "DevClub",
+      //   notification: {
+      //     title: "Notification Title",
+      //     body: "Notification Body"
+      //   }
+      // };
+      // return admin.messaging().send(message);
     })
+    // .then(() => {
+    //   return res.json({
+    //     message: "Update Added Successfully"
+    //   });
+    // })
     .catch(err => next(err));
 };
 
@@ -204,23 +237,23 @@ export const toggleStar = async (
       if (index === -1) {
         user.staredEvents.push(req.params.id);
         return Promise.all([
-          user.save(),
-          admin
-            .messaging()
-            .subscribeToTopic(user.fcmRegistrationToken, event.topicName)
+          user.save()
+          // admin
+          //   .messaging()
+          //   .subscribeToTopic(user.fcmRegistrationToken, event.topicName)
         ]);
       } else {
         user.staredEvents.splice(index, 1);
         return Promise.all([
-          user.save(),
-          admin
-            .messaging()
-            .unsubscribeFromTopic(user.fcmRegistrationToken, event.topicName)
+          user.save()
+          // admin
+          //   .messaging()
+          //   .unsubscribeFromTopic(user.fcmRegistrationToken, event.topicName)
         ]);
       }
     })
-    .then(([, response]) => {
-      console.log("Successfully subscribed to topic:", response);
+    .then(() => {
+      // console.log("Successfully subscribed to topic:", response);
       return res.status(200).json({
         message: "Successfully Subscribed"
       });

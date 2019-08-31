@@ -83,7 +83,7 @@ export const toggleSubscribe = async (
     const user = await User.findById(req.payload.id);
     if (user === null) {
       //! JWT WAS INVALID
-      return null;
+      return res.send("Invalid Request");
     }
     const index = user.subscribedBodies.indexOf(req.params.id);
     if (index === -1) {
