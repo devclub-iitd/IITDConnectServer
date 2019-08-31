@@ -20,6 +20,7 @@ const toEventJSON = (event: EventImpl, user: UserImpl) => {
   });
   if (event.body instanceof Body) {
     return {
+      id: event.id,
       name: event.name,
       about: event.about,
       body: event.body,

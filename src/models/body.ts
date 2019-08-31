@@ -3,7 +3,7 @@ import mongoose, { Schema, model, Model, Document } from "mongoose";
 export interface BodyImpl extends Document {
   name: string;
   about: string;
-  dept: string;
+  department: string;
   events: mongoose.Types.ObjectId[];
 }
 
@@ -15,7 +15,7 @@ const bodySchema = new Schema({
   about: {
     type: String
   },
-  dept: {
+  department: {
     type: String,
     uppercase: true,
     //* More To Be Added
