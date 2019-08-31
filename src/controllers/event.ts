@@ -18,12 +18,21 @@ const toEventJSON = (event: EventImpl, user: UserImpl) => {
   const isStarred = user.staredEvents.some(starId => {
     return starId.toString() === event.id.toString();
   });
+  const isSub = user.subscribedBodies.some(bodyId => {
+    return bodyId.toString() === event.body.toString();
+  });
   if (event.body instanceof Body) {
     return {
       id: event.id,
       name: event.name,
       about: event.about,
-      body: event.body,
+      body: {
+        name: event.body.name,
+        about: event.body.about,
+        id: event.body.id,
+        department: event.body.dept,
+        isSub: isSub
+      },
       startDate: event.startDate,
       endDate: event.endDate,
       stared: isStarred,
@@ -31,16 +40,6 @@ const toEventJSON = (event: EventImpl, user: UserImpl) => {
       venue: event.venue
     };
   }
-  // return {
-  //   name: event.name,
-  //   about: event.about,
-  //   body: event.body,
-  //   startDate: event.startDate,
-  //   endDate: event.endDate,
-  //   stared: isStarred,
-  //   image: event.imageLink,
-  //   venue: event.venue
-  // };
 };
 
 export const createEvent = async (
