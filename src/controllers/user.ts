@@ -121,62 +121,36 @@ export const getUser = async (
     });
 };
 
-export const googleLogin = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const token = req.body.code;
-  const client = new OAuth2Client(GOOGLE_CLIENT_ID);
-  client
-    .verifyIdToken({
-      idToken: token,
-      audience: GOOGLE_CLIENT_ID
-    })
-    .then(ticket => {
-      const payload = ticket.getPayload();
-      let userId: string;
-      if (typeof payload === "undefined") {
-        throw createError(
-          400,
-          "Invalid Login Credentials",
-          "The User Credentials Provided Were Invalid"
-        );
-      }
-      userId = payload["sub"];
-      return Promise.all([
-        User.findOne({
-          googleID: userId
-        }),
-        userId
-      ]);
-    })
-    .then(([user, userId]) => {
-      if (user === null) {
-        const newUser = new User({
-          googleID: userId
-        });
-        return newUser.save();
-      }
-      return user;
-    })
-    .then(createdUser => {
-      const payload = {
-        id: createdUser._id
-      };
-      const token = jwt.sign(payload, JWT_SECRET, {
-        expiresIn: "7d"
-      });
-      const respData = {
-        token
-      };
-      res.send(createResponse("Login Successful", respData));
-    })
-    .catch(err => {
-      console.log(err);
-      next(err);
-    });
-};
+// export const googleLogin = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   // console.log(req.body.code);
+//   let options = {
+//     method: "POST",
+//     url: "https://www.googleapis.com/oauth2/v4/token",
+//     qs: {
+//       code:
+//         "4/qgFTlrAPQBsataxYY41mBofAbcEuUIkvHlWfkrVgMNFiyijGUiLO0ACbRQZ3ec3r0ebF70ujojyS22fu65ebFro",
+//       grant_type: "authorization_code",
+//       redirect_uri: "http://localhost:5000",
+//       client_id:
+//         "205021812271-v4hbhl4dp9qgoqkdfuldcrgnfpl1jc1r.apps.googleusercontent.com",
+//       client_secret: "SdT4ARWJ1da6GtpcwHyiQWLo"
+//     }
+//   };
+//   rp(options)
+//     .then(r => {
+//       let resp = JSON.parse(r);
+//       console.log(resp);
+//       return res.send("The Request Was Successful");
+//     })
+//     .catch(e => {
+//       console.log(e);
+//       return res.send("Error");
+//     });
+// };
 
 export const facebookLogin = (
   req: Request,
@@ -243,77 +217,61 @@ export const facebookLogin = (
     });
 };
 
-// var options = {
-//   method: "GET",
-//   url: "https://graph.facebook.com/v3.3/oauth/access_token",
-//   qs: {
-//     code: `${code}`,
-//     client_id: `${FACEBOOK_CLIENTID}`,
-//     client_secret: `${FACEBOOK_SECRET}`,
-//     redirect_uri: "https://www.facebook.com/connect/login_success.html"
-//   },
-//   headers: {
-//     "cache-control": "no-cache",
-//     Connection: "keep-alive",
-//     "accept-encoding": "gzip, deflate",
-//     cookie:
-//       "fr=1ku81bPaFPh4R72zk..BdEcFJ.FY.AAA.0.0.BdEcPd.AWXWwKG9; sb=ScERXSwW8fJ7CseWB-7kr2O9",
-//     Host: "graph.facebook.com",
-//     "Cache-Control": "no-cache",
-//     Accept: "*/*"
-//   }
-// };
-// rp(options)
-//   .then(r => {
-//     let resp = JSON.parse(r);
-//     let options = {
-//       method: "GET",
-//       url: "https://graph.facebook.com/me",
-//       qs: {
-//         access_token: resp.access_token,
-//         fields: "id,name"
-//       }
-//     };
-//     return rp(options);
-//   })
-
-// let options = {
-//   method: "GET",
-//   url: "https://graph.facebook.com/me",
-//   qs: {
-//     access_token: code,
-//     fields: "id,name"
-//   }
-// };
-// rp(options)
-//   .then(response => {
-//     let resp = JSON.parse(response);
-//     return Promise.all([User.findOne({ facebookID: resp.id }), resp]);
-//   })
-//   .then(([user, details]) => {
-//     if (!user) {
-//       const newUser = new User({
-//         facebookID: details.id,
-//         name: details.name
-//       });
-//       return newUser.save();
-//     }
-//     return user;
-//   })
-//   .then(createdUser => {
-//     console.log(createdUser.name);
-//     const payload = {
-//       id: createdUser._id
-//     };
-//     const token = jwt.sign(payload, JWT_SECRET, {
-//       expiresIn: "7d"
-//     });
-//     console.log(token);
-//     const respData = {
-//       token
-//     };
-//     res.send(createResponse("Login Successful", respData));
-//   })
-//   .catch(e => {
-//     next(e);
-//   });
+export const googleLogin = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  // const token = req.body.code;
+  const token =
+    "ya29.Glt1B0VGL3joCk_CBFLMsufVXdjRBAm93iScL88fW5HxMNgQ17CgGoN__s7ZSxAoaaazZHpcEaMoqtLoA9alOpcCwuzjtLkM_upqa-oNsvTBTpfScxukMlatP2i6";
+  const client = new OAuth2Client(GOOGLE_CLIENT_ID);
+  client
+    .verifyIdToken({
+      idToken: token,
+      audience: GOOGLE_CLIENT_ID
+    })
+    .then(ticket => {
+      const payload = ticket.getPayload();
+      let userId: string;
+      if (typeof payload === "undefined") {
+        throw createError(
+          400,
+          "Invalid Login Credentials",
+          "The User Credentials Provided Were Invalid"
+        );
+      }
+      userId = payload["sub"];
+      return Promise.all([
+        User.findOne({
+          googleID: userId
+        }),
+        userId
+      ]);
+    })
+    .then(([user, userId]) => {
+      if (user === null) {
+        const newUser = new User({
+          googleID: userId
+        });
+        return newUser.save();
+      }
+      return user;
+    })
+    .then(createdUser => {
+      const payload = {
+        id: createdUser._id
+      };
+      const token = jwt.sign(payload, JWT_SECRET, {
+        expiresIn: "7d"
+      });
+      const respData = {
+        token
+      };
+      res.send(createResponse("Login Successful", respData));
+    })
+    .catch(err => {
+      console.log(err);
+      next(err);
+    });
+};

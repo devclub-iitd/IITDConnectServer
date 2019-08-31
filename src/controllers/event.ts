@@ -79,15 +79,7 @@ export const createEvent = async (
       })
       .then(([event]) => {
         const respData = {
-          event: {
-            name: event.name,
-            about: event.about,
-            body: event.body,
-            startDate: event.startDate,
-            endDate: event.endDate,
-            image: event.imageLink,
-            venue: event.venue
-          }
+          event: toEventJSON(event, user)
         };
         return res.send(createResponse("Event Created Successfully", respData));
       })
