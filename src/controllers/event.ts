@@ -18,10 +18,11 @@ const toEventJSON = (event: EventImpl, user: UserImpl) => {
   const isStarred = user.staredEvents.some(starId => {
     return starId.toString() === event.id.toString();
   });
-  const isSub = user.subscribedBodies.some(bodyId => {
-    return bodyId.toString() === event.body.toString();
-  });
   if (event.body instanceof Body) {
+    let bId = event.body.id.toString();
+    const isSub = user.subscribedBodies.some(bodyId => {
+      return bodyId.toString() === bId;
+    });
     return {
       id: event.id,
       name: event.name,
@@ -255,7 +256,7 @@ export const toggleStar = async (
     .then(() => {
       // console.log("Successfully subscribed to topic:", response);
       return res.status(200).json({
-        message: "Successfully Subscribed"
+        message: "Successfully Starred"
       });
     })
     .catch(e => next(e));

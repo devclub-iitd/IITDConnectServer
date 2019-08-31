@@ -1,0 +1,22 @@
+{
+  "display_on_website": "true",
+  "name": "Saksham Rastogi",
+  "hostel": "Kumaon",
+  "gender": "Male",
+  "join_year": 2018,
+  "grad_year": 2022,
+  "entry_no": "2018EE10496",
+  "phone_no": 9999688685,
+  "birth_date": "05/02/2000",
+  "email": "sakshamdev5@gmail.com",
+  "hometown": "New Delhi",
+  "interests": "",
+  "specialization": "",
+  "category": "Sophomore",
+  "url": {
+    "picture_url": "https://drive.google.com/file/d/1mvPTXfk4SJVpmuFWP3kyMDr2u3qlvEeg/view?usp=sharing",
+    "fb_url": "",
+    "github_url": "https://github.com/codeboy5"
+  },
+  "intro": ""
+}
