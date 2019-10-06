@@ -182,6 +182,13 @@ export const getEvents = async (
     });
 };
 
+// export const updateEvent = async (req, res, next) => {
+//   const event = await Event.findById(req.params.id);
+//   if (event != null) {
+//     event.update(req.body);
+//   }
+// };
+
 //TODO: ADD THE SUPPORT FOR PUSH NOTIFICATIONS
 export const addUpdate = async (
   req: Request,
