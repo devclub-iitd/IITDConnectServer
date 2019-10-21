@@ -17,6 +17,7 @@ export interface UserImpl extends Document {
   entryNumber: string;
   department: string;
   fcmRegistrationToken: string;
+  adminOf: mongoose.Types.ObjectId[];
 }
 
 const userSchema: Schema = new Schema(
@@ -76,6 +77,14 @@ const userSchema: Schema = new Schema(
         {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Event"
+        }
+      ]
+    },
+    adminOf: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Body"
         }
       ]
     }

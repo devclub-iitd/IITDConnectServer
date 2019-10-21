@@ -5,7 +5,10 @@ import {
   facebookLogin,
   googleLogin,
   addUserInformation,
-  getUser
+  getUser,
+  postMakeAdmin,
+  getListOfAdmins,
+  removeAdmin
 } from "../../controllers/user";
 import auth from "../../middleware/auth";
 
@@ -33,9 +36,16 @@ router.post(
   addUserInformation
 );
 
+//  name,email,superadmin,
 //TODO: Requires Authentication and Respond with Users Auth JSON(Current Logged In User)
 router.get("/user", auth.required);
 
 router.get("/users/:id", auth.required, getUser);
+
+router.post("/users/addAdmin", auth.required, postMakeAdmin);
+
+router.post("/users/getAdmins", auth.required, getListOfAdmins);
+
+router.post("/users/removeAdmin", auth.required, removeAdmin);
 
 export default router;

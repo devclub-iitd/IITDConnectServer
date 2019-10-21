@@ -14,6 +14,7 @@ import {
   GOOGLE_CLIENT_ID
 } from "../utils/secrets";
 import User from "../models/user";
+import Body, { BodyImpl } from "../models/body";
 import { createError, createResponse } from "../utils/helpers";
 
 //TODO: Configire A Real SMTP Server
@@ -109,11 +110,6 @@ export const getUser = async (
       if (user === null) {
         throw createError(401, "Unauthorized", "No Such User Found");
       }
-      // const respData = {
-      //   user: {
-      //     name: user.name
-      //   }
-      // };
       return res.send(createResponse("User Found", user));
     })
     .catch(e => {
@@ -273,5 +269,103 @@ export const googleLogin = (
     .catch(err => {
       console.log(err);
       next(err);
+    });
+};
+
+export const postMakeAdmin = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { clubId, userEmail } = req.body;
+  return Promise.all([
+    User.findOne({ email: userEmail }),
+    Body.findById(clubId)
+  ])
+    .then(([user, body]) => {
+      if (body != null && user != null) {
+        if (body.superAdmin == req.payload.id) {
+          user.adminOf.push(body.id), body.admins.push(user.id);
+          return Promise.all([user.save(), body.save()]);
+        } else {
+          res.send(
+            createError(
+              404,
+              "Authorization",
+              "Not Authorized To Perform this Action"
+            )
+          );
+        }
+      } else {
+        res.send(createError(404, "Invalid", "Invalid Club or User"));
+      }
+    })
+    .then(() => {
+      res.send("Successfully Created The Admin");
+    });
+};
+
+export const getListOfAdmins = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { clubId } = req.body;
+  Body.findById(clubId)
+    .populate("admins")
+    .then(body => {
+      if (body != null) {
+        const admins = body.admins;
+        return res.send(
+          createResponse("Success", {
+            admins: admins
+          })
+        );
+      }
+      return res.send(createError(404, "Invalid", "Invalid Club Id"));
+    })
+    .catch(err => {
+      next(err);
+    });
+};
+
+export const removeAdmin = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const superUserId = req.payload.id;
+  const { userEmail, clubId } = req.body.id;
+  return Promise.all([
+    User.findOne({ email: userEmail }),
+    Body.findById(clubId)
+  ])
+    .then(([user, body]) => {
+      if (body != null && user != null) {
+        if (body.superAdmin == req.payload.id) {
+          const indexOne = body.admins.indexOf(user.id);
+          const indexTwo = user.adminOf.indexOf(body.id);
+          if (indexOne != -1) {
+            body.admins.splice(indexOne, 1);
+          }
+          if (indexTwo != -1) {
+            user.adminOf.splice(indexTwo, 1);
+          }
+          return Promise.all([user.save(), body.save()]);
+        } else {
+          res.send(
+            createError(
+              404,
+              "Authorization",
+              "Not Authorized To Perform this Action"
+            )
+          );
+        }
+      } else {
+        res.send(createError(404, "Invalid", "Invalid Club or User"));
+      }
+    })
+    .then(() => {
+      res.send("Successfully Deleted The Admin");
     });
 };
