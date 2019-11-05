@@ -27,7 +27,7 @@
     "googleapis": "^40.0.0",
     "jsonwebtoken": "^8.5.1",
     "lusca": "^1.6.1",
-    "mongoose": "^5.5.15",
+    "mongoose": "^5.7.5",
     "mongoose-unique-validator": "^2.0.3",
     "nodemailer": "^6.2.1",
     "request": "^2.88.0",
