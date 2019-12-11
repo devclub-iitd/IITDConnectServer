@@ -7,6 +7,8 @@ const getTokenFromHeader = (req: Request): string | null => {
     req.headers.authorization &&
     req.headers.authorization.split(" ")[0] === "Bearer"
   ) {
+    // eslint-disable-next-line no-console
+    // console.log(req.headers.authorization.split(" ")[1]);
     return req.headers.authorization.split(" ")[1];
   }
   return null;

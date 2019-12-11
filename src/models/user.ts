@@ -18,12 +18,21 @@ export interface UserImpl extends Document {
   department: string;
   fcmRegistrationToken: string;
   adminOf: mongoose.Types.ObjectId[];
+  email: string;
 }
 
 const userSchema: Schema = new Schema(
   {
     name: {
       type: String
+    },
+    email: {
+      type: String,
+      required: true
+    },
+    password: {
+      type: String,
+      required: true
     },
     facebookID: String,
     googleID: String,

@@ -1,27 +1,29 @@
 /* eslint-disable no-console */
-import express, { Response } from "express";
+import express from "express";
 import { check } from "express-validator/check";
 import {
-  facebookLogin,
-  googleLogin,
+  // facebookLogin,
+  // googleLogin,
   addUserInformation,
   getUser,
   postMakeAdmin,
   getListOfAdmins,
-  removeAdmin
+  removeAdmin,
+  signUp,
+  login
 } from "../../controllers/user";
 import auth from "../../middleware/auth";
 
 const router = express.Router();
 
-router.post("/users/facebookLogin", facebookLogin);
+// router.post("/users/facebookLogin", facebookLogin);
 
 // router.post("/users/googleLogin", (_, res: Response) => {
 //   console.log("HELLO WORLD");
 //   return res.send("Tumkiiiiiii");
 // });
 
-router.post("/users/googleLogin", googleLogin);
+// router.post("/users/googleLogin", googleLogin);
 
 router.post(
   "/users/addUserInformation",
@@ -47,5 +49,27 @@ router.post("/users/addAdmin", auth.required, postMakeAdmin);
 router.post("/users/getAdmins", auth.required, getListOfAdmins);
 
 router.post("/users/removeAdmin", auth.required, removeAdmin);
+
+router.post(
+  "/signup",
+  [
+    check("email")
+      .isEmail()
+      .exists()
+      .withMessage("Not a Valid Email Address")
+  ],
+  signUp
+);
+
+router.post(
+  "/login",
+  [
+    check("email")
+      .isEmail()
+      .exists()
+      .withMessage("Not a Valid Email Address")
+  ],
+  login
+);
 
 export default router;

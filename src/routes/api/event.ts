@@ -29,6 +29,8 @@ router.get("/:id", auth.required, getEvent);
 //* Delete An Event
 router.delete("/:id", auth.required, deleteEvent);
 
+router.put("/:id", auth.required);
+
 //* Star/UnStar An Event
 router.post("/:id/star", auth.required, toggleStar);
 

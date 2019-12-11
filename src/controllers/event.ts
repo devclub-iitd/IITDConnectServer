@@ -150,6 +150,12 @@ export const getEvent = async (req: Request, res: Response) => {
   return res.send(respData);
 };
 
+export const updateEvent = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {};
+
 export const getEvents = async (
   req: Request,
   res: Response,
