@@ -2,40 +2,74 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import admin from "firebase-admin";
 import slug from "slug";
-import { validationResult } from "express-validator/check";
+import { validationResult, body } from "express-validator/check";
 import { Request, Response, NextFunction } from "express";
 import { createError, createResponse } from "../utils/helpers";
 import Event, { EventImpl } from "../models/event";
 import User, { UserImpl } from "../models/user";
+import Body, { BodyImpl } from "../models/body";
 import Update from "../models/update";
 // import Body from "../models/body";
+
+//TODO! :- start and end time, just body name and id
+//TODO! :- add the functionality to delete,edit event , delete update
 
 const toEventJSON = (event: EventImpl, user: UserImpl) => {
   const isStarred = user.staredEvents.some(starId => {
     return starId.toString() === event.id.toString();
   });
-  // if (event.body instanceof Body) {
-  //   return {
-  //     name: event.name,
-  //     about: event.about,
-  //     body: event.body,
-  //     startDate: event.startDate,
-  //     endDate: event.endDate,
-  //     stared: isStarred,
-  //     image: event.imageLink,
-  //     venue: event.venue
-  //   };
-  // }
-  return {
-    name: event.name,
-    about: event.about,
-    body: event.body,
-    startDate: event.startDate,
-    endDate: event.endDate,
-    stared: isStarred,
-    image: event.imageLink,
-    venue: event.venue
-  };
+  if (event.body instanceof Body) {
+    let bId = event.body.id.toString();
+    const isSub = user.subscribedBodies.some(bodyId => {
+      return bodyId.toString() === bId;
+    });
+    return {
+      id: event.id,
+      name: event.name,
+      about: event.about,
+      body: {
+        name: event.body.name,
+        about: event.body.about,
+        id: event.body.id,
+        department: event.body.dept,
+        isSub: isSub
+      },
+      startDate: event.startDate,
+      endDate: event.endDate,
+      stared: isStarred,
+      image: event.imageLink,
+      venue: event.venue
+    };
+  }
+};
+
+const toSingleEventJSON = (event: EventImpl, user: UserImpl) => {
+  const isStarred = user.staredEvents.some(starId => {
+    return starId.toString() === event.id.toString();
+  });
+  const isSub = user.subscribedBodies.some(bodyId => {
+    return bodyId.toString() === event.body.toString();
+  });
+  if (event.body instanceof Body) {
+    return {
+      id: event.id,
+      name: event.name,
+      about: event.about,
+      body: {
+        name: event.body.name,
+        about: event.body.about,
+        id: event.body.id,
+        department: event.body.dept,
+        isSub: isSub
+      },
+      updates: event.updates,
+      startDate: event.startDate,
+      endDate: event.endDate,
+      stared: isStarred,
+      image: event.imageLink,
+      venue: event.venue
+    };
+  }
 };
 
 export const createEvent = async (
@@ -51,8 +85,11 @@ export const createEvent = async (
     });
   }
 
-  User.findById(req.payload.id).then(user => {
-    if (user === null) {
+  return Promise.all([
+    Body.findById(req.body.body),
+    User.findById(req.payload.id)
+  ]).then(([body, user]) => {
+    if (user === null || body == null) {
       throw createError(401, "Unauthorized", "Invalid");
     }
     const topic =
@@ -67,16 +104,12 @@ export const createEvent = async (
     newEvent
       .save()
       .then(event => {
+        body.events.push(event.id);
+        return Promise.all([event, body.save()]);
+      })
+      .then(([event]) => {
         const respData = {
-          event: {
-            name: event.name,
-            about: event.about,
-            body: event.body,
-            startDate: event.startDate,
-            endDate: event.endDate,
-            image: event.imageLink,
-            venue: event.venue
-          }
+          event: toEventJSON(event, user)
         };
         return res.send(createResponse("Event Created Successfully", respData));
       })
@@ -86,34 +119,58 @@ export const createEvent = async (
   });
 };
 
+export const deleteEvent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const event = await Event.findById(req.params.id);
+  if (event == null) {
+    return res.send("Invalid");
+  }
+  await Body.update({ _id: event.body }, { $pull: { events: event.id } });
+  await event.remove();
+  return res.send("Event Was Successfully Removed");
+};
+
 export const getEvent = async (req: Request, res: Response) => {
-  return Promise.all([
+  const [user, event] = await Promise.all([
     User.findById(req.payload.id),
     Event.findById(req.params.id)
-  ])
-    .then(([user, event]) => {
-      if (user && event) {
-        const respData = {
-          event: toEventJSON(event, user)
-        };
-        return res.send(createResponse("Found Event", respData));
-      }
-      throw createError(401, "Unauthorized", "Invalid");
-    })
-    .catch(() => res.status(400).json({ message: "Error" }));
+      .populate("body")
+      .populate("updates")
+      .exec()
+  ]);
+  if (user == null || event == null) {
+    return res.status(400).json({ message: "Error" });
+  }
+  const respData = {
+    event: toSingleEventJSON(event, user)
+  };
+  return res.send(respData);
 };
+
+export const updateEvent = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {};
 
 export const getEvents = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  //TODO: IF WE WANT TO ADD THE OPTION TO FILTER BY DEPARTMENT OR YEAR OR ANYTHING
-  let query = {};
+  //!TODO IF WE WANT TO ADD THE OPTION TO FILTER BY CLUB OR YEAR OR ANYTHING
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let query: any = {};
+  if (typeof req.query.body !== "undefined") {
+    query.body = req.query.body;
+  }
   return Promise.all([
     Event.find(query)
       // .sort({ endDate: "desc" })
-      // .populate("body")
+      .populate("body")
       .exec(),
     User.findById(req.payload.id)
   ])
@@ -131,6 +188,14 @@ export const getEvents = async (
     });
 };
 
+// export const updateEvent = async (req, res, next) => {
+//   const event = await Event.findById(req.params.id);
+//   if (event != null) {
+//     event.update(req.body);
+//   }
+// };
+
+//TODO: ADD THE SUPPORT FOR PUSH NOTIFICATIONS
 export const addUpdate = async (
   req: Request,
   res: Response,
@@ -149,20 +214,23 @@ export const addUpdate = async (
       return event.save();
     })
     .then(() => {
-      const message = {
-        topic: "DevClub",
-        notification: {
-          title: "Notification Title",
-          body: "Notification Body"
-        }
-      };
-      return admin.messaging().send(message);
-    })
-    .then(() => {
       return res.json({
         message: "Update Added Successfully"
       });
+      // const message = {
+      //   topic: "DevClub",
+      //   notification: {
+      //     title: "Notification Title",
+      //     body: "Notification Body"
+      //   }
+      // };
+      // return admin.messaging().send(message);
     })
+    // .then(() => {
+    //   return res.json({
+    //     message: "Update Added Successfully"
+    //   });
+    // })
     .catch(err => next(err));
 };
 
@@ -183,25 +251,25 @@ export const toggleStar = async (
       if (index === -1) {
         user.staredEvents.push(req.params.id);
         return Promise.all([
-          user.save(),
-          admin
-            .messaging()
-            .subscribeToTopic(user.fcmRegistrationToken, event.topicName)
+          user.save()
+          // admin
+          //   .messaging()
+          //   .subscribeToTopic(user.fcmRegistrationToken, event.topicName)
         ]);
       } else {
         user.staredEvents.splice(index, 1);
         return Promise.all([
-          user.save(),
-          admin
-            .messaging()
-            .unsubscribeFromTopic(user.fcmRegistrationToken, event.topicName)
+          user.save()
+          // admin
+          //   .messaging()
+          //   .unsubscribeFromTopic(user.fcmRegistrationToken, event.topicName)
         ]);
       }
     })
-    .then(([, response]) => {
-      console.log("Successfully subscribed to topic:", response);
+    .then(() => {
+      // console.log("Successfully subscribed to topic:", response);
       return res.status(200).json({
-        message: "Successfully Subscribed"
+        message: "Successfully Starred"
       });
     })
     .catch(e => next(e));

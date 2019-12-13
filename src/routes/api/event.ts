@@ -1,14 +1,21 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import {
   createEvent,
   getEvents,
   getEvent,
   toggleStar,
-  addUpdate
+  addUpdate,
+  deleteEvent
 } from "../../controllers/event";
 import auth from "../../middleware/auth";
 
 const router = express.Router();
+
+router.get("/check", auth.required, (req: Request, res: Response) => {
+  // eslint-disable-next-line no-console
+  console.log(req.payload);
+  return res.send("Successful");
+});
 
 //* Add An Event
 router.post("/", auth.required, createEvent);
@@ -18,6 +25,11 @@ router.get("/", auth.required, getEvents);
 
 //* Get An Event
 router.get("/:id", auth.required, getEvent);
+
+//* Delete An Event
+router.delete("/:id", auth.required, deleteEvent);
+
+router.put("/:id", auth.required);
 
 //* Star/UnStar An Event
 router.post("/:id/star", auth.required, toggleStar);

@@ -17,12 +17,22 @@ export interface UserImpl extends Document {
   entryNumber: string;
   department: string;
   fcmRegistrationToken: string;
+  adminOf: mongoose.Types.ObjectId[];
+  email: string;
 }
 
 const userSchema: Schema = new Schema(
   {
     name: {
       type: String
+    },
+    email: {
+      type: String,
+      required: true
+    },
+    password: {
+      type: String,
+      required: true
     },
     facebookID: String,
     googleID: String,
@@ -76,6 +86,14 @@ const userSchema: Schema = new Schema(
         {
           type: mongoose.Schema.Types.ObjectId,
           ref: "Event"
+        }
+      ]
+    },
+    adminOf: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Body"
         }
       ]
     }

@@ -7,6 +7,8 @@ export interface EventImpl extends Document {
   body: mongoose.Types.ObjectId;
   startDate: Date;
   endDate: Date;
+  startTime: Date;
+  endTime: Date;
   participants: mongoose.Types.ObjectId[];
   venue: string;
   imageLink: string;
@@ -47,6 +49,8 @@ const eventSchema = new Schema(
       type: Date
       // required: true
     },
+    startTime: Date,
+    endTime: Date,
     participants: {
       type: [{ type: Schema.Types.ObjectId, ref: "User" }]
     },
