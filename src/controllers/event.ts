@@ -144,8 +144,9 @@ export const getEvent = async (req: Request, res: Response) => {
   if (user == null || event == null) {
     return res.status(400).json({ message: "Error" });
   }
+  // console.log(event);
   const respData = {
-    event: toSingleEventJSON(event, user)
+    event: toEventJSON(event, user)
   };
   return res.send(respData);
 };

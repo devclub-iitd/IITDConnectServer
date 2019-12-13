@@ -17,13 +17,17 @@ router.get("/check", auth.required, (req: Request, res: Response) => {
   return res.send("Successful");
 });
 
+//? Tested OK...
 //* Add An Event
 router.post("/", auth.required, createEvent);
 
+//? Tested OK...
 //* Get All The Events
 router.get("/", auth.required, getEvents);
 
+//? Tested OK...
 //* Get An Event
+//! isSub Flag Error
 router.get("/:id", auth.required, getEvent);
 
 //* Delete An Event
@@ -31,6 +35,7 @@ router.delete("/:id", auth.required, deleteEvent);
 
 router.put("/:id", auth.required);
 
+//? Tested OK...
 //* Star/UnStar An Event
 router.post("/:id/star", auth.required, toggleStar);
 

@@ -273,13 +273,54 @@ export const getUser = async (
 //     });
 // };
 
+export const postMakeSuperAdmin = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { clubId, userEmail } = req.body;
+  return Promise.all([
+    User.findOne({
+      email: userEmail
+    }),
+    Body.findById(clubId)
+  ])
+    .then(([user, body]) => {
+      if (body != null && user != null) {
+        if ("5df25041d07fbd82cc6a73e9" == req.payload.id) {
+          body.superAdmin = user._id;
+          // user.adminOf.push(body.id), body.admins.push(user.id);
+          return Promise.all([user.save(), body.save()]);
+        } else {
+          res.send(
+            createError(
+              404,
+              "Authorization",
+              "Not Authorized To Perform this Action"
+            )
+          );
+        }
+      } else {
+        res.send(createError(404, "Invalid", "Invalid Club or User"));
+      }
+    })
+    .then(() => {
+      res.send("Successfully Created The SuperUser");
+    });
+};
+
 export const postMakeAdmin = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const { clubId, userEmail } = req.body;
-  return Promise.all([User.findById(userEmail), Body.findById(clubId)])
+  return Promise.all([
+    User.findOne({
+      email: userEmail
+    }),
+    Body.findById(clubId)
+  ])
     .then(([user, body]) => {
       if (body != null && user != null) {
         if (body.superAdmin == req.payload.id) {
@@ -309,9 +350,11 @@ export const getListOfAdmins = (
   next: NextFunction
 ) => {
   const { clubId } = req.body;
+  // return res.send(clubId);
   Body.findById(clubId)
     .populate("admins")
     .then(body => {
+      console.log(body);
       if (body != null) {
         const admins = body.admins;
         return res.send(

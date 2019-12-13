@@ -10,7 +10,8 @@ import {
   getListOfAdmins,
   removeAdmin,
   signUp,
-  login
+  login,
+  postMakeSuperAdmin
 } from "../../controllers/user";
 import auth from "../../middleware/auth";
 
@@ -42,14 +43,21 @@ router.post(
 //TODO: Requires Authentication and Respond with Users Auth JSON(Current Logged In User)
 router.get("/user", auth.required);
 
-router.get("/users/:id", auth.required, getUser);
+//? Tested OK...
+router.post("/users/getAdmins", auth.required, getListOfAdmins);
 
+//? Tested OK...
 router.post("/users/addAdmin", auth.required, postMakeAdmin);
 
-router.post("/users/getAdmins", auth.required, getListOfAdmins);
+//? Tested OK...
+router.post("/users/addSuperAdmin", auth.required, postMakeSuperAdmin);
+
+//? Tested OK...
+router.get("/users/:id", auth.required, getUser);
 
 router.post("/users/removeAdmin", auth.required, removeAdmin);
 
+//? Tested OK...
 router.post(
   "/signup",
   [
@@ -61,6 +69,7 @@ router.post(
   signUp
 );
 
+//? Tested OK...
 router.post(
   "/login",
   [
