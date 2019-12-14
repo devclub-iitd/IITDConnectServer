@@ -11,9 +11,6 @@ import Body, { BodyImpl } from "../models/body";
 import Update from "../models/update";
 // import Body from "../models/body";
 
-//TODO! :- start and end time, just body name and id
-//TODO! :- add the functionality to delete,edit event , delete update
-
 const toEventJSON = (event: EventImpl, user: UserImpl) => {
   const isStarred = user.staredEvents.some(starId => {
     return starId.toString() === event.id.toString();

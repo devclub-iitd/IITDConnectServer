@@ -289,9 +289,9 @@ export const postMakeSuperAdmin = (
   ])
     .then(([user, body]) => {
       if (body != null && user != null) {
-        if ("5df25041d07fbd82cc6a73e9" == req.payload.id) {
+        if (user.superSuperAdmin == true) {
           body.superAdmin = user._id;
-          // user.adminOf.push(body.id), body.admins.push(user.id);
+          user.superAdminOf.push(body.id);
           return Promise.all([user.save(), body.save()]);
         } else {
           res.send(
