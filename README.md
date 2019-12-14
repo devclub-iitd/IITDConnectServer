@@ -16,3 +16,7 @@
 - Run The Server In Development Mode using `yarn run watch`
 
 - View at `localhost:5000`
+
+## API DOCUMENTATION
+
+-Head Over To [IITD-Connect](https://documenter.getpostman.com/view/9775600/SWE9ZcqD?version=latest)
