@@ -5,7 +5,9 @@ import {
   getEvent,
   toggleStar,
   addUpdate,
-  deleteEvent
+  deleteEvent,
+  removeUpdate,
+  putUpdateEvent
 } from "../../controllers/event";
 import auth from "../../middleware/auth";
 
@@ -27,18 +29,24 @@ router.get("/", auth.required, getEvents);
 
 //? Tested OK...
 //* Get An Event
-//! isSub Flag Error
 router.get("/:id", auth.required, getEvent);
 
+//? Tested OK...
 //* Delete An Event
 router.delete("/:id", auth.required, deleteEvent);
 
-router.put("/:id", auth.required);
+//? Tested OK...
+//* Update An Event
+router.put("/:id", auth.required, putUpdateEvent);
 
 //? Tested OK...
 //* Star/UnStar An Event
 router.post("/:id/star", auth.required, toggleStar);
 
+//? Tested OK...
 router.post("/:id/addUpdate", auth.required, addUpdate);
+
+//? Tested OK...
+router.delete("/:id/removeUpdate", auth.required, removeUpdate);
 
 export default router;

@@ -23,7 +23,7 @@ const toEventJSON = (event: EventImpl, user: UserImpl) => {
     const isSub = user.subscribedBodies.some(bodyId => {
       return bodyId.toString() === bId;
     });
-    return {
+    const temp = {
       id: event.id,
       name: event.name,
       about: event.about,
@@ -38,8 +38,11 @@ const toEventJSON = (event: EventImpl, user: UserImpl) => {
       endDate: event.endDate,
       stared: isStarred,
       image: event.imageLink,
-      venue: event.venue
+      venue: event.venue,
+      updates: event.updates
     };
+    // console.log(temp);
+    return temp;
   }
 };
 
@@ -108,6 +111,8 @@ export const createEvent = async (
         return Promise.all([event, body.save()]);
       })
       .then(([event]) => {
+        // console.log(event);
+        // console.log(temp);
         const respData = {
           event: toEventJSON(event, user)
         };
@@ -151,12 +156,6 @@ export const getEvent = async (req: Request, res: Response) => {
   return res.send(respData);
 };
 
-export const updateEvent = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {};
-
 export const getEvents = async (
   req: Request,
   res: Response,
@@ -172,6 +171,7 @@ export const getEvents = async (
     Event.find(query)
       // .sort({ endDate: "desc" })
       .populate("body")
+      .populate("updates")
       .exec(),
     User.findById(req.payload.id)
   ])
@@ -179,22 +179,21 @@ export const getEvents = async (
       if (user === null) {
         throw createError(401, "Unauthorized", "Invalid");
       }
+      if (events != null) {
+        const respData = {
+          events: events.map(event => toEventJSON(event, user))
+        };
+        return res.send(createResponse("Events Found", respData));
+      }
       const respData = {
-        events: events.map(event => toEventJSON(event, user))
+        events: []
       };
-      res.send(createResponse("Events Found", respData));
+      return res.send(createResponse("Events Found", respData));
     })
     .catch(e => {
       next(e);
     });
 };
-
-// export const updateEvent = async (req, res, next) => {
-//   const event = await Event.findById(req.params.id);
-//   if (event != null) {
-//     event.update(req.body);
-//   }
-// };
 
 //TODO: ADD THE SUPPORT FOR PUSH NOTIFICATIONS
 export const addUpdate = async (
@@ -274,4 +273,61 @@ export const toggleStar = async (
       });
     })
     .catch(e => next(e));
+};
+
+export const removeUpdate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const event = await Event.findById(req.params.id);
+  const update = await Update.findById(req.body.updateId);
+  if (event == null || update == null) {
+    return res.send("Invalid");
+  }
+  await Event.update({ _id: req.params.id }, { $pull: { updates: update.id } });
+  await update.remove();
+  return res.send("Update Was Successfully Removed");
+};
+
+export const putUpdateEvent = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  return Promise.all([
+    Event.findById(req.params.id),
+    User.findById(req.payload.id)
+  ])
+    .then(([event, user]) => {
+      if (event == null || user == null) {
+        throw createError(400, "Invalid", "No Such Event Exists");
+      }
+      if (req.body.about != null) {
+        event.about = req.body.about;
+      }
+      if (req.body.imageLink != null) {
+        event.imageLink = req.body.imageLink;
+      }
+      if (req.body.venue != null) {
+        event.venue = req.body.venue;
+      }
+      if (req.body.startDate != null) {
+        event.startDate = req.body.startDate;
+      }
+      if (req.body.endDate != null) {
+        event.endDate = req.body.endDate;
+      }
+      // console.log(event, user);
+      event.save().then(event => {
+        const respData = {
+          event: toEventJSON(event, user)
+        };
+        console.log(respData);
+        return res.send(createResponse("Event Updated Successfully", respData));
+      });
+    })
+    .catch(e => {
+      next(e);
+    });
 };

@@ -107,6 +107,8 @@ export const getUser = async (
   next: NextFunction
 ) => {
   User.findById(req.params.id)
+    .populate("adminOf")
+    .exec()
     .then(user => {
       if (user === null) {
         throw createError(401, "Unauthorized", "No Such User Found");
@@ -375,10 +377,11 @@ export const removeAdmin = (
   res: Response,
   next: NextFunction
 ) => {
-  const superUserId = req.payload.id;
-  const { userEmail, clubId } = req.body.id;
+  const { userEmail, clubId } = req.body;
   return Promise.all([
-    User.findOne({ email: userEmail }),
+    User.findOne({
+      email: userEmail
+    }),
     Body.findById(clubId)
   ])
     .then(([user, body]) => {
@@ -481,5 +484,24 @@ export const login = (req: Request, res: Response) => {
     .catch(err => {
       console.log(err);
       return res.status(500).send("Connection Issue");
+    });
+};
+
+export const getUserDetails = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  User.findById(req.payload.id)
+    .populate("adminOf")
+    .exec()
+    .then(user => {
+      if (user === null) {
+        throw createError(401, "Unauthorized", "No Such User Found");
+      }
+      return res.send(createResponse("User Found", user));
+    })
+    .catch(e => {
+      next(e);
     });
 };
