@@ -108,6 +108,7 @@ export const getUser = async (
 ) => {
   User.findById(req.params.id)
     .populate("adminOf")
+    .populate("superAdminOf")
     .exec()
     .then(user => {
       if (user === null) {
@@ -282,14 +283,15 @@ export const postMakeSuperAdmin = (
 ) => {
   const { clubId, userEmail } = req.body;
   return Promise.all([
+    User.findById(req.payload.id),
     User.findOne({
       email: userEmail
     }),
     Body.findById(clubId)
   ])
-    .then(([user, body]) => {
-      if (body != null && user != null) {
-        if (user.superSuperAdmin == true) {
+    .then(([admin, user, body]) => {
+      if (body != null && user != null && admin != null) {
+        if (admin.superSuperAdmin == true) {
           body.superAdmin = user._id;
           user.superAdminOf.push(body.id);
           return Promise.all([user.save(), body.save()]);
@@ -494,6 +496,7 @@ export const getUserDetails = (
 ) => {
   User.findById(req.payload.id)
     .populate("adminOf")
+    .populate("superAdminOf")
     .exec()
     .then(user => {
       if (user === null) {

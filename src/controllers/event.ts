@@ -301,6 +301,9 @@ export const putUpdateEvent = (
       if (event == null || user == null) {
         throw createError(400, "Invalid", "No Such Event Exists");
       }
+      if (req.body.name != null) {
+        event.name = req.body.name;
+      }
       if (req.body.about != null) {
         event.about = req.body.about;
       }
