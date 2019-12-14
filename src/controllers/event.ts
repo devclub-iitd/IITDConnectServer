@@ -41,7 +41,6 @@ const toEventJSON = (event: EventImpl, user: UserImpl) => {
       venue: event.venue,
       updates: event.updates
     };
-    // console.log(temp);
     return temp;
   }
 };
@@ -111,11 +110,13 @@ export const createEvent = async (
         return Promise.all([event, body.save()]);
       })
       .then(([event]) => {
-        // console.log(event);
-        // console.log(temp);
         const respData = {
-          event: toEventJSON(event, user)
+          id: event._id
         };
+        console.log(event);
+        // const respData = {
+        //   event: toEventJSON(ev, user)
+        // };
         return res.send(createResponse("Event Created Successfully", respData));
       })
       .catch(err => {
@@ -318,12 +319,14 @@ export const putUpdateEvent = (
       if (req.body.endDate != null) {
         event.endDate = req.body.endDate;
       }
-      // console.log(event, user);
       event.save().then(event => {
+        // const respData = {
+        //   event: toEventJSON(event, user)
+        // };
+        // console.log(respData);
         const respData = {
-          event: toEventJSON(event, user)
+          id: event._id
         };
-        console.log(respData);
         return res.send(createResponse("Event Updated Successfully", respData));
       });
     })
