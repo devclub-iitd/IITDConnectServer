@@ -107,6 +107,9 @@ export const getUser = async (
   next: NextFunction
 ) => {
   User.findById(req.params.id)
+    .populate("adminOf")
+    .populate("superAdminOf")
+    .exec()
     .then(user => {
       if (user === null) {
         throw createError(401, "Unauthorized", "No Such User Found");
@@ -273,13 +276,55 @@ export const getUser = async (
 //     });
 // };
 
+export const postMakeSuperAdmin = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { clubId, userEmail } = req.body;
+  return Promise.all([
+    User.findById(req.payload.id),
+    User.findOne({
+      email: userEmail
+    }),
+    Body.findById(clubId)
+  ])
+    .then(([admin, user, body]) => {
+      if (body != null && user != null && admin != null) {
+        if (admin.superSuperAdmin == true) {
+          body.superAdmin = user._id;
+          user.superAdminOf.push(body.id);
+          return Promise.all([user.save(), body.save()]);
+        } else {
+          res.send(
+            createError(
+              404,
+              "Authorization",
+              "Not Authorized To Perform this Action"
+            )
+          );
+        }
+      } else {
+        res.send(createError(404, "Invalid", "Invalid Club or User"));
+      }
+    })
+    .then(() => {
+      res.send("Successfully Created The SuperUser");
+    });
+};
+
 export const postMakeAdmin = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   const { clubId, userEmail } = req.body;
-  return Promise.all([User.findById(userEmail), Body.findById(clubId)])
+  return Promise.all([
+    User.findOne({
+      email: userEmail
+    }),
+    Body.findById(clubId)
+  ])
     .then(([user, body]) => {
       if (body != null && user != null) {
         if (body.superAdmin == req.payload.id) {
@@ -309,9 +354,11 @@ export const getListOfAdmins = (
   next: NextFunction
 ) => {
   const { clubId } = req.body;
+  // return res.send(clubId);
   Body.findById(clubId)
     .populate("admins")
     .then(body => {
+      console.log(body);
       if (body != null) {
         const admins = body.admins;
         return res.send(
@@ -332,10 +379,11 @@ export const removeAdmin = (
   res: Response,
   next: NextFunction
 ) => {
-  const superUserId = req.payload.id;
-  const { userEmail, clubId } = req.body.id;
+  const { userEmail, clubId } = req.body;
   return Promise.all([
-    User.findOne({ email: userEmail }),
+    User.findOne({
+      email: userEmail
+    }),
     Body.findById(clubId)
   ])
     .then(([user, body]) => {
@@ -438,5 +486,25 @@ export const login = (req: Request, res: Response) => {
     .catch(err => {
       console.log(err);
       return res.status(500).send("Connection Issue");
+    });
+};
+
+export const getUserDetails = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  User.findById(req.payload.id)
+    .populate("adminOf")
+    .populate("superAdminOf")
+    .exec()
+    .then(user => {
+      if (user === null) {
+        throw createError(401, "Unauthorized", "No Such User Found");
+      }
+      return res.send(createResponse("User Found", user));
+    })
+    .catch(e => {
+      next(e);
     });
 };

@@ -19,6 +19,8 @@ export interface UserImpl extends Document {
   fcmRegistrationToken: string;
   adminOf: mongoose.Types.ObjectId[];
   email: string;
+  superSuperAdmin: boolean;
+  superAdminOf: mongoose.Types.ObjectId[];
 }
 
 const userSchema: Schema = new Schema(
@@ -44,6 +46,10 @@ const userSchema: Schema = new Schema(
     },
     entryNumber: String,
     emailValidated: {
+      type: Boolean,
+      default: false
+    },
+    superSuperAdmin: {
       type: Boolean,
       default: false
     },
@@ -90,6 +96,14 @@ const userSchema: Schema = new Schema(
       ]
     },
     adminOf: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Body"
+        }
+      ]
+    },
+    superAdminOf: {
       type: [
         {
           type: mongoose.Schema.Types.ObjectId,

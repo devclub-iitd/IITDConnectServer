@@ -11,9 +11,6 @@ import Body, { BodyImpl } from "../models/body";
 import Update from "../models/update";
 // import Body from "../models/body";
 
-//TODO! :- start and end time, just body name and id
-//TODO! :- add the functionality to delete,edit event , delete update
-
 const toEventJSON = (event: EventImpl, user: UserImpl) => {
   const isStarred = user.staredEvents.some(starId => {
     return starId.toString() === event.id.toString();
@@ -23,7 +20,7 @@ const toEventJSON = (event: EventImpl, user: UserImpl) => {
     const isSub = user.subscribedBodies.some(bodyId => {
       return bodyId.toString() === bId;
     });
-    return {
+    const temp = {
       id: event.id,
       name: event.name,
       about: event.about,
@@ -38,8 +35,10 @@ const toEventJSON = (event: EventImpl, user: UserImpl) => {
       endDate: event.endDate,
       stared: isStarred,
       image: event.imageLink,
-      venue: event.venue
+      venue: event.venue,
+      updates: event.updates
     };
+    return temp;
   }
 };
 
@@ -109,8 +108,12 @@ export const createEvent = async (
       })
       .then(([event]) => {
         const respData = {
-          event: toEventJSON(event, user)
+          id: event._id
         };
+        console.log(event);
+        // const respData = {
+        //   event: toEventJSON(ev, user)
+        // };
         return res.send(createResponse("Event Created Successfully", respData));
       })
       .catch(err => {
@@ -144,17 +147,12 @@ export const getEvent = async (req: Request, res: Response) => {
   if (user == null || event == null) {
     return res.status(400).json({ message: "Error" });
   }
+  // console.log(event);
   const respData = {
-    event: toSingleEventJSON(event, user)
+    event: toEventJSON(event, user)
   };
   return res.send(respData);
 };
-
-export const updateEvent = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {};
 
 export const getEvents = async (
   req: Request,
@@ -171,6 +169,7 @@ export const getEvents = async (
     Event.find(query)
       // .sort({ endDate: "desc" })
       .populate("body")
+      .populate("updates")
       .exec(),
     User.findById(req.payload.id)
   ])
@@ -178,22 +177,21 @@ export const getEvents = async (
       if (user === null) {
         throw createError(401, "Unauthorized", "Invalid");
       }
+      if (events != null) {
+        const respData = {
+          events: events.map(event => toEventJSON(event, user))
+        };
+        return res.send(createResponse("Events Found", respData));
+      }
       const respData = {
-        events: events.map(event => toEventJSON(event, user))
+        events: []
       };
-      res.send(createResponse("Events Found", respData));
+      return res.send(createResponse("Events Found", respData));
     })
     .catch(e => {
       next(e);
     });
 };
-
-// export const updateEvent = async (req, res, next) => {
-//   const event = await Event.findById(req.params.id);
-//   if (event != null) {
-//     event.update(req.body);
-//   }
-// };
 
 //TODO: ADD THE SUPPORT FOR PUSH NOTIFICATIONS
 export const addUpdate = async (
@@ -273,4 +271,66 @@ export const toggleStar = async (
       });
     })
     .catch(e => next(e));
+};
+
+export const removeUpdate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const event = await Event.findById(req.params.id);
+  const update = await Update.findById(req.body.updateId);
+  if (event == null || update == null) {
+    return res.send("Invalid");
+  }
+  await Event.update({ _id: req.params.id }, { $pull: { updates: update.id } });
+  await update.remove();
+  return res.send("Update Was Successfully Removed");
+};
+
+export const putUpdateEvent = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  return Promise.all([
+    Event.findById(req.params.id),
+    User.findById(req.payload.id)
+  ])
+    .then(([event, user]) => {
+      if (event == null || user == null) {
+        throw createError(400, "Invalid", "No Such Event Exists");
+      }
+      if (req.body.name != null) {
+        event.name = req.body.name;
+      }
+      if (req.body.about != null) {
+        event.about = req.body.about;
+      }
+      if (req.body.imageLink != null) {
+        event.imageLink = req.body.imageLink;
+      }
+      if (req.body.venue != null) {
+        event.venue = req.body.venue;
+      }
+      if (req.body.startDate != null) {
+        event.startDate = req.body.startDate;
+      }
+      if (req.body.endDate != null) {
+        event.endDate = req.body.endDate;
+      }
+      event.save().then(event => {
+        // const respData = {
+        //   event: toEventJSON(event, user)
+        // };
+        // console.log(respData);
+        const respData = {
+          id: event._id
+        };
+        return res.send(createResponse("Event Updated Successfully", respData));
+      });
+    })
+    .catch(e => {
+      next(e);
+    });
 };

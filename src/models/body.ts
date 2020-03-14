@@ -22,7 +22,7 @@ const bodySchema = new Schema(
       type: String,
       uppercase: true,
       //* More To Be Added
-      enum: ["CSE", "EE", "ME", "CH", "CE"]
+      enum: ["CSE", "EE", "ME", "CH", "CE", "BRCA"]
     },
     events: {
       type: [

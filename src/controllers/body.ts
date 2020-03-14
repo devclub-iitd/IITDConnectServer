@@ -50,7 +50,7 @@ export const getAllBodies = (
 ) => {
   return Promise.all([User.findById(req.payload.id), Body.find()])
     .then(([user, bodies]) => {
-      if (user === null) {
+      if (user === null || bodies === null) {
         return null;
       }
       return res.status(200).json({
