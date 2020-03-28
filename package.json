@@ -60,6 +60,7 @@
     "eslint": "^5.16.0",
     "eslint-config-airbnb-typescript": "^4.0.0",
     "eslint-plugin-import": "^2.17.3",
+    "minimist": "^1.2.5",
     "nodemon": "^1.19.1",
     "typescript": "^3.5.2"
   }
