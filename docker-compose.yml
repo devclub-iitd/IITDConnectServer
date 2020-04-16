@@ -1,0 +1,40 @@
+version: '3.4'
+services:
+  database:
+    image: "${REGISTRY_NAME}mongo:latest"
+    volumes:
+      - connectdb:/data/db
+    networks:
+      - "internal"
+    restart: "unless-stopped"
+  porty_backend:
+    image: "${REGISTRY_NAME}devclubiitd/connect:0.1"
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:${PORT}"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: "unless-stopped"
+    build: .
+    env_file:
+      - ./.env
+    ports:
+      - '${PORT}:${PORT}'
+    environment:
+      - VIRTUAL_HOST
+      - MONGODB_URI_LOCAL
+    networks:
+      - "internal"
+      - "reverseproxy"
+    depends_on:
+      - database
+
+volumes:
+  portfoliodb:
+
+networks:
+  reverseproxy:
+    external:
+      name: "reverseproxy"
+  internal:
