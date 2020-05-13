@@ -2,8 +2,8 @@
 export const createResponse = (
   message: string,
   data: any
-): { message: string; data: any } => {
-  return { message, data };
+): {message: string; data: any} => {
+  return {message, data};
 };
 
 export const createError = (

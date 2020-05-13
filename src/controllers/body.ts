@@ -1,13 +1,11 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { Request, Response, NextFunction } from "express";
-import admin from "firebase-admin";
-import { createError, createResponse } from "../utils/helpers";
+import {Request, Response, NextFunction} from 'express';
+import {Types} from 'mongoose';
+import {createResponse} from '../utils/helpers';
 
-// import { validationResult } from "express-validator/check";
-
-import User, { UserImpl } from "../models/user";
-import Body, { BodyImpl } from "../models/body";
+import User, {UserImpl} from '../models/user';
+import Body, {BodyImpl} from '../models/body';
 
 const toBodyJSON = (body: BodyImpl, user: UserImpl) => {
   const isSub = user.subscribedBodies.some(bodyId => {
@@ -18,7 +16,7 @@ const toBodyJSON = (body: BodyImpl, user: UserImpl) => {
     about: body.about,
     department: body.dept,
     isSub: isSub,
-    id: body._id
+    id: body._id,
   };
 };
 
@@ -33,10 +31,10 @@ export const addBody = async (
     .then(body => {
       const respData = {
         body: {
-          name: body.name
-        }
+          name: body.name,
+        },
       };
-      return res.send(createResponse("Body Created Successfully", respData));
+      return res.send(createResponse('Body Created Successfully', respData));
     })
     .catch(err => {
       next(err);
@@ -54,7 +52,7 @@ export const getAllBodies = (
         return null;
       }
       return res.status(200).json({
-        bodies: bodies.map(body => toBodyJSON(body, user))
+        bodies: bodies.map(body => toBodyJSON(body, user)),
       });
     })
     .catch(err => next(err));
@@ -63,11 +61,11 @@ export const getAllBodies = (
 export const getBody = (req: Request, res: Response) => {
   return Promise.all([
     User.findById(req.payload.id),
-    Body.findById(req.params.id)
+    Body.findById(req.params.id),
   ]).then(([user, body]) => {
     if (user !== null && body !== null) {
       return res.status(200).json({
-        body: toBodyJSON(body, user)
+        body: toBodyJSON(body, user),
       });
     }
     return null;
@@ -83,60 +81,19 @@ export const toggleSubscribe = async (
     const user = await User.findById(req.payload.id);
     if (user === null) {
       //! JWT WAS INVALID
-      return res.send("Invalid Request");
+      return res.send('Invalid Request');
     }
-    const index = user.subscribedBodies.indexOf(req.params.id);
+    const index = user.subscribedBodies.indexOf(Types.ObjectId(req.params.id));
     if (index === -1) {
-      user.subscribedBodies.push(req.params.id);
+      user.subscribedBodies.push(Types.ObjectId(req.params.id));
     } else {
       user.subscribedBodies.splice(index, 1);
     }
     await user.save();
     return res.status(200).json({
-      message: "Successfully Toggled Subscribe"
+      message: 'Successfully Toggled Subscribe',
     });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
-
-// export const toggleSubscribe = async (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   return Promise.all([
-//     User.findById(req.payload.id),
-//     Body.findById(req.params.id)
-//   ])
-//     .then(([user, body]) => {
-//       if (user === null || body === null) {
-//         throw createError(401, "Unauthorized", "Invalid Login Credentials");
-//       }
-//       const index = user.subscribedBodies.indexOf(body._id);
-//       if (index === -1) {
-//         user.subscribedBodies.push(req.params.id);
-//         return Promise.all([
-//           user.save(),
-//           admin
-//             .messaging()
-//             .subscribeToTopic(user.fcmRegistrationToken, body.name)
-//         ]);
-//       } else {
-//         user.subscribedBodies.splice(index, 1);
-//         return Promise.all([
-//           user.save(),
-//           admin
-//             .messaging()
-//             .unsubscribeFromTopic(user.fcmRegistrationToken, body.name)
-//         ]);
-//       }
-//     })
-//     .then(([, response]) => {
-//       console.log("Successfully subscribed to topic:", response);
-//       return res.status(200).json({
-//         message: "Successfully Subscribed"
-//       });
-//     })
-//     .catch(e => next(e));
-// };

@@ -1,6 +1,6 @@
-import mongoose, { Schema, model, Model, Document } from "mongoose";
-// import mongooseUniqueValidator from "mongoose-unique-validator";
-import { isEmail } from "validator";
+import * as mongoose from 'mongoose';
+import {Schema, model, Model, Document} from 'mongoose';
+import {isEmail} from 'validator';
 
 export interface UserImpl extends Document {
   name: string;
@@ -26,15 +26,15 @@ export interface UserImpl extends Document {
 const userSchema: Schema = new Schema(
   {
     name: {
-      type: String
+      type: String,
     },
     email: {
       type: String,
-      required: true
+      required: true,
     },
     password: {
       type: String,
-      required: true
+      required: true,
     },
     facebookID: String,
     googleID: String,
@@ -42,77 +42,77 @@ const userSchema: Schema = new Schema(
       type: String,
       uppercase: true,
       //* More To Be Added
-      enum: ["CSE", "EE"]
+      enum: ['CSE', 'EE'],
     },
     entryNumber: String,
     emailValidated: {
       type: Boolean,
-      default: false
+      default: false,
     },
     superSuperAdmin: {
       type: Boolean,
-      default: false
+      default: false,
     },
     iitdEmail: {
       type: String,
       lowercase: true,
-      validate: [isEmail, "Invalid Email"]
+      validate: [isEmail, 'Invalid Email'],
     },
     fcmRegistrationToken: String,
     hash: {
-      type: String
+      type: String,
     },
     privilege: {
       type: String,
       lowercase: true,
-      enum: ["admin", "organizer", "participant"]
+      enum: ['admin', 'organizer', 'participant'],
     },
     subscribedBodies: {
       type: [
         {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Body"
-        }
-      ]
+          ref: 'Body',
+        },
+      ],
     },
     canCreate: {
       type: Boolean,
-      default: false
+      default: false,
     },
     createdEvents: {
       type: [
         {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Event"
-        }
-      ]
+          ref: 'Event',
+        },
+      ],
     },
     staredEvents: {
       type: [
         {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Event"
-        }
-      ]
+          ref: 'Event',
+        },
+      ],
     },
     adminOf: {
       type: [
         {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Body"
-        }
-      ]
+          ref: 'Body',
+        },
+      ],
     },
     superAdminOf: {
       type: [
         {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Body"
-        }
-      ]
-    }
+          ref: 'Body',
+        },
+      ],
+    },
   },
-  { timestamps: true }
+  {timestamps: true}
 );
 
 // userSchema.methods.star = function(id: string) {
@@ -140,6 +140,6 @@ const userSchema: Schema = new Schema(
 
 //TODO: Add The Method To Unsubscribe To A Body
 
-const User: Model<UserImpl> = model<UserImpl>("User", userSchema);
+const User: Model<UserImpl> = model<UserImpl>('User', userSchema);
 
 export default User;

@@ -1,4 +1,4 @@
-import { Schema, model, Model, Document } from "mongoose";
+import {Schema, model, Model, Document} from 'mongoose';
 
 interface UpdateImpl extends Document {
   body: string;
@@ -10,20 +10,20 @@ const updateSchema = new Schema(
   {
     body: {
       type: String,
-      required: true
+      required: true,
     },
     title: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
     // event: {
     //   type: Schema.Types.ObjectId,
     //   ref: "Event"
     // }
   },
-  { timestamps: true }
+  {timestamps: true}
 );
 
-const Update: Model<UpdateImpl> = model<UpdateImpl>("Update", updateSchema);
+const Update: Model<UpdateImpl> = model<UpdateImpl>('Update', updateSchema);
 
 export default Update;

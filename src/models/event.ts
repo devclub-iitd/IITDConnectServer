@@ -1,4 +1,5 @@
-import mongoose, { Schema, model, Model, Document } from "mongoose";
+import * as mongoose from 'mongoose';
+import {Schema, model, Model, Document} from 'mongoose';
 
 export interface EventImpl extends Document {
   name: string;
@@ -20,39 +21,39 @@ export interface EventImpl extends Document {
 const eventSchema = new Schema(
   {
     name: {
-      type: String
+      type: String,
     },
     createdBy: {
       type: Schema.Types.ObjectId,
-      ref: "User"
+      ref: 'User',
     },
     about: {
-      type: String
+      type: String,
     },
     body: {
       type: Schema.Types.ObjectId,
-      ref: "Body"
+      ref: 'Body',
     },
     venue: {
       type: String,
-      required: true
+      required: true,
     },
     imageLink: {
-      type: String
+      type: String,
     },
     startDate: {
       type: Date,
       // required: true,
-      default: Date.now
+      default: Date.now,
     },
     endDate: {
-      type: Date
+      type: Date,
       // required: true
     },
     startTime: Date,
     endTime: Date,
     participants: {
-      type: [{ type: Schema.Types.ObjectId, ref: "User" }]
+      type: [{type: Schema.Types.ObjectId, ref: 'User'}],
     },
     // updates: {
     //   type: [
@@ -66,17 +67,17 @@ const eventSchema = new Schema(
       type: [
         {
           type: Schema.Types.ObjectId,
-          ref: "Update"
-        }
-      ]
+          ref: 'Update',
+        },
+      ],
     },
-    topicName: String
+    topicName: String,
     // staredCount: {
     //   type: Number,
     //   default: 0
     // }
   },
-  { timestamps: true }
+  {timestamps: true}
 );
 
 // eventSchema.methods.eventJSOn = function() {
@@ -94,6 +95,6 @@ const eventSchema = new Schema(
 //   this.staredCount = count;
 // };
 
-const Event: Model<EventImpl> = model<EventImpl>("Event", eventSchema);
+const Event: Model<EventImpl> = model<EventImpl>('Event', eventSchema);
 
 export default Event;

@@ -1,15 +1,15 @@
-import { Request } from "express";
-import jwt from "express-jwt";
-import { JWT_SECRET } from "../utils/secrets";
+import {Request} from 'express';
+import * as jwt from 'express-jwt';
+import {JWT_SECRET} from '../utils/secrets';
 
 const getTokenFromHeader = (req: Request): string | null => {
   if (
     req.headers.authorization &&
-    req.headers.authorization.split(" ")[0] === "Bearer"
+    req.headers.authorization.split(' ')[0] === 'Bearer'
   ) {
     // eslint-disable-next-line no-console
     // console.log(req.headers.authorization.split(" ")[1]);
-    return req.headers.authorization.split(" ")[1];
+    return req.headers.authorization.split(' ')[1];
   }
   return null;
 };
@@ -18,16 +18,16 @@ const auth = {
   required: jwt({
     secret: JWT_SECRET,
     getToken: getTokenFromHeader,
-    userProperty: "payload"
+    userProperty: 'payload',
     // requestProperty: "payload"
   }),
   optional: jwt({
     secret: JWT_SECRET,
     getToken: getTokenFromHeader,
     credentialsRequired: false,
-    userProperty: "payload"
+    userProperty: 'payload',
     // requestProperty: "payload"
-  })
+  }),
 };
 
 export default auth;

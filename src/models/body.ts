@@ -1,4 +1,5 @@
-import mongoose, { Schema, model, Model, Document } from "mongoose";
+import * as mongoose from 'mongoose';
+import {Schema, model, Model, Document} from 'mongoose';
 
 export interface BodyImpl extends Document {
   name: string;
@@ -13,41 +14,41 @@ const bodySchema = new Schema(
   {
     name: {
       type: String,
-      required: true
+      required: true,
     },
     about: {
-      type: String
+      type: String,
     },
     dept: {
       type: String,
       uppercase: true,
       //* More To Be Added
-      enum: ["CSE", "EE", "ME", "CH", "CE", "BRCA"]
+      enum: ['CSE', 'EE', 'ME', 'CH', 'CE', 'BRCA'],
     },
     events: {
       type: [
         {
           type: Schema.Types.ObjectId,
-          ref: "Event"
-        }
-      ]
+          ref: 'Event',
+        },
+      ],
     },
     admins: {
       type: [
         {
           type: Schema.Types.ObjectId,
-          ref: "User"
-        }
-      ]
+          ref: 'User',
+        },
+      ],
     },
     superAdmin: {
       type: Schema.Types.ObjectId,
-      ref: "User"
-    }
+      ref: 'User',
+    },
   },
-  { timestamps: true }
+  {timestamps: true}
 );
 
-const Body: Model<BodyImpl> = model<BodyImpl>("Body", bodySchema);
+const Body: Model<BodyImpl> = model<BodyImpl>('Body', bodySchema);
 
 export default Body;
