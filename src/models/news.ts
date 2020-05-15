@@ -1,0 +1,56 @@
+import mongoose , {Schema , model, Model,Document} from "mongoose";
+
+export interface NewsImpl extends Document {
+	sourceName:string;
+	sourceUrl:string;
+	createdBy:mongoose.Types.ObjectId;
+	author:string;
+	title:string;
+	description:string;
+	imgUrl:string;
+	publDate:Date;
+	content:string;
+	clicks:Number;
+	
+
+}
+const newsSchema = new Schema({
+	sourceName:{
+		type:String,
+	}
+	,sourceUrl:{
+		type:String,
+		trim:true
+	},
+	createdBy:{
+		type:Schema.Types.ObjectId
+
+	},
+	author:{
+		type:String,
+		required:true
+	},
+	description:{
+		type:String,
+		required:true,
+	},
+	imgUrl:{
+		type:String,
+		trim:true
+	},
+	publDate:{
+		type:Date,
+		default:Date.now
+	},
+	content:{
+		type:String
+	},
+	clicks:{
+		required:false,
+		type:Number
+	}
+})
+
+const News: Model<NewsImpl> = model<NewsImpl>('News', newsSchema);
+
+export default News;
