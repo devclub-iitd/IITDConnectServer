@@ -16,20 +16,20 @@ export interface NewsImpl extends Document {
   reports: Array<object>;
 }
 
-const reportSchema =new Schema({
-  description:{
-    type:String,
-    required:true,
- },
-  reporter:{
-    type:Schema.Types.ObjectId,
-    required:false
+const reportSchema = new Schema({
+  description: {
+    type: String,
+    required: true,
   },
-  date:{
-    type:Date,
-    default:Date.now,
-    required:false
-  }
+  reporter: {
+    type: Schema.Types.ObjectId,
+    required: false,
+  },
+  date: {
+    type: Date,
+    default: Date.now,
+    required: false,
+  },
 });
 const newsSchema = new Schema({
   sourceName: {
@@ -64,10 +64,10 @@ const newsSchema = new Schema({
   },
   clicks: {
     type: Number,
-    default:0,
-    required:false
+    default: 0,
+    required: false,
   },
-  reports:[reportSchema]
+  reports: [reportSchema],
 });
 
 const News: Model<NewsImpl> = model<NewsImpl>('News', newsSchema);

@@ -1,55 +1,57 @@
-/* eslint-disable @typescript-eslint/type-annotation-spacing */
-/* eslint-disable eol-last */
-/* eslint-disable prettier/prettier */
 import News from '../models/news';
 import User from '../models/user';
 import {Request, Response, NextFunction} from 'express';
-import {createError} from '../utils/helpers';
+import {createError, createResponse} from '../utils/helpers';
 
-
-
-
-export const getNews = async (req: Request, res: Response) => {
+export const getNews = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     // console.log(req.query);
-    const queryObject =req.query;
+    const queryObject = req.query;
 
-    const queryKeys= Object.keys(queryObject)
-    if(queryKeys.length ===0){
+    const queryKeys = Object.keys(queryObject);
+    if (queryKeys.length === 0) {
       const news = await News.find({}).sort({publDate: 'desc'});
-      res.send(news)
+      res.send(createResponse('Recent News', news));
     }
-    if(queryObject.trending === 'true'){
-      const trendNews =await News.find({}).sort({clicks:'desc'})
-      res.send(trendNews)
+    if (queryObject.trending === 'true') {
+      const trendNews = await News.find({}).sort({clicks: 'desc'});
+      res.send(createResponse('Trending News', trendNews));
+    } else {
+      throw new Error('Query Not Matched');
     }
-    else{
-      throw new Error('Query Not Matched')
-    }
-
-
-
   } catch (e) {
-    res.status(500).send(e);
+    return next(e);
   }
 };
 
-export const newsDetails =async(req : Request , res: Response)=>{
+export const newsDetails = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const user =await User.findById(req.payload.id);
-    if(!user){
-      res.status(401).send({message:'Authentication Failed'});
+    const user = await User.findById(req.payload.id);
+    if (!user) {
+      res.status(401).send({message: 'Authentication Failed'});
     }
-    const news= await News.findById(req.params.id);
-    if(!news){
-      throw createError(401,'Doesnot Exists','News for given id donot exists')
+    const news = await News.findById(req.params.id);
+    if (!news) {
+      throw createError(
+        401,
+        'Doesnot Exists',
+        'News for given id donot exists'
+      );
     }
-    news.clicks+=1;
+    news.clicks += 1;
     await news.save();
-    res.send(news)
+    res.send(news);
   } catch (error) {
-    res.status(500).send(error)
-}
+    return next(error);
+  }
 };
 
 export const addNews = async (
@@ -67,73 +69,105 @@ export const addNews = async (
       createdBy: user._id,
     });
     await news.save();
-    res.send({news});
+    res.send(createResponse('News added Successfully', news));
   } catch (err) {
     next(err);
   }
 };
 
-export const deleteNews = async ( req: Request , res : Response )=>{
+export const deleteNews = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const user=await User.findById(req.payload.id);
-    if(user === null || user.adminOf.length === 0){
-      throw createError(401, 'Unauthorized', 'Only admins are allowed to delete news');
+    const user = await User.findById(req.payload.id);
+    if (user === null || user.adminOf.length === 0) {
+      throw createError(
+        401,
+        'Unauthorized',
+        'Only admins are allowed to delete news'
+      );
     }
-  await News.findByIdAndDelete(req.params.id);
-    res.send({
-      message:'News deleted succesfully'
-    })
+    await News.findByIdAndDelete(req.params.id);
+    res.send(createResponse('News deleted Successfully', {}));
   } catch (error) {
-    res.status(500).send(error);
+    next(error);
   }
-}
+};
 
-export const updateNews = async ( req : Request, res :Response)=>{
+export const updateNews = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     // verify user
-    const user=await User.findById(req.payload.id);
-    if(user === null || user.adminOf.length === 0){
-      throw createError(401, 'Unauthorized', 'Only admins are allowed to update news');
+    const user = await User.findById(req.payload.id);
+    if (user === null || user.adminOf.length === 0) {
+      throw createError(
+        401,
+        'Unauthorized',
+        'Only admins are allowed to update news'
+      );
     }
     // verify allowed fields
-    const allowedUpdates=['sourceName','sourceUrl','title','author','description','imgUrl','content'];
-    const updates=Object.keys(req.body);
-    const isValidOperation= updates.every((update)=> allowedUpdates.includes(update));
-    if(!isValidOperation){
-      res.send({message:'fields not matched to allowed ones',allowed:allowedUpdates})
+    const allowedUpdates = [
+      'sourceName',
+      'sourceUrl',
+      'title',
+      'author',
+      'description',
+      'imgUrl',
+      'content',
+    ];
+    const updates = Object.keys(req.body);
+    const isValidOperation = updates.every(update =>
+      allowedUpdates.includes(update)
+    );
+    if (!isValidOperation) {
+      res.send(
+        createResponse(
+          'Update fields donot match. Following can only be updated',
+          allowedUpdates
+        )
+      );
     }
-
     // Finally updating
-    await News.findByIdAndUpdate(req.params.id,req.body);
-    res.send('News Updated Succesfully');
-}catch(err){
-  res.status(500).send(err)
-}
+    const updatedNews = await News.findByIdAndUpdate(req.params.id, req.body);
+    res.send(createResponse('News Updated Succesfully', updatedNews));
+  } catch (err) {
+    next(err);
+  }
 };
 
 // ?tested Ok
 // report News
-export const reportNews = async( req : Request , res : Response )=>{
+export const reportNews = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const user = await User.findById(req.payload.id);
-    if(user === null){
+    if (user === null) {
       throw createError(401, 'Unauthorized', 'Authorization Failed');
     }
-    const report ={
+    const report = {
       ...req.body,
-    reporter: user._id ,
-  };
+      reporter: user._id,
+    };
     const news = await News.findById(req.params.id);
-    if(!news){
-      throw createError(401, 'News donot exists','News donot exists');
+    if (!news) {
+      throw createError(401, 'News donot exists', 'News donot exists');
     }
     news.reports.push(report);
 
     // save the news object
     await news.save();
 
-    res.send('Report issued successfully');
+    res.send(createResponse('Report issued successfully', report));
   } catch (e) {
-    res.status(500).send(e) ;
+    next(e);
   }
-}
+};
