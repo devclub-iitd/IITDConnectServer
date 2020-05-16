@@ -466,8 +466,9 @@ export const login = async (
     if (!errors.isEmpty()) {
       return res.status(400).json({errors: errors.array()});
     }
-    const {password} = req.body;
-    const user = await User.findById(req.payload.id);
+    const {email, password} = req.body;
+    console.log(req.payload);
+    const user = await User.findOne({email: email});
     if (user === null) {
       throw createError(401, 'Invalid Request', 'No Such User Exists');
     }
@@ -489,7 +490,6 @@ export const login = async (
     return next(error);
   }
 };
-
 // export const login = (req: Request, res: Response) => {
 //   const errors = validationResult(req);
 //   if (!errors.isEmpty()) {

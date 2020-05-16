@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import * as mongoose from 'mongoose';
 import {Schema, model, Model, Document} from 'mongoose';
 
@@ -12,7 +13,24 @@ export interface NewsImpl extends Document {
   publDate: Date;
   content: string;
   clicks: number;
+  reports: Array<object>;
 }
+
+const reportSchema =new Schema({
+  description:{
+    type:String,
+    required:true,
+ },
+  reporter:{
+    type:Schema.Types.ObjectId,
+    required:false
+  },
+  date:{
+    type:Date,
+    default:Date.now,
+    required:false
+  }
+});
 const newsSchema = new Schema({
   sourceName: {
     type: String,
@@ -45,9 +63,11 @@ const newsSchema = new Schema({
     type: String,
   },
   clicks: {
-    required: false,
     type: Number,
+    default:0,
+    required:false
   },
+  reports:[reportSchema]
 });
 
 const News: Model<NewsImpl> = model<NewsImpl>('News', newsSchema);
