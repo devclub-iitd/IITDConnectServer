@@ -31,44 +31,47 @@ const reportSchema = new Schema({
     required: false,
   },
 });
-const newsSchema = new Schema({
-  sourceName: {
-    type: String,
+const newsSchema = new Schema(
+  {
+    sourceName: {
+      type: String,
+    },
+    sourceUrl: {
+      type: String,
+      trim: true,
+    },
+    createdBy: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    author: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    imgUrl: {
+      type: String,
+      trim: true,
+    },
+    publDate: {
+      type: Date,
+      default: Date.now,
+    },
+    content: {
+      type: String,
+    },
+    clicks: {
+      type: Number,
+      default: 0,
+      required: false,
+    },
+    reports: [reportSchema],
   },
-  sourceUrl: {
-    type: String,
-    trim: true,
-  },
-  createdBy: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-  },
-  author: {
-    type: String,
-    required: true,
-  },
-  description: {
-    type: String,
-    required: true,
-  },
-  imgUrl: {
-    type: String,
-    trim: true,
-  },
-  publDate: {
-    type: Date,
-    default: Date.now,
-  },
-  content: {
-    type: String,
-  },
-  clicks: {
-    type: Number,
-    default: 0,
-    required: false,
-  },
-  reports: [reportSchema],
-});
+  {timestamps: true}
+);
 
 const News: Model<NewsImpl> = model<NewsImpl>('News', newsSchema);
 
