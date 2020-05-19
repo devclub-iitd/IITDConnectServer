@@ -21,6 +21,7 @@ export interface UserImpl extends Document {
   email: string;
   superSuperAdmin: boolean;
   superAdminOf: mongoose.Types.ObjectId[];
+  // eslint-disable-next-line @typescript-eslint/ban-types
   reminders: Object;
 }
 
