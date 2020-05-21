@@ -4,6 +4,7 @@ import {
   getReminder,
   updateReminder,
   deleteReminder,
+  getAllEventsAndReminder,
 } from '../../controllers/calendar';
 import auth from '../../middleware/auth';
 
@@ -25,6 +26,9 @@ router.get('/calendar/reminder', auth.required, getReminder);
 // Update a Reminder
 router.patch('/calendar/reminder/:id', auth.required, updateReminder);
 
+// Tested Ok ?
 //delete Reminder
 router.delete('/calendar/reminder/:id', auth.required, deleteReminder);
+
+router.post('/calendar/all', auth.required, getAllEventsAndReminder);
 export default router;

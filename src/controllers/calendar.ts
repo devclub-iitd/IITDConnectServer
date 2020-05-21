@@ -1,5 +1,6 @@
 import Reminder from '../models/calendar-reminder';
 import User from '../models/user';
+import Event from '../models/event';
 import {Request, Response, NextFunction} from 'express';
 import {createError, createResponse} from '../utils/helpers';
 
@@ -105,5 +106,90 @@ export const deleteReminder = async (
     res.send(createResponse('Reminder deleted Successfully', {}));
   } catch (error) {
     return next(error);
+  }
+};
+
+export const getAllEventsAndReminder = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.findById(req.payload.id);
+    if (!user) {
+      throw createError(
+        400,
+        'Authentication Failed',
+        'Authentication Failed. Login Again'
+      );
+    }
+    // console.log(req.body.startTime);
+    await user
+      .populate({
+        path: 'reminders',
+        match: {
+          $or: [
+            {startTime: {$gte: req.body.startTime}},
+            {endTime: {$lte: req.body.endTime}},
+          ],
+        },
+        select: {
+          title: 1,
+          endTime: 1,
+          startTime: 1,
+          venue: 1,
+        },
+      })
+      .execPopulate();
+    const event = await Event.find(
+      {
+        $or: [
+          {
+            startDate: {$gte: req.body.startTime, $lte: req.body.endTime},
+          },
+          {
+            endDate: {$gte: req.body.startTime, $lte: req.body.endTime},
+          },
+        ],
+      },
+      {
+        name: 1,
+        startDate: 1,
+        endDate: 1,
+        topicName: 1,
+      }
+    );
+
+    // starred event
+    await user
+      .populate({
+        path: 'staredEvents',
+        match: {
+          $or: [
+            {
+              startDate: {$gte: req.body.startTime, $lte: req.body.endTime},
+            },
+            {
+              endDate: {$gte: req.body.startTime, $lte: req.body.endTime},
+            },
+          ],
+        },
+        select: {
+          name: 1,
+          startDate: 1,
+          endDate: 1,
+          topicName: 1,
+        },
+      })
+      .execPopulate();
+    res.send(
+      createResponse('SuccesFull', {
+        reminders: user.reminders,
+        staredEvents: user.staredEvents,
+        event: event,
+      })
+    );
+  } catch (err) {
+    return next(err);
   }
 };
