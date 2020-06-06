@@ -3,9 +3,14 @@ import {Schema, model, Model, Document} from 'mongoose';
 export interface ReminderImpl extends Document {
   createdBy: mongoose.Types.ObjectId;
   title: string;
+  description: string;
   startTime: Date;
   endTime: Date;
   venue: string;
+  color: string;
+  repeat: string;
+  eventId: string;
+  reminder: string;
 }
 
 const reminderSchema = new Schema({
@@ -27,6 +32,21 @@ const reminderSchema = new Schema({
     required: true,
   },
   venue: {
+    type: String,
+  },
+  color: {
+    type: String,
+  },
+  repeat: {
+    type: String,
+  },
+  eventId: {
+    type: String,
+  },
+  description: {
+    type: String,
+  },
+  reminders: {
     type: String,
   },
 });

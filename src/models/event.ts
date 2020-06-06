@@ -14,7 +14,9 @@ export interface EventImpl extends Document {
   updates: mongoose.Types.ObjectId[];
   topicName: string;
   // staredCount: number;
-  special: boolean;
+  official_inti_event: boolean;
+  color: string;
+  eventId: string;
 }
 
 const eventSchema = new Schema(
@@ -73,9 +75,16 @@ const eventSchema = new Schema(
     //   type: Number,
     //   default: 0
     // }
-    special: {
+    official_inti_event: {
       type: Boolean,
       default: false,
+    },
+    color: {
+      type: String,
+      default: 'blue',
+    },
+    eventId: {
+      type: String,
     },
   },
   {timestamps: true}
