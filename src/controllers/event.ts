@@ -50,17 +50,13 @@ export const createEvent = async (
   next: NextFunction
 ) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({
-      message: 'Event Creation Failed',
-      errors: errors.array(),
-    });
+  if (!errors) {
+    throw createError(400, 'Validation Error', 'Validation Error');
   }
 
-  return Promise.all([
-    Body.findById(req.body.body),
-    User.findById(req.payload.id),
-  ]).then(([body, user]) => {
+  try {
+    const body = await Body.findById(req.body.body);
+    const user = await User.findById(req.payload.id);
     if (user === null || body === null) {
       throw createError(401, 'Unauthorized', 'Invalid');
     }
@@ -68,31 +64,20 @@ export const createEvent = async (
       slug(req.body.name) +
       '-' +
       ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
+
     const newEvent = new Event({
       ...req.body,
       createdBy: user,
       topicName: topic,
     });
-    newEvent
-      .save()
-      .then(event => {
-        body.events.push(event.id);
-        return Promise.all([event, body.save()]);
-      })
-      .then(([event]) => {
-        const respData = {
-          id: event._id,
-        };
-        console.log(event);
-        // const respData = {
-        //   event: toEventJSON(ev, user)
-        // };
-        return res.send(createResponse('Event Created Successfully', respData));
-      })
-      .catch(err => {
-        next(err);
-      });
-  });
+    await newEvent.save();
+
+    body.events.push(newEvent._id);
+    await body.save();
+    res.send(createResponse('Event Added Successfully', {newEvent}));
+  } catch (err) {
+    next(err);
+  }
 };
 
 export const deleteEvent = async (req: Request, res: Response) => {

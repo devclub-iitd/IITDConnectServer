@@ -8,14 +8,15 @@ export interface EventImpl extends Document {
   body: mongoose.Types.ObjectId;
   startDate: Date;
   endDate: Date;
-  startTime: Date;
-  endTime: Date;
   participants: mongoose.Types.ObjectId[];
   venue: string;
   imageLink: string;
   updates: mongoose.Types.ObjectId[];
   topicName: string;
   // staredCount: number;
+  official_inti_event: boolean;
+  color: string;
+  eventId: string;
 }
 
 const eventSchema = new Schema(
@@ -50,8 +51,6 @@ const eventSchema = new Schema(
       type: Date,
       // required: true
     },
-    startTime: Date,
-    endTime: Date,
     participants: {
       type: [{type: Schema.Types.ObjectId, ref: 'User'}],
     },
@@ -76,6 +75,17 @@ const eventSchema = new Schema(
     //   type: Number,
     //   default: 0
     // }
+    official_inti_event: {
+      type: Boolean,
+      default: false,
+    },
+    color: {
+      type: String,
+      default: 'blue',
+    },
+    eventId: {
+      type: String,
+    },
   },
   {timestamps: true}
 );

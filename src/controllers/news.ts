@@ -10,19 +10,35 @@ export const getNews = async (
 ) => {
   try {
     // console.log(req.query);
-    const queryObject = req.query;
-
-    const queryKeys = Object.keys(queryObject);
-    if (queryKeys.length === 0) {
-      const news = await News.find({}).sort({publDate: 'desc'});
-      res.send(createResponse('Recent News', news));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // interface LooseObject {
+    //   [key: string]: number;
+    // }
+    const sort: {[k: string]: number} = {};
+    // const sort: LooseObject = {};
+    if (req.query.sortBy !== undefined) {
+      const parts = req.query.sortBy.split(':');
+      sort[parts[0]] = parts[1] === 'desc' ? -1 : 1;
     }
-    if (queryObject.trending === 'true') {
-      const trendNews = await News.find({}).sort({clicks: 'desc'});
-      res.send(createResponse('Trending News', trendNews));
-    } else {
-      throw new Error('Query Not Matched');
-    }
+    console.log(sort);
+    const news = await News.find(
+      {},
+      {
+        author: 1,
+        description: 1,
+        imgUrl: 1,
+        clicks: 1,
+        title: 1,
+        sourceName: 1,
+        createdAt: 1,
+      },
+      {
+        limit: parseInt(req.query.limit),
+        skip: parseInt(req.query.skip),
+        sort,
+      }
+    );
+    res.send(news);
   } catch (e) {
     return next(e);
   }

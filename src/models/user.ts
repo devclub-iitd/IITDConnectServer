@@ -21,6 +21,8 @@ export interface UserImpl extends Document {
   email: string;
   superSuperAdmin: boolean;
   superAdminOf: mongoose.Types.ObjectId[];
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  reminders: Object;
 }
 
 const userSchema: Schema = new Schema(
@@ -114,6 +116,13 @@ const userSchema: Schema = new Schema(
   },
   {timestamps: true}
 );
+
+// virtual schema field for populating the reminder
+userSchema.virtual('reminders', {
+  ref: 'Reminder',
+  localField: '_id',
+  foreignField: 'createdBy',
+});
 
 // userSchema.methods.star = function(id: string) {
 //   if (this.staredEvents.indexOf(id) === -1) {

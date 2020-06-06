@@ -7,20 +7,22 @@ import {
   newsDetails,
   reportNews,
 } from '../../controllers/news';
-import {Request, Response} from 'express';
+// import {Request, Response} from 'express';
 import auth from '../../middleware/auth';
 
 // endpoints
 const router = express.Router();
 
-//  get all the events??
-router.get('/news/check', auth.required, (req: Request, res: Response) => {
-  console.log(req.payload);
-  return res.send('Successful');
-});
+// //  Just checking??
+// router.get('/news/check', auth.required, (req: Request, res: Response) => {
+//   console.log(req.payload);
+//   return res.send('Successful');
+// });
 
 //? tested Ok
 // get all News
+// /news/?sortBy=createdAt:desc
+// news/?limit=10&skip=15
 router.get('/news', auth.required, getNews);
 
 // ?Tested Ok
