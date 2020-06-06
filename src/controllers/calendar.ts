@@ -15,7 +15,7 @@ export const setReminder = async (
     // check user authentication
     const user = await User.findById(req.payload.id);
     if (!user) {
-      throw createError(500, 'Unauthenticated', 'Authentication Failed');
+      throw createError(401, 'Unauthenticated', 'Authentication Failed');
     }
     const reminder = new Reminder({
       ...req.body,
@@ -36,7 +36,7 @@ export const getReminder = async (
   try {
     const user = await User.findById(req.payload.id);
     if (!user) {
-      throw createError(500, 'Unauthenticated', 'Authentication Failed');
+      throw createError(401, 'Unauthenticated', 'Authentication Failed');
     }
     // user has reminders as its virtual field stored
     await user.populate('reminders').execPopulate();
@@ -54,7 +54,7 @@ export const updateReminder = async (
   try {
     const user = await User.findById(req.payload.id);
     if (!user) {
-      throw createError(500, 'Unauthenticated', 'Authentication Failed');
+      throw createError(401, 'Unauthenticated', 'Authentication Failed');
     }
     // verify allowed fields
     const allowedUpdates = ['title', 'startTime', 'endTime', 'venue'];
@@ -76,10 +76,10 @@ export const updateReminder = async (
       req.body
     );
     if (!reminder) {
-      throw createError(400, 'Failure', 'Reminder with given id donot exists');
+      throw createError(401, 'Failure', 'Reminder with given id donot exists');
     }
     await reminder.update(req.body);
-    res.send('Update Successfull');
+    res.send(createResponse('Update Successfull', reminder));
   } catch (err) {
     return next(err);
   }
@@ -100,7 +100,7 @@ export const deleteReminder = async (
       createdBy: user._id,
     });
     if (!reminder) {
-      throw createError(404, 'Failure', 'Either id or the token is wrong');
+      throw createError(401, 'Failure', 'Either id or the token is wrong');
     }
     await reminder.remove();
     res.send(createResponse('Reminder deleted Successfully', {}));
@@ -118,7 +118,7 @@ export const getAllEventsAndReminder = async (
     const user = await User.findById(req.payload.id);
     if (!user) {
       throw createError(
-        400,
+        401,
         'Authentication Failed',
         'Authentication Failed. Login Again'
       );

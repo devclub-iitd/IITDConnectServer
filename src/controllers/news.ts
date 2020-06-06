@@ -28,6 +28,7 @@ export const getNews = async (
         description: 1,
         imgUrl: 1,
         clicks: 1,
+        title: 1,
         sourceName: 1,
         createdAt: 1,
       },
