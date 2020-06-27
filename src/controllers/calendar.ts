@@ -138,6 +138,10 @@ export const getAllEventsAndReminder = async (
           endTime: 1,
           startTime: 1,
           venue: 1,
+          color: 1,
+          repeat: 1,
+          description: 1,
+          reminder: 1,
         },
       })
       .execPopulate();
