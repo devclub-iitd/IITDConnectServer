@@ -2,10 +2,11 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {Request, Response, NextFunction} from 'express';
 import {Types} from 'mongoose';
-import {createResponse} from '../utils/helpers';
+import {createResponse, createError} from '../utils/helpers';
 
 import User, {UserImpl} from '../models/user';
 import Body, {BodyImpl} from '../models/body';
+// import {nextTick} from 'process';
 
 const toBodyJSON = (body: BodyImpl, user: UserImpl) => {
   const isSub = user.subscribedBodies.some(bodyId => {
@@ -58,18 +59,28 @@ export const getAllBodies = (
     .catch(err => next(err));
 };
 
-export const getBody = (req: Request, res: Response) => {
-  return Promise.all([
-    User.findById(req.payload.id),
-    Body.findById(req.params.id),
-  ]).then(([user, body]) => {
-    if (user !== null && body !== null) {
-      return res.status(200).json({
-        body: toBodyJSON(body, user),
-      });
+export const getBody = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const [user, body] = await Promise.all([
+      User.findById(req.payload.id),
+      Body.findById(req.params.id),
+    ]);
+
+    if (user === null || body === null) {
+      throw createError(
+        404,
+        'Invalid User id or club id',
+        'Invalid credentials'
+      );
     }
-    return null;
-  });
+    res.send(createResponse('Success', body));
+  } catch (err) {
+    next(err);
+  }
 };
 
 export const toggleSubscribe = async (
