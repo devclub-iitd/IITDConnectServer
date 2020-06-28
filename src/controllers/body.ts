@@ -13,11 +13,8 @@ const toBodyJSON = (body: BodyImpl, user: UserImpl) => {
     return bodyId.toString() === body.id.toString();
   });
   return {
-    name: body.name,
-    about: body.about,
-    department: body.dept,
+    body,
     isSub: isSub,
-    id: body._id,
   };
 };
 
@@ -26,38 +23,63 @@ export const addBody = async (
   res: Response,
   next: NextFunction
 ) => {
-  const newBody = new Body(req.body);
-  newBody
-    .save()
-    .then(body => {
-      const respData = {
-        body: {
-          name: body.name,
-        },
-      };
-      return res.send(createResponse('Body Created Successfully', respData));
-    })
-    .catch(err => {
-      next(err);
-    });
+  try {
+    const newBody = new Body(req.body);
+    await newBody.save();
+    res.send(createResponse('Body Created Successfully', newBody));
+  } catch (error) {
+    next(error);
+  }
 };
 
-export const getAllBodies = (
+// const newBody = new Body(req.body);
+// newBody
+//   .save()
+//   .then(body => {
+//     const respData = {
+//       body: {
+//         name: body.name,
+//       },
+//     };
+//     return res.send(createResponse('Body Created Successfully', respData));
+//   })
+//   .catch(err => {
+//     next(err);
+//   });
+
+export const getAllBodies = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  return Promise.all([User.findById(req.payload.id), Body.find()])
-    .then(([user, bodies]) => {
-      if (user === null || bodies === null) {
-        return null;
-      }
-      return res.status(200).json({
-        bodies: bodies.map(body => toBodyJSON(body, user)),
-      });
-    })
-    .catch(err => next(err));
+  try {
+    // const filterVal = (req.query.q):
+    const user = await User.findById(req.payload.id);
+    if (!user) {
+      throw createError(404, 'Authentication failed', 'Invalid Credentials');
+    }
+    let bodies;
+    if (req.query.q) {
+      bodies = await Body.find({typeOfBody: req.query.q});
+    } else {
+      bodies = await Body.find({});
+    }
+    const respData = await bodies.map(body => toBodyJSON(body, user));
+    res.send(createResponse('Success', respData));
+  } catch (error) {
+    next(error);
+  }
 };
+// return Promise.all([User.findById(req.payload.id), Body.find()])
+//   .then(([user, bodies]) => {
+//     if (user === null || bodies === null) {
+//       return null;
+//     }
+//     return res.status(200).json({
+//       bodies: bodies.map(body => toBodyJSON(body, user)),
+//     });
+//   })
+//   .catch(err => next(err));
 
 export const getBody = async (
   req: Request,

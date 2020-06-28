@@ -28,7 +28,6 @@ const toEventJSON = (event: EventImpl, user: UserImpl) => {
         name: event.body.name,
         about: event.body.about,
         id: event.body.id,
-        department: event.body.dept,
         isSub: isSub,
       },
       startDate: event.startDate,
