@@ -22,7 +22,7 @@ export const getNews = async (
     }
     console.log(sort);
     const news = await News.find(
-      {},
+      {visible: true},
       {
         author: 1,
         description: 1,
@@ -136,6 +136,7 @@ export const updateNews = async (
       'description',
       'imgUrl',
       'content',
+      'visible',
     ];
     const updates = Object.keys(req.body);
     const isValidOperation = updates.every(update =>
@@ -185,5 +186,45 @@ export const reportNews = async (
     res.send(createResponse('Report issued successfully', report));
   } catch (e) {
     next(e);
+  }
+};
+
+export const toggleVisibilityOfNews = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.findById(req.payload.id);
+    if (user === null || user.adminOf.length === 0) {
+      throw createError(401, 'Unauthorized', 'Authorization Failed');
+    }
+    const news = await News.findById(req.params.id);
+    if (!news) {
+      throw createError(400, 'field doesnt exist', 'News donot exists');
+    }
+    news.visible = !news.visible;
+    await news.save();
+    res.send(createResponse('succefull', {visibleStatus: news.visible}));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getReportedNews = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.findById(req.payload.id);
+    if (user === null || user.adminOf.length === 0) {
+      throw createError(401, 'Unauthorized', 'Authorization Failed');
+    }
+    // fetch only  news reported more than and equal to 1
+    const news = await News.find({$where: 'this.reports.length>0'});
+    res.send(createResponse('Reported News', news));
+  } catch (error) {
+    next(error);
   }
 };
