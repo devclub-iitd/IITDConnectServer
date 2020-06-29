@@ -34,6 +34,9 @@ const reportSchema = new Schema({
 });
 const newsSchema = new Schema(
   {
+    title: {
+      type: String,
+    },
     sourceName: {
       type: String,
     },
