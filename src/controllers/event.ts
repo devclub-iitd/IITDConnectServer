@@ -7,7 +7,7 @@ import {Types} from 'mongoose';
 import {createError, createResponse} from '../utils/helpers';
 import Event, {EventImpl} from '../models/event';
 import User, {UserImpl} from '../models/user';
-import Body from '../models/body';
+import {Body} from '../models/body';
 import Update from '../models/update';
 // import Body from "../models/body";
 

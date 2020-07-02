@@ -14,6 +14,12 @@ export interface BodyImpl extends Document {
   members: Array<object>;
   hangoutInfo: object;
 }
+export interface BodyMemberImpl extends Document {
+  name: string;
+  por: string;
+  imgUrl: string;
+  link: object;
+}
 
 const linksSchema = new Schema({
   webUrl: {
@@ -109,5 +115,8 @@ const bodySchema = new Schema(
 );
 
 const Body: Model<BodyImpl> = model<BodyImpl>('Body', bodySchema);
-
-export default Body;
+const BodyMember: Model<BodyMemberImpl> = model<BodyMemberImpl>(
+  'BodyMember',
+  memberSchema
+);
+export {Body, BodyMember};

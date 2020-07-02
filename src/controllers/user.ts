@@ -8,7 +8,7 @@ import * as uuid from 'uuid/v5';
 // import * as nodemailer from 'nodemailer';
 import {JWT_SECRET} from '../utils/secrets';
 import User from '../models/user';
-import Body from '../models/body';
+import {Body} from '../models/body';
 import {createError, createResponse} from '../utils/helpers';
 
 //TODO: Configire A Real SMTP Server

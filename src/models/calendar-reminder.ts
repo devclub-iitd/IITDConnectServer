@@ -4,8 +4,8 @@ export interface ReminderImpl extends Document {
   createdBy: mongoose.Types.ObjectId;
   name: string;
   description: string;
-  startTime: Date;
-  endTime: Date;
+  startDate: Date;
+  endDate: Date;
   venue: string;
   color: string;
   repeat: string;
@@ -25,11 +25,11 @@ const reminderSchema = new Schema({
     trim: true,
     required: true,
   },
-  startTime: {
+  startDate: {
     type: Date,
     required: true,
   },
-  endTime: {
+  endDate: {
     type: Date,
     required: true,
   },
