@@ -8,7 +8,7 @@ import * as uuid from 'uuid/v5';
 // import * as nodemailer from 'nodemailer';
 import {JWT_SECRET} from '../utils/secrets';
 import User from '../models/user';
-import Body from '../models/body';
+import {Body} from '../models/body';
 import {createError, createResponse} from '../utils/helpers';
 
 //TODO: Configire A Real SMTP Server
@@ -163,10 +163,6 @@ export const postMakeSuperAdmin = async (
   next: NextFunction
 ) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({errors: errors.array()});
-    }
     const {clubId, userEmail} = req.body;
     const [admin, user, body] = await Promise.all([
       User.findById(req.payload.id),
@@ -180,14 +176,26 @@ export const postMakeSuperAdmin = async (
         body.superAdmin = user._id;
         user.superAdminOf.push(body.id);
         await Promise.all([user.save(), body.save()]);
+      } else {
+        throw createError(
+          404,
+          'Authorization',
+          'Only superSuper Admin can perform This action'
+        );
       }
-      return createError(
+    } else {
+      throw createError(
         404,
         'Authorization',
         'Not Authorized To Perform this Action'
       );
     }
-    return createError(404, 'Invalid', 'Invalid Club or User');
+    res.send(
+      createResponse('Success', {
+        body: body,
+        superAdmin: user,
+      })
+    );
   } catch (error) {
     return next(error);
   }
@@ -232,10 +240,6 @@ export const postMakeAdmin = async (
   next: NextFunction
 ) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({errors: errors.array()});
-    }
     const {clubId, userEmail} = req.body;
     const [user, body] = await Promise.all([
       User.findOne({
@@ -244,18 +248,31 @@ export const postMakeAdmin = async (
       Body.findById(clubId),
     ]);
     if (user !== null && body !== null) {
-      if (body.superAdmin === req.payload.id) {
-        user.adminOf.push(body.id), body.admins.push(user.id);
+      if (body.superAdmin.equals(req.payload.id)) {
+        user.adminOf.push(body.id);
+        body.admins.push(user.id);
         await Promise.all([user.save(), body.save()]);
-        return res.send('Successfully Created The Admin');
+      } else {
+        throw createError(
+          404,
+          'Authorization',
+          'Require SuperAdmin status for the club'
+        );
       }
-      return createError(
+    } else {
+      throw createError(
         404,
         'Authorization',
         'Not Authorized To Perform this Action'
       );
     }
-    return createError(404, 'Invalid', 'Invalid Club or User');
+
+    res.send(
+      createResponse('Admin Added Succesfully', {
+        bodyId: body.id,
+        userId: user.id,
+      })
+    );
   } catch (error) {
     return next(error);
   }
@@ -300,7 +317,7 @@ export const getListOfAdmins = (
   const {clubId} = req.body;
   // return res.send(clubId);
   Body.findById(clubId)
-    .populate('admins')
+
     .then(body => {
       console.log(body);
       if (body !== null) {
@@ -324,10 +341,6 @@ export const removeAdmin = async (
   next: NextFunction
 ) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({errors: errors.array()});
-    }
     const {userEmail, clubId} = req.body;
     const [user, body] = await Promise.all([
       User.findOne({
@@ -336,7 +349,7 @@ export const removeAdmin = async (
       Body.findById(clubId),
     ]);
     if (user !== null && body !== null) {
-      if (body.superAdmin === req.payload.id) {
+      if (body.superAdmin.equals(req.payload.id)) {
         const indexOne = body.admins.indexOf(user.id);
         const indexTwo = user.adminOf.indexOf(body.id);
         if (indexOne !== -1) {
@@ -347,15 +360,21 @@ export const removeAdmin = async (
         }
         await user.save();
         await body.save();
-        return res.send('Successfully Deleted The Admin');
+      } else {
+        throw createError(
+          404,
+          'Authorization',
+          'Not Authorized To Perform this Action. Require SuperAdmin Status'
+        );
       }
+    } else {
       throw createError(
         404,
-        'Authorization',
-        'Not Authorized To Perform this Action'
+        'Invalid Credentials',
+        'Not Authorized To Perform this Action. User id or body id Invalid'
       );
     }
-    return createError(404, 'Invalid', 'Invalid Club or User');
+    return res.send(createResponse('Successfully Deleted The Admin', {}));
   } catch (error) {
     return next(error);
   }

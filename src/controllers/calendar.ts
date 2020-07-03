@@ -57,7 +57,18 @@ export const updateReminder = async (
       throw createError(401, 'Unauthenticated', 'Authentication Failed');
     }
     // verify allowed fields
-    const allowedUpdates = ['title', 'startTime', 'endTime', 'venue'];
+    const allowedUpdates = [
+      'name',
+      'startDate',
+      'endDate',
+      'venue',
+      'description',
+      'color',
+      'repeat',
+      'participants',
+      'url',
+      'eventId',
+    ];
     const updates = Object.keys(req.body);
     const isValidOperation = updates.every(update =>
       allowedUpdates.includes(update)
@@ -123,21 +134,15 @@ export const getAllEventsAndReminder = async (
         'Authentication Failed. Login Again'
       );
     }
-    // console.log(req.body.startTime);
+    // console.log(req.body.startDate);
     await user
       .populate({
         path: 'reminders',
         match: {
           $or: [
-            {startTime: {$gte: req.body.startTime}},
-            {endTime: {$lte: req.body.endTime}},
+            {startDate: {$gte: req.body.startDate}},
+            {endDate: {$lte: req.body.endDate}},
           ],
-        },
-        select: {
-          title: 1,
-          endTime: 1,
-          startTime: 1,
-          venue: 1,
         },
       })
       .execPopulate();
@@ -145,10 +150,10 @@ export const getAllEventsAndReminder = async (
       {
         $or: [
           {
-            startDate: {$gte: req.body.startTime, $lte: req.body.endTime},
+            startDate: {$gte: req.body.startDate, $lte: req.body.endDate},
           },
           {
-            endDate: {$gte: req.body.startTime, $lte: req.body.endTime},
+            endDate: {$gte: req.body.startDate, $lte: req.body.endDate},
           },
         ],
       },
@@ -167,10 +172,10 @@ export const getAllEventsAndReminder = async (
         match: {
           $or: [
             {
-              startDate: {$gte: req.body.startTime, $lte: req.body.endTime},
+              startDate: {$gte: req.body.startDate, $lte: req.body.endDate},
             },
             {
-              endDate: {$gte: req.body.startTime, $lte: req.body.endTime},
+              endDate: {$gte: req.body.startDate, $lte: req.body.endDate},
             },
           ],
         },

@@ -2,15 +2,17 @@ import * as mongoose from 'mongoose';
 import {Schema, model, Model, Document} from 'mongoose';
 export interface ReminderImpl extends Document {
   createdBy: mongoose.Types.ObjectId;
-  title: string;
+  name: string;
   description: string;
-  startTime: Date;
-  endTime: Date;
+  startDate: Date;
+  endDate: Date;
   venue: string;
   color: string;
   repeat: string;
   eventId: string;
   reminder: string;
+  participants: Array<string>;
+  url: string;
 }
 
 const reminderSchema = new Schema({
@@ -18,16 +20,16 @@ const reminderSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
   },
-  title: {
+  name: {
     type: String,
     trim: true,
     required: true,
   },
-  startTime: {
+  startDate: {
     type: Date,
     required: true,
   },
-  endTime: {
+  endDate: {
     type: Date,
     required: true,
   },
@@ -48,6 +50,11 @@ const reminderSchema = new Schema({
   },
   reminders: {
     type: String,
+  },
+  participants: [String],
+  url: {
+    type: String,
+    trim: true,
   },
 });
 const Reminder: Model<ReminderImpl> = model<ReminderImpl>(
