@@ -319,7 +319,7 @@ export const getListOfAdmins = (
   Body.findById(clubId)
 
     .then(body => {
-      console.log(body);
+      // console.log(body);
       if (body !== null) {
         const admins = body.admins;
         return res.send(

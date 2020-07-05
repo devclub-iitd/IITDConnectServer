@@ -23,7 +23,7 @@
     "prettier-fix": "prettier --write './**/*.ts'",
     "lint-tests": "npm run eslint-test;npm run prettier-test",
     "lint-fixes": "npm run eslint-fix;npm run prettier-fix",
-    "api-tests": " env-cmd -f ./config/test.env jest --watch --runInBand"
+    "api-tests": " env-cmd -f ./config/test.env jest --watch"
   },
   "license": "MIT",
   "dependencies": {
