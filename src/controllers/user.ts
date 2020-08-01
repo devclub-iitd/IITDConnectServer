@@ -319,7 +319,7 @@ export const getListOfAdmins = (
   Body.findById(clubId)
 
     .then(body => {
-      console.log(body);
+      // console.log(body);
       if (body !== null) {
         const admins = body.admins;
         return res.send(
@@ -486,7 +486,7 @@ export const login = async (
       return res.status(400).json({errors: errors.array()});
     }
     const {email, password} = req.body;
-    console.log(req.payload);
+    // console.log(req.payload);
     const user = await User.findOne({email: email});
     if (user === null) {
       throw createError(401, 'Invalid Request', 'No Such User Exists');

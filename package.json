@@ -22,7 +22,8 @@
     "prettier-test": "prettier --check './**/*.ts'",
     "prettier-fix": "prettier --write './**/*.ts'",
     "lint-tests": "npm run eslint-test;npm run prettier-test",
-    "lint-fixes": "npm run eslint-fix;npm run prettier-fix"
+    "lint-fixes": "npm run eslint-fix;npm run prettier-fix",
+    "api-tests": " env-cmd -f ./config/test.env jest --watch"
   },
   "license": "MIT",
   "dependencies": {
@@ -57,6 +58,7 @@
     "@types/dotenv": "^6.1.1",
     "@types/express": "^4.17.0",
     "@types/express-jwt": "^0.0.42",
+    "@types/jest": "^26.0.3",
     "@types/jsonwebtoken": "^8.3.2",
     "@types/lusca": "^1.6.0",
     "@types/mongoose": "^5.5.6",
@@ -65,12 +67,17 @@
     "@types/nodemailer": "^6.2.0",
     "@types/request-promise": "^4.1.44",
     "@types/slug": "^0.9.1",
+    "@types/supertest": "^2.0.10",
     "@types/uuid": "^3.4.4",
     "@types/validator": "^10.11.1",
     "concurrently": "^4.1.0",
+    "env-cmd": "^10.1.0",
+    "gts": "^2.0.2",
+    "jest": "^26.1.0",
     "minimist": "^1.2.5",
     "nodemon": "^1.19.1",
-    "typescript": "^3.8.3",
-    "gts": "^2.0.2"
+    "supertest": "^4.0.2",
+    "ts-jest": "^26.1.1",
+    "typescript": "^3.8.3"
   }
 }
