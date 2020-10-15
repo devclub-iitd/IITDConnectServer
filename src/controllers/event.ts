@@ -55,7 +55,8 @@ export const createEvent = async (
 
   try {
     const body = await Body.findById(req.body.body);
-    const user = await User.findById(req.payload.id);
+    // const user = await User.findById(req.payload.id);
+    const user = await User.findOne({email: req.payload.email});
     if (user === null || body === null) {
       throw createError(401, 'Unauthorized', 'Invalid');
     }
@@ -91,7 +92,8 @@ export const deleteEvent = async (req: Request, res: Response) => {
 
 export const getEvent = async (req: Request, res: Response) => {
   const [user, event] = await Promise.all([
-    User.findById(req.payload.id),
+    // User.findById(req.payload.id),
+    User.findOne({email:req.payload.email}),
     Event.findById(req.params.id).populate('body').populate('updates').exec(),
   ]);
   if (user === null || event === null) {
@@ -121,7 +123,8 @@ export const getEvents = async (
       .populate('body')
       .populate('updates')
       .exec(),
-    User.findById(req.payload.id),
+    User.findOne({email:req.payload.email})
+    // User.findById(req.payload.id),
   ])
     .then(([events, user]) => {
       if (user === null) {
@@ -188,7 +191,8 @@ export const toggleStar = async (
   next: NextFunction
 ) => {
   return Promise.all([
-    User.findById(req.payload.id),
+    // User.findById(req.payload.id),
+    User.findOne({email: req.payload.email}),
     Event.findById(req.params.id),
   ])
     .then(([user, event]) => {
@@ -241,7 +245,8 @@ export const putUpdateEvent = (
 ) => {
   return Promise.all([
     Event.findById(req.params.id),
-    User.findById(req.payload.id),
+    User.findOne({email: req.payload.email})
+    // User.findById(req.payload.id),
   ])
     .then(([event, user]) => {
       if (event === null || user === null) {

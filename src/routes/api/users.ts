@@ -36,27 +36,27 @@ router.post(
       .isEmail()
       .withMessage('Enter A Valid Email Address'),
   ],
-  auth.required,
+  auth,
   addUserInformation
 );
 
 //? Tested OK...
-router.get('/user/me', auth.required, getUserDetails);
+router.get('/user/me', auth, getUserDetails);
 
 //? Tested OK...
-router.post('/users/getAdmins', auth.required, getListOfAdmins);
+router.post('/users/getAdmins', auth, getListOfAdmins);
 
 //? Tested OK...
-router.post('/users/addAdmin', auth.required, postMakeAdmin);
+router.post('/users/addAdmin', auth, postMakeAdmin);
 
 //? Tested OK...
-router.post('/users/addSuperAdmin', auth.required, postMakeSuperAdmin);
+router.post('/users/addSuperAdmin', auth, postMakeSuperAdmin);
 
 //? Tested OK...
-router.get('/users/:id', auth.required, getUser);
+router.get('/users/:id', auth, getUser);
 
 //? Tested OK...
-router.post('/users/removeAdmin', auth.required, removeAdmin);
+router.post('/users/removeAdmin', auth, removeAdmin);
 
 //? Tested OK...
 router.post(

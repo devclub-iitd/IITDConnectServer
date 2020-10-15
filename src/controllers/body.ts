@@ -54,7 +54,8 @@ export const getAllBodies = async (
 ) => {
   try {
     // const filterVal = (req.query.q):
-    const user = await User.findById(req.payload.id);
+    const user = await User.findOne({email: req.payload.email});
+    // const user = await User.findById(req.payload.id);
     if (!user) {
       throw createError(404, 'Authentication failed', 'Invalid Credentials');
     }
@@ -88,7 +89,8 @@ export const getBody = async (
 ) => {
   try {
     const [user, body] = await Promise.all([
-      User.findById(req.payload.id),
+      User.findOne({email: req.payload.email}),
+      // User.findById(req.payload.id),
       Body.findById(req.params.id),
     ]);
 
@@ -112,7 +114,8 @@ export const updateBody = async (
 ) => {
   try {
     const [superadmin, body] = await Promise.all([
-      User.findById(req.payload.id),
+      // User.findById(req.payload.id),
+      User.findOne({email: req.payload.email}),
       Body.findById(req.params.id),
     ]);
     if (superadmin === null || body === null) {
@@ -129,7 +132,7 @@ export const updateBody = async (
         ''
       );
     }
-    if (!body.superAdmin.equals(req.payload.id)) {
+    if (!body.superAdmin.equals(superadmin.id)) {
       throw createError(
         400,
         'Not Authorized',
@@ -149,7 +152,8 @@ export const toggleSubscribe = async (
   next: NextFunction
 ) => {
   try {
-    const user = await User.findById(req.payload.id);
+    // const user = await User.findById(req.payload.id);
+    const user = await User.findOne({email: req.payload.email});
     if (user === null) {
       //! JWT WAS INVALID
       return res.send('Invalid Request');
@@ -176,7 +180,8 @@ export const addMembers = async (
 ) => {
   try {
     const [superadmin, body] = await Promise.all([
-      User.findById(req.payload.id),
+      // User.findById(req.payload.id),
+      User.findOne({email: req.payload.email}),
       Body.findById(req.body.bodyId),
     ]);
     if (superadmin === null || body === null) {
@@ -195,7 +200,7 @@ export const addMembers = async (
     }
     // console.log('here 1');
     // console.log(body.superAdmin, req.payload.id);
-    if (!body.superAdmin.equals(req.payload.id)) {
+    if (!body.superAdmin.equals(superadmin.id)) {
       throw createError(
         400,
         'Not Authorized',

@@ -50,7 +50,8 @@ export const newsDetails = async (
   next: NextFunction
 ) => {
   try {
-    const user = await User.findById(req.payload.id);
+    // const user = await User.findById(req.payload.id);
+    const user = await User.findOne({email: req.payload.email});
     if (!user) {
       res.status(401).send({message: 'Authentication Failed'});
     }
@@ -76,7 +77,8 @@ export const addNews = async (
   next: NextFunction
 ) => {
   try {
-    const user = await User.findById(req.payload.id);
+    // const user = await User.findById(req.payload.id);
+    const user = await User.findOne({email:req.payload.email});
     if (user === null || user.adminOf.length === 0) {
       throw createError(401, 'Unauthorized', 'Invalid Login Credentials');
     }
@@ -97,7 +99,8 @@ export const deleteNews = async (
   next: NextFunction
 ) => {
   try {
-    const user = await User.findById(req.payload.id);
+    // const user = await User.findById(req.payload.id);
+    const user = await User.findOne({email:req.payload.email});
     if (user === null || user.adminOf.length === 0) {
       throw createError(
         401,
@@ -119,7 +122,8 @@ export const updateNews = async (
 ) => {
   try {
     // verify user
-    const user = await User.findById(req.payload.id);
+    // const user = await User.findById(req.payload.id);
+    const user = await User.findOne({email:req.payload.email});
     if (user === null || user.adminOf.length === 0) {
       throw createError(
         401,
@@ -166,7 +170,8 @@ export const reportNews = async (
   next: NextFunction
 ) => {
   try {
-    const user = await User.findById(req.payload.id);
+    // const user = await User.findById(req.payload.id);
+    const user = await User.findOne({email:req.payload.email});
     if (user === null) {
       throw createError(401, 'Unauthorized', 'Authorization Failed');
     }
@@ -195,7 +200,8 @@ export const toggleVisibilityOfNews = async (
   next: NextFunction
 ) => {
   try {
-    const user = await User.findById(req.payload.id);
+    // const user = await User.findById(req.payload.id);
+    const user = await User.findOne({email:req.payload.email});
     if (user === null || user.adminOf.length === 0) {
       throw createError(401, 'Unauthorized', 'Authorization Failed');
     }
