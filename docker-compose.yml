@@ -1,0 +1,41 @@
+version: '3.4'
+
+services:
+  database:
+    image: "${REGISTRY_NAME}mongo:latest"
+    volumes:
+      - iitdconnectdb:/data/db
+    networks:
+      - "internal"
+    restart: "unless-stopped"
+  dashboard:
+    build: .
+    image: "${REGISTRY_NAME}devclubiitd/iitdconnect:0.1"
+    ports:
+      - ${PORT}:${PORT}
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:${PORT}"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: "unless-stopped" 
+    networks:
+      - "internal"
+      - "reverseproxy"
+    env_file:
+      - ./.env
+    environment:
+      - VIRTUAL_HOST
+      - MONGODB_URI_LOCAL
+    depends_on:
+      - database
+
+volumes:
+  iitdconnectdb:
+
+networks:
+  reverseproxy:
+    external:
+      name: "reverseproxy"
+  internal:
