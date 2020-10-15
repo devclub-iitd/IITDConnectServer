@@ -93,7 +93,7 @@ export const deleteEvent = async (req: Request, res: Response) => {
 export const getEvent = async (req: Request, res: Response) => {
   const [user, event] = await Promise.all([
     // User.findById(req.payload.id),
-    User.findOne({email:req.payload.email}),
+    User.findOne({email: req.payload.email}),
     Event.findById(req.params.id).populate('body').populate('updates').exec(),
   ]);
   if (user === null || event === null) {
@@ -123,7 +123,7 @@ export const getEvents = async (
       .populate('body')
       .populate('updates')
       .exec(),
-    User.findOne({email:req.payload.email})
+    User.findOne({email: req.payload.email}),
     // User.findById(req.payload.id),
   ])
     .then(([events, user]) => {
@@ -245,7 +245,7 @@ export const putUpdateEvent = (
 ) => {
   return Promise.all([
     Event.findById(req.params.id),
-    User.findOne({email: req.payload.email})
+    User.findOne({email: req.payload.email}),
     // User.findById(req.payload.id),
   ])
     .then(([event, user]) => {
