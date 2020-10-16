@@ -3,6 +3,8 @@ import * as jwt from 'jsonwebtoken';
 import * as fs from 'fs';
 import * as path from 'path';
 
+import User from '../models/user';
+
 const publicKey = fs.readFileSync(path.resolve(__dirname, './public.pem')); // Public Key path
 
 const auth = async (req: Request, res: Response, next: NextFunction) => {
@@ -20,8 +22,23 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
       algorithms: ['RS256'],
     });
 
+    //! Create a user by this email does not exist.
+    const user = await User.findOne({email: decoded.user.email});
+
+    if (user) {
+      req.payload.id = user.id;
+      return next();
+    }
+
     // all went well, proceed;
-    req.payload = decoded.user;
+    // req.payload = decoded.user;
+
+    const name = decoded.user.firstname + ' ' + decoded.user.secondname;
+
+    //! Create a user.
+    const newUser = await new User({name: name, email: decoded.user.email});
+
+    req.payload.id = newUser.id;
 
     return next();
   } catch (error) {
@@ -31,40 +48,16 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-module.exports = auth;
+export default auth;
 
-// import {Request} from 'express';
-// import * as jwt from 'express-jwt';
-// import {JWT_SECRET} from '../utils/secrets';
+// const newUser = await new User({name, email, password: hashedPassword});
+// await newUser.save();
 
-// const getTokenFromHeader = (req: Request): string | null => {
-//   if (
-//     req.headers.authorization &&
-//     req.headers.authorization.split(' ')[0] === 'Bearer'
-//   ) {
-//     // eslint-disable-next-line no-console
-//     // console.log(req.headers.authorization.split(" ")[1]);
-//     return req.headers.authorization.split(' ')[1];
-//   }
-//   return null;
-// };
-
-// const auth = {
-//   required: jwt({
-//     secret: JWT_SECRET,
-//     algorithms: ['sha1', 'RS256', 'HS256'],
-//     getToken: getTokenFromHeader,
-//     userProperty: 'payload',
-//     // requestProperty: "payload"
-//   }),
-//   optional: jwt({
-//     secret: JWT_SECRET,
-//     algorithms: ['sha1', 'RS256', 'HS256'],
-//     getToken: getTokenFromHeader,
-//     credentialsRequired: false,
-//     userProperty: 'payload',
-//     // requestProperty: "payload"
-//   }),
-// };
-
-// export default auth;
+// "user":{
+//   "id": <uid>,
+//   "firstname": <First Name>
+//   "lastname": <Last Name>
+//   "email": <Registered Email>
+//   "roles": [<list of role strings> ]
+// "is_verified" : A boolean specifying whether the user is verified
+// }

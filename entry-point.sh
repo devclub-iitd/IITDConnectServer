@@ -7,4 +7,6 @@ done
 
 npm run build-ts
 
+npm run post-build
+
 npm run watch-node
