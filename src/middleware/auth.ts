@@ -33,7 +33,7 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
     // all went well, proceed;
     // req.payload = decoded.user;
 
-    const name = decoded.user.firstname + ' ' + decoded.user.secondname;
+    const name = decoded.user.firstname + ' ' + decoded.user.lastname;
 
     //! Create a user.
     const newUser = await new User({name: name, email: decoded.user.email});
