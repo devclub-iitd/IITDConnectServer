@@ -12,21 +12,21 @@ import {
 const router = express.Router();
 
 //? Tested OK
-router.get('/', auth, getAllBodies);
+router.get('/', auth.required, getAllBodies);
 
 //? Tested OK
-router.post('/', auth, addBody);
+router.post('/', auth.required, addBody);
 
 //? Tested OK
-router.get('/:id', auth, getBody);
+router.get('/:id', auth.required, getBody);
 
-router.patch('/:id', auth, updateBody);
+router.patch('/:id', auth.required, updateBody);
 
 //? Tested OK
 //! Google Firebase Integration is Left
-router.post('/:id/subscribe', auth, toggleSubscribe);
+router.post('/:id/subscribe', auth.required, toggleSubscribe);
 
 // ?Tested Ok
 // Add members to the Body , Only by Superadmin
-router.post('/addMember', auth, addMembers);
+router.post('/addMember', auth.required, addMembers);
 export default router;

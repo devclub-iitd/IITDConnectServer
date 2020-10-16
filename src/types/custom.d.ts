@@ -6,7 +6,6 @@ declare global {
     interface Request {
       payload: {
         id: any;
-        email: string;
       };
     }
   }

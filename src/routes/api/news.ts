@@ -25,28 +25,28 @@ const router = express.Router();
 // get all News
 // /news/?sortBy=createdAt:desc
 // news/?limit=10&skip=15
-router.get('/news', auth, getNews);
+router.get('/news', auth.required, getNews);
 
 // ?Tested Ok
 // add a news
-router.post('/news', auth, addNews);
+router.post('/news', auth.required, addNews);
 
-router.delete('/news/:id', auth, deleteNews);
+router.delete('/news/:id', auth.required, deleteNews);
 
 // ?Tested Ok
 // get news details
-router.get('/news/:id', auth, newsDetails);
+router.get('/news/:id', auth.required, newsDetails);
 
 // ?Tested Ok
-router.patch('/news/:id', auth, updateNews);
+router.patch('/news/:id', auth.required, updateNews);
 
 // report news
-router.post('/news/report/:id', auth, reportNews);
+router.post('/news/report/:id', auth.required, reportNews);
 
 // ?Tested Ok
 // Toggle change visibity of News
-router.get('/news/report/toggle/:id', auth, toggleVisibilityOfNews);
+router.get('/news/report/toggle/:id', auth.required, toggleVisibilityOfNews);
 
 // Get all Reported News
-router.get('/news/report/all', auth, getReportedNews);
+router.get('/news/report/all', auth.required, getReportedNews);
 export default router;

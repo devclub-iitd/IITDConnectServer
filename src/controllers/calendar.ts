@@ -13,8 +13,7 @@ export const setReminder = async (
 ) => {
   try {
     // check user authentication
-    // const user = await User.findById(req.payload.id);
-    const user = await User.findOne({email:req.payload.email});
+    const user = await User.findById(req.payload.id);
     if (!user) {
       throw createError(401, 'Unauthenticated', 'Authentication Failed');
     }
@@ -35,8 +34,7 @@ export const getReminder = async (
   next: NextFunction
 ) => {
   try {
-    // const user = await User.findById(req.payload.id);
-    const user = await User.findOne({email:req.payload.email});
+    const user = await User.findById(req.payload.id);
     if (!user) {
       throw createError(401, 'Unauthenticated', 'Authentication Failed');
     }
@@ -54,8 +52,7 @@ export const updateReminder = async (
   next: NextFunction
 ) => {
   try {
-    // const user = await User.findById(req.payload.id);
-    const user = await User.findOne({email:req.payload.email});
+    const user = await User.findById(req.payload.id);
     if (!user) {
       throw createError(401, 'Unauthenticated', 'Authentication Failed');
     }
@@ -105,8 +102,7 @@ export const deleteReminder = async (
   next: NextFunction
 ) => {
   try {
-    // const user = await User.findById(req.payload.id);
-    const user = await User.findOne({email:req.payload.email});
+    const user = await User.findById(req.payload.id);
     if (user === null) {
       throw createError(401, 'Unauthorized', 'authentication Failed');
     }
@@ -130,8 +126,7 @@ export const getAllEventsAndReminder = async (
   next: NextFunction
 ) => {
   try {
-    // const user = await User.findById(req.payload.id);
-    const user = await User.findOne({email:req.payload.email});
+    const user = await User.findById(req.payload.id);
     if (!user) {
       throw createError(
         401,
