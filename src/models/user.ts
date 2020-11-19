@@ -1,19 +1,19 @@
 import * as mongoose from 'mongoose';
 import {Schema, model, Model, Document} from 'mongoose';
-import {isEmail} from 'validator';
+// import {isEmail} from 'validator';
 
 export interface UserImpl extends Document {
   name: string;
-  password: string;
+  // password: string;
   privilege: string;
   subscribedBodies: mongoose.Types.ObjectId[];
   canCreate: boolean;
   createdEvents: mongoose.Types.ObjectId[];
   staredEvents: mongoose.Types.ObjectId[];
-  iitdEmail: string;
+  // iitdEmail: string;
   emailValidated: boolean;
-  facebookID: string;
-  googleID: string;
+  // facebookID: string;
+  // googleID: string;
   entryNumber: string;
   department: string;
   fcmRegistrationToken: string;
@@ -29,17 +29,18 @@ const userSchema: Schema = new Schema(
   {
     name: {
       type: String,
+      required: true,
     },
     email: {
       type: String,
       required: true,
     },
-    password: {
-      type: String,
-      required: true,
-    },
-    facebookID: String,
-    googleID: String,
+    // password: {
+    //   type: String,
+    //   required: true,
+    // },
+    // facebookID: String,
+    // googleID: String,
     department: {
       type: String,
       uppercase: true,
@@ -47,23 +48,23 @@ const userSchema: Schema = new Schema(
       enum: ['CSE', 'EE'],
     },
     entryNumber: String,
-    emailValidated: {
-      type: Boolean,
-      default: false,
-    },
+    // emailValidated: {
+    //   type: Boolean,
+    //   default: false,
+    // },
     superSuperAdmin: {
       type: Boolean,
       default: false,
     },
-    iitdEmail: {
-      type: String,
-      lowercase: true,
-      validate: [isEmail, 'Invalid Email'],
-    },
+    // iitdEmail: {
+    //   type: String,
+    //   lowercase: true,
+    //   validate: [isEmail, 'Invalid Email'],
+    // },
     fcmRegistrationToken: String,
-    hash: {
-      type: String,
-    },
+    // hash: {
+    //   type: String,
+    // },
     privilege: {
       type: String,
       lowercase: true,

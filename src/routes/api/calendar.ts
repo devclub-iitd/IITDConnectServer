@@ -11,24 +11,24 @@ import auth from '../../middleware/auth';
 const router = express.Router();
 
 // just checking
-router.get('/calendar/check', auth.required, (req, res) => {
+router.get('/calendar/check', auth, (req, res) => {
   res.send('Heloow boys');
 });
 
 // Set customized Reminder
 // Tested? Ok
-router.post('/calendar/reminder', auth.required, setReminder);
+router.post('/calendar/reminder', auth, setReminder);
 // TestedOk
 // Get all reminders
-router.get('/calendar/reminder', auth.required, getReminder);
+router.get('/calendar/reminder', auth, getReminder);
 
 // ?Tested Ok
 // Update a Reminder
-router.patch('/calendar/reminder/:id', auth.required, updateReminder);
+router.patch('/calendar/reminder/:id', auth, updateReminder);
 
 // Tested Ok ?
 //delete Reminder
-router.delete('/calendar/reminder/:id', auth.required, deleteReminder);
+router.delete('/calendar/reminder/:id', auth, deleteReminder);
 
-router.post('/calendar/all', auth.required, getAllEventsAndReminder);
+router.post('/calendar/all', auth, getAllEventsAndReminder);
 export default router;

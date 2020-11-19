@@ -5,6 +5,6 @@ const router = express.Router();
 // Make a User SuperAdmin
 // Development Purpose
 import {MakeMeSuperAdmin} from '../../controllers/testEndpoint';
-router.get('/makeMeSuperSuperAdmin', auth.required, MakeMeSuperAdmin);
+router.get('/makeMeSuperSuperAdmin', auth, MakeMeSuperAdmin);
 
 export default router;
