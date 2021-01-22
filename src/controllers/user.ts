@@ -34,7 +34,7 @@ import {createError, createResponse} from '../utils/helpers';
 //     }
 //     const hash = uuid(email, uuid.DNS);
 //     const updatedUser = await User.findByIdAndUpdate(
-//       req.payload.id,
+//       req.payload,
 //       {
 //         iitdEmail: email,
 //         department: department,
@@ -82,7 +82,7 @@ export const postMakeSuperAdmin = async (
   try {
     const {clubId, userEmail} = req.body;
     const [admin, user, body] = await Promise.all([
-      User.findById(req.payload.id),
+      User.findById(req.payload),
       User.findOne({
         email: userEmail,
       }),
@@ -132,7 +132,7 @@ export const postMakeAdmin = async (
       Body.findById(clubId),
     ]);
     if (user !== null && body !== null) {
-      if (body.superAdmin.equals(req.payload.id)) {
+      if (body.superAdmin.equals(req.payload)) {
         user.adminOf.push(body.id);
         body.admins.push(user.id);
         await Promise.all([user.save(), body.save()]);
@@ -202,7 +202,7 @@ export const removeAdmin = async (
       Body.findById(clubId),
     ]);
     if (user !== null && body !== null) {
-      if (body.superAdmin.equals(req.payload.id)) {
+      if (body.superAdmin.equals(req.payload)) {
         const indexOne = body.admins.indexOf(user.id);
         const indexTwo = user.adminOf.indexOf(body.id);
         if (indexOne !== -1) {
@@ -297,7 +297,7 @@ export const getUserDetails = (
   res: Response,
   next: NextFunction
 ) => {
-  User.findById(req.payload.id)
+  User.findById(req.payload)
     .populate('adminOf')
     .populate('superAdminOf')
     .exec()

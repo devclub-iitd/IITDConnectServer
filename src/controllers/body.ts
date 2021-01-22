@@ -54,7 +54,7 @@ export const getAllBodies = async (
 ) => {
   try {
     // const filterVal = (req.query.q):
-    const user = await User.findById(req.payload.id);
+    const user = await User.findById(req.payload);
     if (!user) {
       throw createError(404, 'Authentication failed', 'Invalid Credentials');
     }
@@ -70,7 +70,7 @@ export const getAllBodies = async (
     next(error);
   }
 };
-// return Promise.all([User.findById(req.payload.id), Body.find()])
+// return Promise.all([User.findById(req.payload), Body.find()])
 //   .then(([user, bodies]) => {
 //     if (user === null || bodies === null) {
 //       return null;
@@ -88,7 +88,7 @@ export const getBody = async (
 ) => {
   try {
     const [user, body] = await Promise.all([
-      User.findById(req.payload.id),
+      User.findById(req.payload),
       Body.findById(req.params.id),
     ]);
 
@@ -112,7 +112,7 @@ export const updateBody = async (
 ) => {
   try {
     const [superadmin, body] = await Promise.all([
-      User.findById(req.payload.id),
+      User.findById(req.payload),
       Body.findById(req.params.id),
     ]);
     if (superadmin === null || body === null) {
@@ -129,7 +129,7 @@ export const updateBody = async (
         ''
       );
     }
-    if (!body.superAdmin.equals(req.payload.id)) {
+    if (!body.superAdmin.equals(req.payload)) {
       throw createError(
         400,
         'Not Authorized',
@@ -149,7 +149,7 @@ export const toggleSubscribe = async (
   next: NextFunction
 ) => {
   try {
-    const user = await User.findById(req.payload.id);
+    const user = await User.findById(req.payload);
     if (user === null) {
       //! JWT WAS INVALID
       return res.send('Invalid Request');
@@ -176,7 +176,7 @@ export const addMembers = async (
 ) => {
   try {
     const [superadmin, body] = await Promise.all([
-      User.findById(req.payload.id),
+      User.findById(req.payload),
       Body.findById(req.body.bodyId),
     ]);
     if (superadmin === null || body === null) {
@@ -194,8 +194,8 @@ export const addMembers = async (
       );
     }
     // console.log('here 1');
-    // console.log(body.superAdmin, req.payload.id);
-    if (!body.superAdmin.equals(req.payload.id)) {
+    // console.log(body.superAdmin, req.payload);
+    if (!body.superAdmin.equals(req.payload)) {
       throw createError(
         400,
         'Not Authorized',

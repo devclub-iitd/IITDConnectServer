@@ -9,7 +9,7 @@ export const MakeMeSuperAdmin = async (
   next: NextFunction
 ) => {
   try {
-    const user = await User.findById(req.payload.id);
+    const user = await User.findById(req.payload);
     if (!user) {
       throw createError(400, 'User Donot Exists', 'Invalid User Id');
     }
