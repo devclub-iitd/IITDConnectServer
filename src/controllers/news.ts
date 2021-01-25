@@ -69,7 +69,7 @@ export const newsDetails = async (
     const timeElapsedInHours =
       (new Date().getTime() - news.createdAt.getTime()) / (1000 * 60 * 60);
     //console.log(timeElapsedInHours);
-    news.trendRate = news.clicks / Math.ceil(timeElapsedInHours);
+    news.trendRate = news.clicks / timeElapsedInHours;
     //console.log(news.trendRate);
     await news.save();
     res.send(news);
