@@ -213,7 +213,7 @@ export const removeAdmin = async (
         if (indexTwo !== -1) {
           user.adminOf.splice(indexTwo, 1);
         }
-        if (user.adminOf.length == 0) user.isAdmin = false;
+        if (user.adminOf.length === 0) user.isAdmin = false;
         await user.save();
         await body.save();
       } else {

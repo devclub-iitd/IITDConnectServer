@@ -63,6 +63,13 @@ export const newsDetails = async (
       );
     }
     news.clicks += 1;
+
+    // Update the newsTrend Rate ,every time it is fetched
+    const timeElapsedInHours =
+      (new Date().getTime() - news.createdAt.getTime()) / (1000 * 60 * 60);
+    //console.log(timeElapsedInHours);
+    news.trendRate = news.clicks / Math.ceil(timeElapsedInHours);
+    //console.log(news.trendRate);
     await news.save();
     res.send(news);
   } catch (error) {
@@ -226,5 +233,29 @@ export const getReportedNews = async (
     res.send(createResponse('Reported News', news));
   } catch (error) {
     next(error);
+  }
+};
+export const getTrendNews = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.findById(req.payload);
+    if (user === null) {
+      throw createError(401, 'Unauthorized', 'Authorization Failed');
+    }
+    const news = await News.find(
+      {visible: true},
+      {},
+      {
+        limit: parseInt(req.query.limit),
+        sort: {trendRate: -1},
+      }
+    );
+
+    res.send(news);
+  } catch (e) {
+    next(e);
   }
 };
