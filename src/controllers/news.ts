@@ -52,7 +52,8 @@ export const newsDetails = async (
   try {
     const user = await User.findById(req.payload);
     if (!user) {
-      res.status(401).send({message: 'Authentication Failed'});
+      //res.status(401).send({message: 'Authentication Failed'});
+      throw createError(401, 'Unauthorized', 'Invalid Credentials');
     }
     const news = await News.findById(req.params.id);
     if (!news) {
@@ -84,8 +85,15 @@ export const addNews = async (
 ) => {
   try {
     const user = await User.findById(req.payload);
-    if (user === null || user.adminOf.length === 0) {
-      throw createError(401, 'Unauthorized', 'Invalid Login Credentials');
+    if (user === null) {
+      throw createError(401, 'Invalid', 'Invalid Login Credentials');
+    }
+    if (!user.isAdmin && !user.isSuperAdmin && !user.superSuperAdmin) {
+      throw createError(
+        401,
+        'Unauthorized',
+        'You are not authorized to add news'
+      );
     }
     const news = new News({
       ...req.body,
@@ -105,12 +113,32 @@ export const deleteNews = async (
 ) => {
   try {
     const user = await User.findById(req.payload);
-    if (user === null || user.adminOf.length === 0) {
+    if (user === null) {
+      throw createError(401, 'Invalid', 'Invalid Login credentials');
+    }
+    if (!user.isAdmin && !user.isSuperAdmin && !user.superSuperAdmin) {
       throw createError(
         401,
         'Unauthorized',
-        'Only admins are allowed to delete news'
+        'You are not authorized to delete news'
       );
+    }
+
+    //If user is ONLY admin , he can delete only his news. SuperAdmins can delete all news
+    const news = await News.findById(req.params.id);
+    if (
+      user.isSuperAdmin === false &&
+      user.superSuperAdmin === false &&
+      user.isAdmin === true &&
+      news !== null
+    ) {
+      if (!news.createdBy.equals(user._id)) {
+        throw createError(
+          401,
+          'Unauthorized',
+          'Admins can delete only their own news'
+        );
+      }
     }
     await News.findByIdAndDelete(req.params.id);
     res.send(createResponse('News deleted Successfully', {}));
@@ -127,12 +155,32 @@ export const updateNews = async (
   try {
     // verify user
     const user = await User.findById(req.payload);
-    if (user === null || user.adminOf.length === 0) {
+    if (user === null) {
+      throw createError(401, 'Invalid', 'Invalid Login credentials');
+    }
+    if (!user.isAdmin && !user.isSuperAdmin && !user.superSuperAdmin) {
       throw createError(
         401,
         'Unauthorized',
-        'Only admins are allowed to update news'
+        'You are not authorized to update news'
       );
+    }
+
+    //Admins can update ONLY their own news
+    const news = await News.findById(req.params.id);
+    if (
+      user.isSuperAdmin === false &&
+      user.superSuperAdmin === false &&
+      user.isAdmin === true &&
+      news !== null
+    ) {
+      if (!news.createdBy.equals(user._id)) {
+        throw createError(
+          401,
+          'Unauthorized',
+          'Admins can update only their own news'
+        );
+      }
     }
     // verify allowed fields
     const allowedUpdates = [
@@ -203,13 +251,36 @@ export const toggleVisibilityOfNews = async (
 ) => {
   try {
     const user = await User.findById(req.payload);
-    if (user === null || user.adminOf.length === 0) {
-      throw createError(401, 'Unauthorized', 'Authorization Failed');
+    if (user === null) {
+      throw createError(401, 'Unauthorized', 'Invalid Login credentials');
     }
+    if (!user.isAdmin && !user.isSuperAdmin && !user.superSuperAdmin) {
+      throw createError(
+        401,
+        'Unauthorized',
+        'You are not authorized to toggleOffVisibility of news'
+      );
+    }
+    //Admins can toggle OFF ONLY their own news
     const news = await News.findById(req.params.id);
     if (!news) {
       throw createError(400, 'field doesnt exist', 'News donot exists');
     }
+    if (
+      user.isSuperAdmin === false &&
+      user.superSuperAdmin === false &&
+      user.isAdmin === true &&
+      news !== null
+    ) {
+      if (!news.createdBy.equals(user._id)) {
+        throw createError(
+          401,
+          'Unauthorized',
+          'Admins can toggleOffVisibility only their own news'
+        );
+      }
+    }
+
     news.visible = !news.visible;
     await news.save();
     res.send(createResponse('succefull', {visibleStatus: news.visible}));
@@ -225,11 +296,19 @@ export const getReportedNews = async (
 ) => {
   try {
     const user = await User.findById(req.payload);
-    if (user === null || user.adminOf.length === 0) {
-      throw createError(401, 'Unauthorized', 'Authorization Failed');
+    if (user === null) {
+      throw createError(401, 'Unauthorized', 'Invalid Login credentials');
+    }
+    if (!user.isAdmin && !user.isSuperAdmin && !user.superSuperAdmin) {
+      throw createError(
+        401,
+        'Unauthorized',
+        'You are not authorized to getReportedNews news'
+      );
     }
     // fetch only  news reported more than and equal to 1
-    const news = await News.find({$where: 'this.reports.length>0'});
+    const count = req.params.count !== undefined ? req.params.count : 5;
+    const news = await News.find({reports: {$size: {$gt: count}}});
     res.send(createResponse('Reported News', news));
   } catch (error) {
     next(error);
