@@ -8,7 +8,9 @@
 <img src="https://img.shields.io/badge/firebase--admin-v8.2.0-blue"></img>
 <img src="https://img.shields.io/badge/Mongoose-v5.7.5-blue"></img>
 <img src="https://img.shields.io/badge/Express-v4.7.1-orange">
+<a href="https://github.com/devclub-iitd/IITDConnectServer/graphs/contributors">
 <img src="https://img.shields.io/badge/Contributors-5-yellow">
+</a>
 </p>
 
 ## Running The Server Locally On Your System
@@ -2964,5 +2966,5 @@ URL: http://localhost:5000/api/events/5ec6a078a3c1605a567ae3f7/star
 
 ---
 [Back to top](#iitd-connect)
-> Made with &#9829; by [thedevsaddam](https://github.com/thedevsaddam) | Generated at: 2021-01-26 11:28:10 by [docgen](https://github.com/thedevsaddam/docgen)
+
 
