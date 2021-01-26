@@ -23,6 +23,8 @@ export interface UserImpl extends Document {
   superAdminOf: mongoose.Types.ObjectId[];
   // eslint-disable-next-line @typescript-eslint/ban-types
   reminders: Object;
+  isAdmin: boolean;
+  isSuperAdmin: boolean;
 }
 
 const userSchema: Schema = new Schema(
@@ -113,6 +115,14 @@ const userSchema: Schema = new Schema(
           ref: 'Body',
         },
       ],
+    },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
+    isSuperAdmin: {
+      type: Boolean,
+      default: false,
     },
   },
   {timestamps: true}

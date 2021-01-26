@@ -92,6 +92,7 @@ export const postMakeSuperAdmin = async (
       if (admin.superSuperAdmin === true) {
         body.superAdmin = user._id;
         user.superAdminOf.push(body.id);
+        user.isSuperAdmin = true;
         await Promise.all([user.save(), body.save()]);
       } else {
         throw createError(
@@ -135,6 +136,7 @@ export const postMakeAdmin = async (
       if (body.superAdmin.equals(req.payload)) {
         user.adminOf.push(body.id);
         body.admins.push(user.id);
+        user.isAdmin = true;
         await Promise.all([user.save(), body.save()]);
       } else {
         throw createError(
@@ -211,6 +213,7 @@ export const removeAdmin = async (
         if (indexTwo !== -1) {
           user.adminOf.splice(indexTwo, 1);
         }
+        if (user.adminOf.length === 0) user.isAdmin = false;
         await user.save();
         await body.save();
       } else {

@@ -8,6 +8,7 @@ import {
   reportNews,
   toggleVisibilityOfNews,
   getReportedNews,
+  getTrendNews,
 } from '../../controllers/news';
 // import {Request, Response} from 'express';
 import auth from '../../middleware/auth';
@@ -49,4 +50,7 @@ router.get('/news/report/toggle/:id', auth, toggleVisibilityOfNews);
 
 // Get all Reported News
 router.get('/news/report/all', auth, getReportedNews);
+
+//Get all trend News
+router.get('/news/trend', auth, getTrendNews);
 export default router;

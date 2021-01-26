@@ -15,6 +15,8 @@ export interface NewsImpl extends Document {
   clicks: number;
   reports: Array<object>;
   visible: boolean;
+  trendRate: number;
+  createdAt: Date;
 }
 
 const reportSchema = new Schema({
@@ -76,6 +78,10 @@ const newsSchema = new Schema(
     visible: {
       type: Boolean,
       default: true,
+    },
+    trendRate: {
+      type: Number,
+      default: 0,
     },
   },
   {timestamps: true}
