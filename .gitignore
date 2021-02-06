@@ -105,6 +105,8 @@ dist
 .gitsecret/keys/random_seed
 !*.secret
 
+#System Files
+**/*.DS_Store
 #########################################
 #CUSTOM
 #########################################

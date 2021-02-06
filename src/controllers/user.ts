@@ -164,30 +164,35 @@ export const postMakeAdmin = async (
   }
 };
 
-export const getListOfAdmins = (
+export const getListOfAdmins = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const {clubId} = req.body;
-  // return res.send(clubId);
-  Body.findById(clubId)
+  try {
+    const user = await User.findById(req.payload);
+    if (!user) {
+      //res.status(401).send({message: 'Authentication Failed'});
+      throw createError(401, 'Unauthorized', 'Invalid Credentials');
+    }
+    const {clubId} = req.body;
+    // return res.send(clubId);
+    const body = await Body.findById(clubId);
 
-    .then(body => {
-      // console.log(body);
-      if (body !== null) {
-        const admins = body.admins;
-        return res.send(
-          createResponse('Success', {
-            admins: admins,
-          })
-        );
+    if (!body) {
+      throw createError(401, 'Body Not found', 'Body not found , Wrong id');
+    } else {
+      const admins_id = body.admins;
+      if (!admins_id) {
+        throw createError(400, 'No Admins', ' Body doesnot have any admins');
+      } else {
+        const admins = await User.find({_id: {$in: admins_id}});
+        return res.send(createResponse('Admins', {admins: admins}));
       }
-      return res.send(createError(404, 'Invalid', 'Invalid Club Id'));
-    })
-    .catch(err => {
-      next(err);
-    });
+    }
+  } catch (err) {
+    next(err);
+  }
 };
 
 export const removeAdmin = async (
