@@ -175,19 +175,21 @@ export const getListOfAdmins = async (
       //res.status(401).send({message: 'Authentication Failed'});
       throw createError(401, 'Unauthorized', 'Invalid Credentials');
     }
-    const {clubId} = req.body;
+
     // return res.send(clubId);
-    const body = await Body.findById(clubId);
+    const body = await Body.findById(req.body.clubId);
 
     if (!body) {
       throw createError(401, 'Body Not found', 'Body not found , Wrong id');
     } else {
-      const admins_id = body.admins;
-      if (!admins_id) {
+      if (!body.admins) {
         throw createError(400, 'No Admins', ' Body doesnot have any admins');
       } else {
-        const admins = await User.find({_id: {$in: admins_id}});
-        return res.send(createResponse('Admins', {admins: admins}));
+        const admins = await User.find(
+          {_id: {$in: body.admins}},
+          {name: 1, email: 1}
+        );
+        res.send(createResponse('Admins', {admins: admins}));
       }
     }
   } catch (err) {
