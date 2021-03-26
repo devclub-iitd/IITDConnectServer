@@ -13,6 +13,7 @@ import {
   // login,
   postMakeSuperAdmin,
   getUserDetails,
+  updateSuperAdmin,
 } from '../../controllers/user';
 import auth from '../../middleware/auth';
 
@@ -57,6 +58,8 @@ router.get('/users/:id', auth, getUser);
 
 //? Tested OK...
 router.post('/users/removeAdmin', auth, removeAdmin);
+
+router.patch('/users/updatesuperadmin', auth, updateSuperAdmin);
 
 //? Tested OK...
 // router.post(

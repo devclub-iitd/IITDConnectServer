@@ -10,6 +10,8 @@ import {Request, Response, NextFunction} from 'express';
 import User from '../models/user';
 import {Body} from '../models/body';
 import {createError, createResponse} from '../utils/helpers';
+import {UserRefreshClient} from 'google-auth-library';
+import bodyParser = require('body-parser');
 
 // export const addUserInformation = async (
 //   req: Request,
@@ -116,6 +118,59 @@ export const postMakeSuperAdmin = async (
     );
   } catch (error) {
     return next(error);
+  }
+};
+
+export const updateSuperAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const {clubId, userEmail} = req.body;
+    const user_next = await User.findOne({email: userEmail});
+    const body = await Body.findById(clubId);
+    const admin = await User.findById(req.payload);
+
+    if (body !== null && user_next !== null && admin !== null) {
+      if (body.superAdmin.equals(user_next.id)) {
+        res.send(createResponse('Sucess', {}));
+      } else {
+        if (admin.superSuperAdmin === true) {
+          const user_prev = await User.findById(body.superAdmin);
+
+          if (user_prev !== null) {
+            const index = user_prev.superAdminOf.indexOf(body.id);
+            if (index !== -1) {
+              user_prev.superAdminOf.splice(index, 1);
+            }
+            if (user_prev.superAdminOf.length === 0)
+              user_prev.isSuperAdmin = false;
+          }
+          body.superAdmin = user_next.id;
+          user_next.superAdminOf.push(body.id);
+          user_next.isSuperAdmin = true;
+          await user_next.save();
+          await body.save();
+          await user_prev?.save();
+        } else {
+          throw createError(
+            404,
+            'Authorization',
+            'Only superSuper Admin can perform This action'
+          );
+        }
+      }
+    } else {
+      throw createError(
+        404,
+        'Authorization',
+        'Not Authorized To Perform this Action'
+      );
+    }
+    res.send(createResponse('Success ', {}));
+  } catch (e) {
+    return next(e);
   }
 };
 
