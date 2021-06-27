@@ -1,10 +1,10 @@
 {
   "name": "iitd-connect-server",
   "version": "0.0.1",
-  "repository": "https://github.com/codeboy5/iitd-connect-server.git",
+  "repository": "https://github.com/devclub-iitd/IITDConnectServer.git",
   "scripts": {
-    "start": "npm run serve",
-    "serve": "node build/src/server.js",
+    "start": "node build/src/server.js",
+    "postinstall": "tsc && cp ./src/middleware/public.pem ./build/src/middleware",
     "watch-node": "nodemon build/src/server.js",
     "build-ts": "tsc",
     "post-build": "copyfiles src/**/*.pem build/",
@@ -82,5 +82,8 @@
     "supertest": "^4.0.2",
     "ts-jest": "^26.1.1",
     "typescript": "^3.8.3"
+  },
+  "engines": {
+    "node": "v12.13.0"
   }
 }

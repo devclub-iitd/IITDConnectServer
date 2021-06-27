@@ -6,19 +6,19 @@ import * as expressValidator from 'express-validator';
 import * as cors from 'cors';
 import * as lusca from 'lusca';
 import * as compression from 'compression';
-import * as admin from 'firebase-admin';
-import * as fs from 'fs';
+// import * as admin from 'firebase-admin';
+// import * as fs from 'fs';
 import {MONGODB_URI} from './utils/secrets';
 
 import routes from './routes';
-const serviceAccount = JSON.parse(
-  fs.readFileSync('src/serviceAccountKey.json', 'utf8')
-);
+// const serviceAccount = JSON.parse(
+//   fs.readFileSync('src/serviceAccountKey.json', 'utf8')
+// );
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: 'https://iitd-connect-b0113.firebaseio.com',
-});
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount),
+//   databaseURL: 'https://iitd-connect-b0113.firebaseio.com',
+// });
 
 // import logRequest from "./middleware/logRequest";
 
