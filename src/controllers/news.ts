@@ -2,6 +2,7 @@ import News from '../models/news';
 import User from '../models/user';
 import {Request, Response, NextFunction} from 'express';
 import {createError, createResponse} from '../utils/helpers';
+import admin = require('firebase-admin');
 
 export const getNews = async (
   req: Request,
@@ -43,7 +44,6 @@ export const getNews = async (
     return next(e);
   }
 };
-
 export const newsDetails = async (
   req: Request,
   res: Response,
@@ -77,7 +77,6 @@ export const newsDetails = async (
     return next(error);
   }
 };
-
 export const addNews = async (
   req: Request,
   res: Response,
@@ -101,6 +100,19 @@ export const addNews = async (
     });
     await news.save();
     res.send(createResponse('News added Successfully', news));
+
+    //TODO send PNS to subscribed users
+    if (process.env.NODE_ENV === 'production') {
+      const message = {
+        notification: {
+          title: news.title,
+          image: news.imgUrl,
+          body: news.description,
+        },
+        topic: 'NEWS',
+      };
+      await admin.messaging().send(message);
+    }
   } catch (err) {
     next(err);
   }

@@ -260,15 +260,23 @@ export const toggleStar = async (
   }
 };
 
-export const removeUpdate = async (req: Request, res: Response) => {
-  const event = await Event.findById(req.params.id);
-  const update = await Update.findById(req.body.updateId);
-  if (event === null || update === null) {
-    return res.send('Invalid');
+export const removeUpdate = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    const update = await Update.findById(req.body.updateId);
+    if (event === null || update === null) {
+      throw createError(400, 'Invalid', 'Event or Update not found');
+    }
+    await Event.update({_id: req.params.id}, {$pull: {updates: update.id}});
+    await update.remove();
+    res.send('Update Was Successfully Removed');
+  } catch (error) {
+    next(error);
   }
-  await Event.update({_id: req.params.id}, {$pull: {updates: update.id}});
-  await update.remove();
-  return res.send('Update Was Successfully Removed');
 };
 
 export const putUpdateEvent = (
