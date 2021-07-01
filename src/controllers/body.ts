@@ -6,6 +6,7 @@ import {createResponse, createError} from '../utils/helpers';
 
 import User, {UserImpl} from '../models/user';
 import {Body, BodyMember, BodyImpl} from '../models/body';
+import * as admin from 'firebase-admin';
 // import {nextTick} from 'process';
 
 const toBodyJSON = (body: BodyImpl, user: UserImpl) => {
@@ -154,11 +155,43 @@ export const toggleSubscribe = async (
       //! JWT WAS INVALID
       return res.send('Invalid Request');
     }
+    const body = await Body.findById(req.params.id);
     const index = user.subscribedBodies.indexOf(Types.ObjectId(req.params.id));
     if (index === -1) {
+      //subscibe
+      if (process.env.NODE_ENV === 'production') {
+        // Subscribe user to Firebase topic of the current body
+        if (body) {
+          await admin
+            .messaging()
+            .subscribeToTopic(user.fcmRegistrationToken, body.name);
+          console.log(`${user.name} subscribed to topic ${body.name}`);
+        }
+      }
       user.subscribedBodies.push(Types.ObjectId(req.params.id));
     } else {
+      //unsubscribe
+      if (process.env.NODE_ENV === 'production') {
+        // Subscribe user to Firebase topic of the current body
+        if (body) {
+          await admin
+            .messaging()
+            .unsubscribeFromTopic(user.fcmRegistrationToken, body.name);
+          console.log(`${user.name} unsubscribed to topic ${body.name}`);
+        }
+      }
       user.subscribedBodies.splice(index, 1);
+    }
+
+    if (process.env.NODE_ENV === 'production') {
+      // Subscribe user to Firebase topic of the current body
+      const body = await Body.findById(req.params.id);
+      if (body) {
+        await admin
+          .messaging()
+          .subscribeToTopic(user.fcmRegistrationToken, body.name);
+        console.log(`${user.name} subscribed to topic ${body.name}`);
+      }
     }
     await user.save();
     return res.status(200).json({
