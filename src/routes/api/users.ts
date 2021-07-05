@@ -5,14 +5,14 @@ import {
   // facebookLogin,
   // googleLogin,
   // addUserInformation,
-  getUser,
+  // getUser,
   postMakeAdmin,
   getListOfAdmins,
   removeAdmin,
   // signUp,
   // login,
   postMakeSuperAdmin,
-  getUserDetails,
+  loggedInUserDetails,
   updateSuperAdmin,
 } from '../../controllers/user';
 import auth from '../../middleware/auth';
@@ -42,7 +42,7 @@ const router = express.Router();
 // );
 
 //? Tested OK...
-router.get('/user/me', auth, getUserDetails);
+router.get('/user/me', auth, loggedInUserDetails);
 
 //? Tested OK...
 router.post('/users/getAdmins', auth, getListOfAdmins);
@@ -54,7 +54,7 @@ router.post('/users/addAdmin', auth, postMakeAdmin);
 router.post('/users/addSuperAdmin', auth, postMakeSuperAdmin);
 
 //? Tested OK...
-router.get('/users/:id', auth, getUser);
+// router.get('/users/:id', auth, getUser);
 
 //? Tested OK...
 router.post('/users/removeAdmin', auth, removeAdmin);
