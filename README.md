@@ -157,7 +157,7 @@ Given Below is a structure presently
 | caption     | &#x2611; | &#x2611;    | &#x2611;       | String                             |
 | events      | &#x2611; | &#x2611;    | &#x2612;       | Array of event document            |
 | admins      | &#x2611; | &#x2611;    | &#x2612;       | Array                              |
-| superAdmin  | &#x2611; | &#x2611;    | &#x2612;       | mongoode ID                        |
+| superAdmin  | &#x2611; | &#x2611;    | &#x2612;       | mongoose ID                        |
 | imageUrl    | &#x2611; | &#x2611;    | &#x2611;       | String                             |
 | links       | &#x2611; | &#x2611;    | &#x2612;       | Object of Type Link Schema         |
 | typeOfBody  | 0        | 1           | 2              | value in range 0,1,2               |
