@@ -215,7 +215,6 @@ Given Below is a structure presently
 > Provide the following fields inside body in JSON format/url-encoded
 > - name 
 > - about
-> - department
 > - typeOfBody
 <br>
 > RULES :
@@ -242,9 +241,8 @@ URL: {{url}}/api/body
 ***Body:***
 
 ```js        
-{"name":"DevClub",
-  "about":"Technical Club IITD",
-  "dept":"CS",
+{"name":"FACC",
+  "about":"Art is everything",
   "typeOfBody":"1"
   
 }
@@ -267,14 +265,21 @@ URL: {{url}}/api/body
 
 
 
-##### I. Example Response: Adding Finance club
+##### I. Example Response: Adding FACC club
 ```js
 {
     "message": "Body Created Successfully",
     "data": {
-        "body": {
-            "name": "Finance"
-        }
+        "events": [],
+        "admins": [],
+        "_id": "60e54c6da75895171b914a75",
+        "name": "FACC",
+        "about": "Art is everything",
+        "typeOfBody": 1,
+        "members": [],
+        "createdAt": "2021-07-07T06:40:45.911Z",
+        "updatedAt": "2021-07-07T06:40:45.911Z",
+        "__v": 0
     }
 }
 ```
