@@ -18,21 +18,19 @@
 > 1. Clone The Repo
 > 2. Run a local MongoDB server or use atlas mogodb service.
 > 3. For development Mode create a .env file in the root folder of the project and place the following in it.
-> 
-> <code>MONGODB_URI=mongodb://localhost:27017/dbname?retryWrites=true&w=majority
-	
-> PORT=5000 </code>
-> 
-> OR
-> 
-> <code>MONGODB_URI=YOUR_ATLAS_CLUSTER_STRING
-	
-> PORT=5000 </code>
+
+> `MONGODB_URI=mongodb://localhost:27017/dbname?retryWrites=true&w=majority`
+>	
+> `PORT=5000`
+
+OR
+
+> `MONGODB_URI=YOUR_ATLAS_CLUSTER_STRING`
+>
+> `PORT=5000`
 
 > 4. run `npm i` inside the project DIR, to install the npm packages.
-
 > 5. Run The Server In Development Mode using `npm run watch-debug`
-
 > 6. View at `localhost:5000`
 
 ## API DOCUMENTATION
@@ -625,41 +623,64 @@ URL: {{url}}/api/body/
 ##### II. Example Response: Get List of All Clubs
 ```js
 {
-    "bodies": [
+    "message": "Success",
+    "data": [
         {
-            "name": "Robotics",
-            "about": "Build Intelligent Machines",
-            "department": "ME",
-            "isSub": false,
-            "id": "5df4f4e93840e5f1400b2008"
+            "body": {
+                "events": [
+                    "600ad185f14e27417c0d1dc2",
+                    "600daa94f84256933cb2c71b",
+                    "600eb184c9fef2c643b9b90f",
+                    "601150619a2e671e33511e6b",
+                    "6016ef5f455c7a5089cf46e3",
+                    "60183277890525d312b6e569",
+                    "6019346a67cbfaf580d2e8e6"
+                ],
+                "admins": [
+                    "600e7f521e8db81ba8323c47"
+                ],
+                "_id": "600acceff14e27417c0d1dbd",
+                "name": "Literary Club",
+                "about": "We are here to organise events",
+                "typeOfBody": 0,
+                "members": [],
+                "createdAt": "2021-01-22T13:02:39.527Z",
+                "updatedAt": "2021-03-26T11:41:38.424Z",
+                "__v": 19,
+                "superAdmin": "600dc40386476f0cfa84f127"
+            },
+            "isSub": false
         },
         {
-            "name": "Quizzing Club",
-            "about": "Quizzing Related Activities In The Campus",
-            "department": "BRCA",
-            "isSub": true,
-            "id": "5df4f4d43840e5f1400b2007"
+            "body": {
+                "events": [],
+                "admins": [],
+                "_id": "600acd3cf14e27417c0d1dbe",
+                "name": "dancing Club",
+                "about": "We are here to organise events",
+                "typeOfBody": 1,
+                "members": [],
+                "createdAt": "2021-01-22T13:03:56.391Z",
+                "updatedAt": "2021-01-22T13:03:56.391Z",
+                "__v": 0
+            },
+            "isSub": false
         },
         {
-            "name": "DevClub",
-            "about": "Software Development Club",
-            "department": "CSE",
-            "isSub": false,
-            "id": "5df4f4753840e5f1400b2006"
-        },
-        {
-            "name": "Finance",
-            "about": "Developing stratigies to invest smartly and wisely with max profir",
-            "department": "ME",
-            "isSub": false,
-            "id": "5eb9418cc7a8d92a4750e8f1"
-        },
-        {
-            "name": "Literary Club",
-            "about": "We are here to organise events",
-            "department": "ME",
-            "isSub": false,
-            "id": "5eb944dac7a8d92a4750e8f2"
+            "body": {
+                "events": [],
+                "admins": [],
+                "_id": "600dc91a86476f0cfa84f129",
+                "name": "DevClub",
+                "about": "Technical Club IITD",
+                "typeOfBody": 1,
+                "members": [],
+                "createdAt": "2021-01-24T19:23:06.074Z",
+                "updatedAt": "2021-01-24T19:38:45.712Z",
+                "__v": 2,
+                "superAdmin": "600dc40386476f0cfa84f127"
+            },
+            "isSub": false
         }
     ]
 }
