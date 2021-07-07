@@ -1,17 +1,9 @@
-/* eslint-disable no-console */
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {Request, Response, NextFunction} from 'express';
-// import {validationResult} from 'express-validator/check';
-// import * as jwt from 'jsonwebtoken';
-// import * as bcrypt from 'bcryptjs';
-// import * as uuid from 'uuid/v5';
-// import * as nodemailer from 'nodemailer';
-// import {JWT_SECRET} from '../utils/secrets';
 import User from '../models/user';
 import {Body} from '../models/body';
 import {createError, createResponse} from '../utils/helpers';
-import {UserRefreshClient} from 'google-auth-library';
-import bodyParser = require('body-parser');
+// import {UserRefreshClient} from 'google-auth-library';
+// import bodyParser = require('body-parser');
 
 // export const addUserInformation = async (
 //   req: Request,
@@ -56,25 +48,25 @@ import bodyParser = require('body-parser');
 //   }
 // };
 
-export const getUser = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  User.findById(req.params.id)
-    .populate('adminOf')
-    .populate('superAdminOf')
-    .exec()
-    .then(user => {
-      if (user === null) {
-        throw createError(401, 'Unauthorized', 'No Such User Found');
-      }
-      return res.send(createResponse('User Found', user));
-    })
-    .catch(e => {
-      next(e);
-    });
-};
+// export const getUser = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   User.findById(req.params.id)
+//     .populate('adminOf')
+//     .populate('superAdminOf')
+//     .exec()
+//     .then(user => {
+//       if (user === null) {
+//         throw createError(401, 'Unauthorized', 'No Such User Found');
+//       }
+//       return res.send(createResponse('User Found', user));
+//     })
+//     .catch(e => {
+//       next(e);
+//     });
+// };
 
 export const postMakeSuperAdmin = async (
   req: Request,
@@ -357,22 +349,22 @@ export const removeAdmin = async (
 //   }
 // };
 
-export const getUserDetails = (
+export const loggedInUserDetails = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  User.findById(req.payload)
-    .populate('adminOf')
-    .populate('superAdminOf')
-    .exec()
-    .then(user => {
-      if (user === null) {
-        throw createError(401, 'Unauthorized', 'No Such User Found');
-      }
-      return res.send(createResponse('User Found', user));
-    })
-    .catch(e => {
-      next(e);
-    });
+  try {
+    const user = User.findById(req.payload)
+      .populate('adminOf')
+      .populate('superAdminOf')
+      .exec();
+
+    if (user === null) {
+      throw createError(401, 'Unauthorized', 'No Such User Found');
+    }
+    res.send(createResponse('User Found', user));
+  } catch (e) {
+    next(e);
+  }
 };
