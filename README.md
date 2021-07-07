@@ -17,6 +17,7 @@
 
 > 1. Clone The Repo
 > 2. Run a local MongoDB server or use atlas mogodb service.
+
 > 3. For development Mode create a .env file root directory of the project and place the following in it.
 >    <code>MONGODB_URI='localhost:27017/dbname' <br>
 >    PORT=5000</code> > <br>
@@ -28,8 +29,19 @@
 
 > 4. run `npm i` inside the project DIR, to install the npm packages.
 
-> 5. Run The Server In Development Mode using `npm run watch-debug`
 
+> `MONGODB_URI=mongodb://localhost:27017/dbname?retryWrites=true&w=majority`
+>	
+> `PORT=5000`
+
+OR
+
+> `MONGODB_URI=YOUR_ATLAS_CLUSTER_STRING`
+>
+> `PORT=5000`
+
+> 4. run `npm i` inside the project DIR, to install the npm packages.
+> 5. Run The Server In Development Mode using `npm run watch-debug`
 > 6. View at `localhost:5000`
 
 ## API DOCUMENTATION
@@ -157,7 +169,7 @@ Given Below is a structure presently
 | caption     | &#x2611; | &#x2611;    | &#x2611;       | String                             |
 | events      | &#x2611; | &#x2611;    | &#x2612;       | Array of event document            |
 | admins      | &#x2611; | &#x2611;    | &#x2612;       | Array                              |
-| superAdmin  | &#x2611; | &#x2611;    | &#x2612;       | mongoode ID                        |
+| superAdmin  | &#x2611; | &#x2611;    | &#x2612;       | mongoose ID                        |
 | imageUrl    | &#x2611; | &#x2611;    | &#x2611;       | String                             |
 | links       | &#x2611; | &#x2611;    | &#x2612;       | Object of Type Link Schema         |
 | typeOfBody  | 0        | 1           | 2              | value in range 0,1,2               |
@@ -213,7 +225,6 @@ Given Below is a structure presently
 >
 > - name
 > - about
-> - department
 > - typeOfBody
 >   <br>
 >   RULES :
@@ -236,18 +247,17 @@ URL: {{url}}/api/body
 
 **_Body:_**
 
-```js
-{"name":"DevClub",
-  "about":"Technical Club IITD",
-  "dept":"CS",
-  "typeOfBody":"1"
 
+```js        
+{"name":"FACC",
+  "about":"Art is everything",
+  "typeOfBody":"1"
 }
 ```
 
 **_More example Requests/Responses:_**
 
-##### I. Example Request: Adding Finance club
+##### I. Example Request: Adding FACC club
 
 **_Headers:_**
 
@@ -256,15 +266,23 @@ URL: {{url}}/api/body
 | authorization | Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVkZjRmMzU4Mzg0MGU1ZjE0MDBiMjAwNSIsImlhdCI6MTU3NjMzNDI3OSwiZXhwIjoxNTc2OTM5MDc5fQ.nMVL_FeUqj9-iCrz6jVOZZ1NkCWk3o9PSlcXONjcp6Y |             |
 | Content-Type  | application/x-www-form-urlencoded                                                                                                                                                  |             |
 
-##### I. Example Response: Adding Finance club
+
+##### I. Example Response: Adding FACC club
 
 ```js
 {
     "message": "Body Created Successfully",
     "data": {
-        "body": {
-            "name": "Finance"
-        }
+        "events": [],
+        "admins": [],
+        "_id": "60e54c6da75895171b914a75",
+        "name": "FACC",
+        "about": "Art is everything",
+        "typeOfBody": 1,
+        "members": [],
+        "createdAt": "2021-07-07T06:40:45.911Z",
+        "updatedAt": "2021-07-07T06:40:45.911Z",
+        "__v": 0
     }
 }
 ```
@@ -424,14 +442,15 @@ URL: http://localhost:5000/api/body/600dc91a86476f0cfa84f129
     "data": {
         "events": [],
         "admins": [],
-        "_id": "5ec6a039a3c1605a567ae3f6",
-        "name": "Literary Club",
-        "about": "We are here to organise events",
-        "dept": "ME",
-        "createdAt": "2020-05-21T15:37:29.946Z",
-        "updatedAt": "2020-06-28T09:32:52.301Z",
-        "__v": 0,
-        "superAdmin": "5ec2e5aad3e63d114d93359e"
+        "_id": "600dc91a86476f0cfa84f129",
+        "name": "DevClub",
+        "about": "Technical Club IITD",
+        "typeOfBody": 1,
+        "members": [],
+        "createdAt": "2021-01-24T19:23:06.074Z",
+        "updatedAt": "2021-01-24T19:38:45.712Z",
+        "__v": 2,
+        "superAdmin": "600dc40386476f0cfa84f127"
     }
 }
 ```
@@ -568,41 +587,64 @@ URL: {{url}}/api/body/
 
 ```js
 {
-    "bodies": [
+    "message": "Success",
+    "data": [
         {
-            "name": "Robotics",
-            "about": "Build Intelligent Machines",
-            "department": "ME",
-            "isSub": false,
-            "id": "5df4f4e93840e5f1400b2008"
+            "body": {
+                "events": [
+                    "600ad185f14e27417c0d1dc2",
+                    "600daa94f84256933cb2c71b",
+                    "600eb184c9fef2c643b9b90f",
+                    "601150619a2e671e33511e6b",
+                    "6016ef5f455c7a5089cf46e3",
+                    "60183277890525d312b6e569",
+                    "6019346a67cbfaf580d2e8e6"
+                ],
+                "admins": [
+                    "600e7f521e8db81ba8323c47"
+                ],
+                "_id": "600acceff14e27417c0d1dbd",
+                "name": "Literary Club",
+                "about": "We are here to organise events",
+                "typeOfBody": 0,
+                "members": [],
+                "createdAt": "2021-01-22T13:02:39.527Z",
+                "updatedAt": "2021-03-26T11:41:38.424Z",
+                "__v": 19,
+                "superAdmin": "600dc40386476f0cfa84f127"
+            },
+            "isSub": false
         },
         {
-            "name": "Quizzing Club",
-            "about": "Quizzing Related Activities In The Campus",
-            "department": "BRCA",
-            "isSub": true,
-            "id": "5df4f4d43840e5f1400b2007"
+            "body": {
+                "events": [],
+                "admins": [],
+                "_id": "600acd3cf14e27417c0d1dbe",
+                "name": "dancing Club",
+                "about": "We are here to organise events",
+                "typeOfBody": 1,
+                "members": [],
+                "createdAt": "2021-01-22T13:03:56.391Z",
+                "updatedAt": "2021-01-22T13:03:56.391Z",
+                "__v": 0
+            },
+            "isSub": false
         },
         {
-            "name": "DevClub",
-            "about": "Software Development Club",
-            "department": "CSE",
-            "isSub": false,
-            "id": "5df4f4753840e5f1400b2006"
-        },
-        {
-            "name": "Finance",
-            "about": "Developing stratigies to invest smartly and wisely with max profir",
-            "department": "ME",
-            "isSub": false,
-            "id": "5eb9418cc7a8d92a4750e8f1"
-        },
-        {
-            "name": "Literary Club",
-            "about": "We are here to organise events",
-            "department": "ME",
-            "isSub": false,
-            "id": "5eb944dac7a8d92a4750e8f2"
+            "body": {
+                "events": [],
+                "admins": [],
+                "_id": "600dc91a86476f0cfa84f129",
+                "name": "DevClub",
+                "about": "Technical Club IITD",
+                "typeOfBody": 1,
+                "members": [],
+                "createdAt": "2021-01-24T19:23:06.074Z",
+                "updatedAt": "2021-01-24T19:38:45.712Z",
+                "__v": 2,
+                "superAdmin": "600dc40386476f0cfa84f127"
+            },
+            "isSub": false
         }
     ]
 }
@@ -659,9 +701,9 @@ URL: http://localhost:5000/api/body/5df4f4d43840e5f1400b2007/subscribe
 
 ## Update Body
 
----
 
 1. Only superadmin of bodies are aloowed to update body info.
+
 2. Make a patch request at /api/body/:id
 
 **_Endpoint:_**
@@ -2173,229 +2215,140 @@ URL: http://localhost:5000/api/events/
     "data": {
         "events": [
             {
-                "id": "5df50dbf54fad33b476f6a84",
-                "name": "Orientation",
-                "about": "get educated in dark arts",
+                "id": "600ad185f14e27417c0d1dc2",
+                "name": "n",
+                "about": "n",
                 "body": {
-                    "name": "DevClub",
-                    "about": "Software Development Club",
-                    "id": "5df4f4753840e5f1400b2006",
-                    "department": "CSE",
+                    "name": "Literary Club",
+                    "about": "We are here to organise events",
+                    "id": "600acceff14e27417c0d1dbd",
                     "isSub": false
                 },
-                "startDate": "2019-12-24T10:58:00.000Z",
-                "endDate": "2019-12-26T16:28:00.000Z",
+                "startDate": "2021-01-22T18:51:00.000Z",
+                "endDate": "2021-01-22T21:52:00.000Z",
                 "stared": false,
                 "image": "",
-                "venue": "LH-316",
-                "updates": [
-                    {
-                        "_id": "5e1620b8cc86eb200dd19ec6",
-                        "body": "Notification check",
-                        "title": "check one",
-                        "createdAt": "2020-01-08T18:34:32.510Z",
-                        "updatedAt": "2020-01-08T18:34:32.510Z",
-                        "__v": 0
-                    },
-                    {
-                        "_id": "5e1620bccc86eb200dd19ec7",
-                        "body": "Notification check",
-                        "title": "check one",
-                        "createdAt": "2020-01-08T18:34:36.822Z",
-                        "updatedAt": "2020-01-08T18:34:36.822Z",
-                        "__v": 0
-                    },
-                    {
-                        "_id": "5e1620c2cc86eb200dd19ec8",
-                        "body": "Notification check",
-                        "title": "check one",
-                        "createdAt": "2020-01-08T18:34:42.332Z",
-                        "updatedAt": "2020-01-08T18:34:42.332Z",
-                        "__v": 0
-                    },
-                    {
-                        "_id": "5e1c593be69cc08bc58c4520",
-                        "body": "Notification check",
-                        "title": "check two",
-                        "createdAt": "2020-01-13T11:49:15.175Z",
-                        "updatedAt": "2020-01-13T11:49:15.175Z",
-                        "__v": 0
-                    },
-                    {
-                        "_id": "5e1c5978e69cc08bc58c4521",
-                        "body": "Notification check",
-                        "title": "check three",
-                        "createdAt": "2020-01-13T11:50:16.892Z",
-                        "updatedAt": "2020-01-13T11:50:16.892Z",
-                        "__v": 0
-                    },
-                    {
-                        "_id": "5e1c6e7c16c6bc9935e7121b",
-                        "body": "Notification check",
-                        "title": "Brand New",
-                        "createdAt": "2020-01-13T13:19:56.298Z",
-                        "updatedAt": "2020-01-13T13:19:56.298Z",
-                        "__v": 0
-                    },
-                    {
-                        "_id": "5e1c6eba4e467199729b9dc1",
-                        "body": "Notification check",
-                        "title": "Brand New",
-                        "createdAt": "2020-01-13T13:20:58.048Z",
-                        "updatedAt": "2020-01-13T13:20:58.048Z",
-                        "__v": 0
-                    },
-                    {
-                        "_id": "5e1c6f2a4e467199729b9dc2",
-                        "body": "Notification check",
-                        "title": "Brand New",
-                        "createdAt": "2020-01-13T13:22:50.123Z",
-                        "updatedAt": "2020-01-13T13:22:50.123Z",
-                        "__v": 0
-                    },
-                    {
-                        "_id": "5e987965780bd9580b289ea7",
-                        "body": "Event Finally Cancelled",
-                        "title": "Cancel Hi Kardiya",
-                        "createdAt": "2020-04-16T15:27:33.835Z",
-                        "updatedAt": "2020-04-16T15:27:33.835Z",
-                        "__v": 0
-                    }
-                ]
-            },
-            {
-                "id": "5df5397a54fad33b476f6a8e",
-                "name": "Hackathon",
-                "about": "Make Something Good",
-                "body": {
-                    "name": "DevClub",
-                    "about": "Software Development Club",
-                    "id": "5df4f4753840e5f1400b2006",
-                    "department": "CSE",
-                    "isSub": false
-                },
-                "startDate": "2019-12-24T14:05:00.000Z",
-                "endDate": "2019-12-25T14:05:00.000Z",
-                "stared": false,
-                "image": "",
-                "venue": "LH-121",
+                "venue": "n",
                 "updates": []
             },
             {
-                "id": "5df539af54fad33b476f6a8f",
-                "name": "Build A Robot",
-                "about": "Don't you ever wonder what is it like to make your own robots? Come and make your own robots in this event. You will learn a lot from your seniors. Participants from all the years are welcome.",
+                "id": "600daa94f84256933cb2c71b",
+                "name": "rrrm",
+                "about": "content",
                 "body": {
-                    "name": "Robotics",
-                    "about": "Build Intelligent Machines",
-                    "id": "5df4f4e93840e5f1400b2008",
-                    "department": "ME",
+                    "name": "Literary Club",
+                    "about": "We are here to organise events",
+                    "id": "600acceff14e27417c0d1dbd",
                     "isSub": false
                 },
-                "startDate": "2019-12-24T11:30:00.000Z",
-                "endDate": "2019-12-24T13:30:00.000Z",
+                "startDate": "2021-01-24T22:42:00.000Z",
+                "endDate": "2021-01-27T17:12:00.000Z",
                 "stared": false,
                 "image": "",
-                "venue": "LH-325",
+                "venue": "ee",
                 "updates": [
                     {
-                        "_id": "5df53a3754fad33b476f6a91",
+                        "_id": "600eaed2c9fef2c643b9b90e",
                         "title": "TITLE",
-                        "body": "All the material will be provided",
-                        "createdAt": "2019-12-14T19:38:31.874Z",
-                        "updatedAt": "2019-12-14T19:38:31.874Z",
+                        "body": "delay",
+                        "createdAt": "2021-01-25T11:43:14.973Z",
+                        "updatedAt": "2021-01-25T11:43:14.973Z",
                         "__v": 0
                     }
                 ]
             },
             {
-                "id": "5df539e454fad33b476f6a90",
-                "name": "Mix Bag",
-                "about": "Quiz about everything.",
+                "id": "600eb184c9fef2c643b9b90f",
+                "name": "m",
+                "about": "m",
                 "body": {
-                    "name": "Quizzing Club",
-                    "about": "Quizzing Related Activities In The Campus",
-                    "id": "5df4f4d43840e5f1400b2007",
-                    "department": "BRCA",
-                    "isSub": true
+                    "name": "Literary Club",
+                    "about": "We are here to organise events",
+                    "id": "600acceff14e27417c0d1dbd",
+                    "isSub": false
                 },
-                "startDate": "2019-12-23T19:36:00.000Z",
-                "endDate": "2019-12-25T19:37:00.000Z",
+                "startDate": "2021-01-25T17:24:00.000Z",
+                "endDate": "2021-01-26T17:24:00.000Z",
                 "stared": false,
                 "image": "",
-                "venue": "SAC CR",
-                "updates": [
-                    {
-                        "_id": "5df5cef6bf58419a1dc57a43",
-                        "title": "TITLE",
-                        "body": "for all years",
-                        "createdAt": "2019-12-15T06:13:10.935Z",
-                        "updatedAt": "2019-12-15T06:13:10.935Z",
-                        "__v": 0
-                    }
-                ]
-            },
-            {
-                "id": "5e01a6f2cb3ea7334344b55f",
-                "name": "Fresher's quiz",
-                "about": "quiz for freshers",
-                "body": {
-                    "name": "Quizzing Club",
-                    "about": "Quizzing Related Activities In The Campus",
-                    "id": "5df4f4d43840e5f1400b2007",
-                    "department": "BRCA",
-                    "isSub": true
-                },
-                "startDate": "2019-12-25T11:19:00.000Z",
-                "endDate": "2019-12-26T11:19:00.000Z",
-                "stared": false,
-                "image": "",
-                "venue": "LH-310",
+                "venue": "m",
                 "updates": []
             },
             {
-                "id": "5e0ad6d3b81e9518ee1987d5",
-                "name": "Hackathon",
-                "about": "make something",
+                "id": "601150619a2e671e33511e6b",
+                "name": "Test Event",
+                "about": "qwerty",
                 "body": {
-                    "name": "DevClub",
-                    "about": "Software Development Club",
-                    "id": "5df4f4753840e5f1400b2006",
-                    "department": "CSE",
+                    "name": "Literary Club",
+                    "about": "We are here to organise events",
+                    "id": "600acceff14e27417c0d1dbd",
                     "isSub": false
                 },
-                "startDate": "2019-12-31T17:00:00.000Z",
-                "endDate": "2020-01-02T17:00:00.000Z",
+                "startDate": "2021-01-27T18:06:00.000Z",
+                "endDate": "2021-01-27T19:06:00.000Z",
                 "stared": false,
                 "image": "",
-                "venue": "LH-310",
+                "venue": "LHC",
                 "updates": [
                     {
-                        "_id": "5e0ad768b81e9518ee1987d6",
+                        "_id": "601153379a2e671e33511e6d",
                         "title": "TITLE",
-                        "body": "event is for all years",
-                        "createdAt": "2019-12-31T05:06:48.926Z",
-                        "updatedAt": "2019-12-31T05:06:48.926Z",
+                        "body": "Bring your own laptops",
+                        "createdAt": "2021-01-27T11:49:11.961Z",
+                        "updatedAt": "2021-01-27T11:49:11.961Z",
                         "__v": 0
                     }
                 ]
             },
             {
-                "id": "5eb66d53fe865372528349c8",
-                "name": "Test Quiz",
-                "about": "AF",
+                "id": "6016ef5f455c7a5089cf46e3",
+                "name": "Code Night 6",
+                "about": "Just For Members",
                 "body": {
-                    "name": "Quizzing Club",
-                    "about": "Quizzing Related Activities In The Campus",
-                    "id": "5df4f4d43840e5f1400b2007",
-                    "department": "BRCA",
-                    "isSub": true
+                    "name": "Literary Club",
+                    "about": "We are here to organise events",
+                    "id": "600acceff14e27417c0d1dbd",
+                    "isSub": false
                 },
-                "startDate": "2020-05-10T14:12:00.000Z",
-                "endDate": "2020-05-11T14:12:00.000Z",
-                "stared": true,
-                "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Wikipedia-logo-v2-en.svg/1200px-Wikipedia-logo-v2-en.svg.png",
-                "venue": "Remote",
+                "startDate": "2021-01-31T17:56:47.285Z",
+                "endDate": "2021-01-31T18:56:47.285Z",
+                "stared": false,
+                "image": "",
+                "venue": "Bharti Building",
+                "updates": []
+            },
+            {
+                "id": "60183277890525d312b6e569",
+                "name": "Code Night 2",
+                "about": "Just For Members",
+                "body": {
+                    "name": "Literary Club",
+                    "about": "We are here to organise events",
+                    "id": "600acceff14e27417c0d1dbd",
+                    "isSub": false
+                },
+                "startDate": "2021-02-01T16:55:19.520Z",
+                "endDate": "2021-02-01T17:55:19.520Z",
+                "stared": false,
+                "image": "",
+                "venue": "Bharti Building",
+                "updates": []
+            },
+            {
+                "id": "6019346a67cbfaf580d2e8e6",
+                "name": "r",
+                "about": "m",
+                "body": {
+                    "name": "Literary Club",
+                    "about": "We are here to organise events",
+                    "id": "600acceff14e27417c0d1dbd",
+                    "isSub": false
+                },
+                "startDate": "2021-02-02T16:45:00.000Z",
+                "endDate": "2021-02-02T16:45:00.000Z",
+                "stared": false,
+                "image": "",
+                "venue": "u",
                 "updates": []
             }
         ]
@@ -2452,10 +2405,14 @@ URL: http://localhost:5000/api/users/getAdmins
 
 ```js
 {
-    "message": "Success",
+    "message": "Admins",
     "data": {
         "admins": [
-            "5ef867f538c52658f4d2d905"
+            {
+                "_id": "600e7f521e8db81ba8323c47",
+                "name": "Prakhar Jagwani",
+                "email": "cs1190382@cse.iitd.ac.in"
+            }
         ]
     }
 }
