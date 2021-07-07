@@ -17,16 +17,18 @@
 
 > 1. Clone The Repo
 > 2. Run a local MongoDB server or use atlas mogodb service.
-> 3. For development Mode create a .env file int the src folder and place the following in it.
+> 3. For development Mode create a .env file in the root folder of the project and place the following in it.
 > 
-> <code>MONGODB_URI='localhost:27017/dbname' <br> 
-> PORT=5000</code>
-> <br>
+> <code>MONGODB_URI=mongodb://localhost:27017/dbname?retryWrites=true&w=majority
+	
+> PORT=5000 </code>
+> 
 > OR
-> <br>
-> <code>MONGODB_URI='YOUR_ATLAS_CLUSTER_NAME' <br> 
-> PORT=5000</code>
 > 
+> <code>MONGODB_URI=YOUR_ATLAS_CLUSTER_STRING
+	
+> PORT=5000 </code>
+
 > 4. run `npm i` inside the project DIR, to install the npm packages.
 
 > 5. Run The Server In Development Mode using `npm run watch-debug`
