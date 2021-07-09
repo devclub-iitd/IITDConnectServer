@@ -137,6 +137,23 @@ export const deleteEvent = async (
   }
 };
 
+export const getStarredEvents = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.findById(req.payload);
+
+    if (user === null) {
+      throw createError(401, 'Unauthorized', 'Invalid');
+    }
+    const starredEvents = user.staredEvents;
+    res.send(createResponse('Starred Events', starredEvents));
+  } catch (error) {
+    next(error);
+  }
+};
 export const getEvent = async (req: Request, res: Response) => {
   const [user, event] = await Promise.all([
     User.findById(req.payload),
