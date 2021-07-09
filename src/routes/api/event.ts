@@ -4,6 +4,7 @@ import {
   createEvent,
   getEvents,
   getEvent,
+  getStarredEvents,
   toggleStar,
   addUpdate,
   deleteEvent,
@@ -28,6 +29,7 @@ router.post('/', auth, createEvent);
 //* Get All The Events
 router.get('/', auth, getEvents);
 
+router.get('/starred', auth, getStarredEvents);
 //? Tested OK...
 //* Get An Event
 router.get('/:id', auth, getEvent);

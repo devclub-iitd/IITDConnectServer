@@ -349,16 +349,15 @@ export const removeAdmin = async (
 //   }
 // };
 
-export const loggedInUserDetails = (
+export const loggedInUserDetails = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const user = User.findById(req.payload)
+    const user = await User.findById(req.payload)
       .populate('adminOf')
-      .populate('superAdminOf')
-      .exec();
+      .populate('superAdminOf');
 
     if (user === null) {
       throw createError(401, 'Unauthorized', 'No Such User Found');
