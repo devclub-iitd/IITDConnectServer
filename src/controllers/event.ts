@@ -163,10 +163,24 @@ export const getEvent = async (req: Request, res: Response) => {
     return res.status(400).json({message: 'Error'});
   }
   // console.log(event);
-  const respData = {
-    event: toEventJSON(event, user),
-  };
-  return res.send(respData);
+  const body = await Body.findById(event.body);
+  if (!body) {
+    return res.status(400).json({message: 'Error'});
+  }
+  const members = body.members;
+  const valid_member = members.filter(member => {
+    return member.userId.toString() === user._id.toString();
+  });
+  // console.log(valid_member);
+
+  if (event.private === false || valid_member.length !== 0) {
+    const respData = {
+      event: toEventJSON(event, user),
+    };
+    return res.send(respData);
+  } else {
+    return res.status(400).json({message: 'Error, Event is not public'});
+  }
 };
 
 export const getEvents = async (
@@ -176,36 +190,58 @@ export const getEvents = async (
 ) => {
   //!TODO IF WE WANT TO ADD THE OPTION TO FILTER BY CLUB OR YEAR OR ANYTHING
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const query: any = {};
-  if (typeof req.query.body !== 'undefined') {
-    query.body = req.query.body;
-  }
-  return Promise.all([
-    Event.find(query)
-      // .sort({ endDate: "desc" })
+  try {
+    const user = await User.findById(req.payload);
+    if (user === null) {
+      throw createError(401, 'Unauthorized', 'Invalid');
+    }
+    let events;
+    let priv = false;
+    if (req.query) {
+      if (req.query.p === '1') {
+        priv = true;
+      }
+    }
+    events = await Event.find({private: priv})
       .populate('body')
-      .populate('updates')
-      .exec(),
-    User.findById(req.payload),
-  ])
-    .then(([events, user]) => {
-      if (user === null) {
-        throw createError(401, 'Unauthorized', 'Invalid');
-      }
-      if (events !== null) {
-        const respData = {
-          events: events.map(event => toEventJSON(event, user)),
-        };
-        return res.send(createResponse('Events Found', respData));
-      }
-      const respData = {
+      .populate('updates');
+    // events = await Event.find().populate('body').populate('updates');
+    if (priv) {
+      //using maps to return an array of promises
+      const promises = await events.map(event => Body.findById(event.body));
+      const bodies = await Promise.all(promises);
+      const fevents = events.filter((event, index) => {
+        const body = bodies[index];
+        if (!body) {
+          return false;
+        }
+        const members = body.members;
+        const valid_member = members.filter(member => {
+          return member.userId.toString() === user._id.toString();
+        });
+        if (valid_member.length !== 0) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+      events = fevents;
+    }
+
+    let respData;
+    if (events !== null) {
+      respData = {
+        events: events.map(event => toEventJSON(event, user)),
+      };
+    } else {
+      respData = {
         events: [],
       };
-      return res.send(createResponse('Events Found', respData));
-    })
-    .catch(e => {
-      next(e);
-    });
+    }
+    res.send(createResponse('Events Found', respData));
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const addUpdate = async (
@@ -296,49 +332,48 @@ export const removeUpdate = async (
   }
 };
 
-export const putUpdateEvent = (
+export const putUpdateEvent = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  return Promise.all([
-    Event.findById(req.params.id),
-    User.findById(req.payload),
-  ])
-    .then(([event, user]) => {
-      if (event === null || user === null) {
-        throw createError(400, 'Invalid', 'No Such Event Exists');
-      }
-      if (req.body.name !== null) {
-        event.name = req.body.name;
-      }
-      if (req.body.about !== null) {
-        event.about = req.body.about;
-      }
-      if (req.body.imageLink !== null) {
-        event.imageLink = req.body.imageLink;
-      }
-      if (req.body.venue !== null) {
-        event.venue = req.body.venue;
-      }
-      if (req.body.startDate !== null) {
-        event.startDate = req.body.startDate;
-      }
-      if (req.body.endDate !== null) {
-        event.endDate = req.body.endDate;
-      }
-      event.save().then(event => {
-        // const respData = {
-        //   event: toEventJSON(event, user)
-        // };
-        // console.log(respData);
-        const respData = {
-          id: event._id,
-        };
-        return res.send(createResponse('Event Updated Successfully', respData));
-      });
-    })
-    .catch(e => {
-      next(e);
+  try {
+    const [event, user] = await Promise.all([
+      Event.findById(req.params.id),
+      User.findById(req.payload),
+    ]);
+    if (event === null || user === null) {
+      throw createError(400, 'Invalid', 'No Such Event Exists');
+    }
+    if (req.body.name !== null) {
+      event.name = req.body.name;
+    }
+    if (req.body.about !== null) {
+      event.about = req.body.about;
+    }
+    if (req.body.imageLink !== null) {
+      event.imageLink = req.body.imageLink;
+    }
+    if (req.body.venue !== null) {
+      event.venue = req.body.venue;
+    }
+    if (req.body.startDate !== null) {
+      event.startDate = req.body.startDate;
+    }
+    if (req.body.endDate !== null) {
+      event.endDate = req.body.endDate;
+    }
+    event.save().then(event_1 => {
+      // const respData = {
+      //   event: toEventJSON(event, user)
+      // };
+      // console.log(respData);
+      const respData = {
+        id: event_1._id,
+      };
+      return res.send(createResponse('Event Updated Successfully', respData));
     });
+  } catch (e) {
+    next(e);
+  }
 };
