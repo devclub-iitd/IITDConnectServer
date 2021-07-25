@@ -154,32 +154,43 @@ export const getStarredEvents = async (
     next(error);
   }
 };
-export const getEvent = async (req: Request, res: Response) => {
-  const [user, event] = await Promise.all([
-    User.findById(req.payload),
-    Event.findById(req.params.id).populate('body').populate('updates').exec(),
-  ]);
-  if (user === null || event === null) {
-    return res.status(400).json({message: 'Error'});
-  }
-  // console.log(event);
-  const body = await Body.findById(event.body);
-  if (!body) {
-    return res.status(400).json({message: 'Error'});
-  }
-  const members = body.members;
-  const valid_member = members.filter(member => {
-    return member.userId.toString() === user._id.toString();
-  });
-  // console.log(valid_member);
 
-  if (event.private === false || valid_member.length !== 0) {
-    const respData = {
-      event: toEventJSON(event, user),
-    };
-    return res.send(respData);
-  } else {
-    return res.status(400).json({message: 'Error, Event is not public'});
+export const getEvent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.findById(req.payload);
+    const event = await Event.findById(req.params.id)
+      .populate('body')
+      .populate('updates');
+    if (user === null) {
+      throw createError(401, 'Unauthorized', 'Invalid');
+    }
+    if (event === null) {
+      throw createError(400, 'Error ', 'Invalid Event');
+    }
+    // console.log(event);
+    const body = await Body.findById(event.body);
+    if (!body) {
+      throw createError(400, 'Error ', 'Invalid');
+    }
+    const members = body.members;
+    const valid_member = members.filter(member => {
+      return member.userId.toString() === user._id.toString();
+    });
+    // console.log(valid_member);
+    if (event.private === false || valid_member.length !== 0) {
+      const respData = {
+        event: toEventJSON(event, user),
+      };
+      res.send(createResponse('Event Found', respData));
+    } else {
+      throw createError(400, 'Error', 'Event is not public');
+    }
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -208,7 +219,7 @@ export const getEvents = async (
     // events = await Event.find().populate('body').populate('updates');
     if (priv) {
       //using maps to return an array of promises
-      const promises = await events.map(event => Body.findById(event.body));
+      const promises = events.map(event => Body.findById(event.body));
       const bodies = await Promise.all(promises);
       const fevents = events.filter((event, index) => {
         const body = bodies[index];
