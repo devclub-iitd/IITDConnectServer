@@ -36,7 +36,7 @@ const roleSchema = new Schema({
   policies: [
     {
       type: Number,
-      enum: Object.values(policyType),
+      enum: policyType,
     },
   ],
   addedBy: {
@@ -76,7 +76,7 @@ const contractSchema = new Schema({
   policies: [
     {
       type: Number,
-      enum: Object.values(policyType),
+      enum: policyType,
     },
   ],
 });

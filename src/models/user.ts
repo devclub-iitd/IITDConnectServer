@@ -43,7 +43,7 @@ const userPermSchema: Schema = new Schema({
   policies: [
     {
       type: Number,
-      enum: Object.values(policyType),
+      enum: policyType,
     },
   ],
 });
