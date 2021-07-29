@@ -1,5 +1,6 @@
 import * as mongoose from 'mongoose';
 import {Schema, model, Model, Document} from 'mongoose';
+import {policyType} from './role';
 // import {isEmail} from 'validator';
 
 export interface UserImpl extends Document {
@@ -25,7 +26,27 @@ export interface UserImpl extends Document {
   reminders: Object;
   isAdmin: boolean;
   isSuperAdmin: boolean;
+  roles: mongoose.Types.ObjectId[];
+  permissions: UserPermImpl[]; //Local Permissions
 }
+
+export interface UserPermImpl {
+  body: mongoose.Types.ObjectId;
+  policies: policyType[];
+}
+
+const userPermSchema: Schema = new Schema({
+  body: {
+    type: Schema.Types.ObjectId,
+    ref: 'Body',
+  },
+  policies: [
+    {
+      type: Number,
+      enum: Object.values(policyType),
+    },
+  ],
+});
 
 const userSchema: Schema = new Schema(
   {
@@ -124,6 +145,15 @@ const userSchema: Schema = new Schema(
       type: Boolean,
       default: false,
     },
+    roles: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Role',
+        },
+      ],
+    },
+    permissions: [userPermSchema],
   },
   {timestamps: true}
 );
@@ -161,5 +191,8 @@ userSchema.virtual('reminders', {
 //TODO: Add The Method To Unsubscribe To A Body
 
 const User: Model<UserImpl> = model<UserImpl>('User', userSchema);
-
+// const UserPerm: Model<UserPermImpl> = model<UserPermImpl>(
+//   'UserPerm',
+//   userPermSchema
+// );
 export default User;

@@ -13,6 +13,7 @@ export interface BodyImpl extends Document {
   typeOfBody: number;
   members: BodyMemberImpl[];
   hangoutInfo: object;
+  roles: mongoose.Types.ObjectId[];
 }
 //Removed extends Document from BodyMemberImpl
 export interface BodyMemberImpl {
@@ -112,6 +113,14 @@ const bodySchema = new Schema(
     },
     members: [memberSchema],
     hangoutInfo: hangoutSchema,
+    roles: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Role',
+        },
+      ],
+    },
   },
   {timestamps: true}
 );
