@@ -25,6 +25,7 @@ export interface RoleImpl {
   policies: policyType[];
   addedBy: mongoose.Types.ObjectId; //Not sure if this is required
   access: mongoose.Types.ObjectId[]; //List of bodies for now
+  accessGlobal: boolean;
 }
 
 const roleSchema = new Schema({
@@ -50,6 +51,10 @@ const roleSchema = new Schema({
         ref: 'Body',
       },
     ],
+  },
+  accessGlobal: {
+    type: Boolean,
+    default: false,
   },
 });
 

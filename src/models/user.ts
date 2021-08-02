@@ -1,6 +1,6 @@
 import * as mongoose from 'mongoose';
 import {Schema, model, Model, Document} from 'mongoose';
-import {policyType} from './role';
+// import {policyType} from './role';
 // import {isEmail} from 'validator';
 
 export interface UserImpl extends Document {
@@ -27,26 +27,26 @@ export interface UserImpl extends Document {
   isAdmin: boolean;
   isSuperAdmin: boolean;
   roles: mongoose.Types.ObjectId[];
-  permissions: UserPermImpl[]; //Local Permissions
+  // permissions: UserPermImpl[]; //Local Permissions
 }
 
-export interface UserPermImpl {
-  body: mongoose.Types.ObjectId;
-  policies: policyType[];
-}
+// export interface UserPermImpl {
+//   body: mongoose.Types.ObjectId;
+//   policies: policyType[];
+// }
 
-const userPermSchema: Schema = new Schema({
-  body: {
-    type: Schema.Types.ObjectId,
-    ref: 'Body',
-  },
-  policies: [
-    {
-      type: Number,
-      enum: policyType,
-    },
-  ],
-});
+// const userPermSchema: Schema = new Schema({
+//   body: {
+//     type: Schema.Types.ObjectId,
+//     ref: 'Body',
+//   },
+//   policies: [
+//     {
+//       type: Number,
+//       enum: policyType,
+//     },
+//   ],
+// });
 
 const userSchema: Schema = new Schema(
   {
@@ -153,7 +153,7 @@ const userSchema: Schema = new Schema(
         },
       ],
     },
-    permissions: [userPermSchema],
+    // permissions: [userPermSchema],
   },
   {timestamps: true}
 );

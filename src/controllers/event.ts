@@ -356,35 +356,37 @@ export const putUpdateEvent = async (
     if (event === null || user === null) {
       throw createError(400, 'Invalid', 'No Such Event Exists');
     }
-    if (req.body.name !== null) {
-      event.name = req.body.name;
+    // verify allowed fields
+    const allowedUpdates = [
+      'name',
+      'about',
+      'imageLink',
+      'venue',
+      'startDate',
+      'endDate',
+    ];
+    const updates = Object.keys(req.body);
+    const isValidOperation = updates.every(update =>
+      allowedUpdates.includes(update)
+    );
+    if (!isValidOperation) {
+      res.send(
+        createResponse(
+          'Update fields donot match. Following can only be updated',
+          allowedUpdates
+        )
+      );
     }
-    if (req.body.about !== null) {
-      event.about = req.body.about;
-    }
-    if (req.body.imageLink !== null) {
-      event.imageLink = req.body.imageLink;
-    }
-    if (req.body.venue !== null) {
-      event.venue = req.body.venue;
-    }
-    if (req.body.startDate !== null) {
-      event.startDate = req.body.startDate;
-    }
-    if (req.body.endDate !== null) {
-      event.endDate = req.body.endDate;
-    }
-    event.save().then(event_1 => {
-      // const respData = {
-      //   event: toEventJSON(event, user)
-      // };
-      // console.log(respData);
-      const respData = {
-        id: event_1._id,
+    // Finally updating
+    const updatedEvent = await Event.findByIdAndUpdate(req.params.id, req.body);
+    let respData = {};
+    if (updatedEvent) {
+      respData = {
+        id: updatedEvent._id,
       };
-      return res.send(createResponse('Event Updated Successfully', respData));
-    });
-  } catch (e) {
-    next(e);
+    }
+    res.send(createResponse('Event Updated Succesfully', respData));
+  } catch (error) {
+    next(error);
   }
 };
