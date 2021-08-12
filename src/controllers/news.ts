@@ -211,11 +211,10 @@ export const updateNews = async (
       allowedUpdates.includes(update)
     );
     if (!isValidOperation) {
-      res.send(
-        createResponse(
-          'Update fields donot match. Following can only be updated',
-          allowedUpdates
-        )
+      throw createError(
+        400,
+        'Update fields do not match',
+        'Following fields can only be updated ' + allowedUpdates
       );
     }
     // Finally updating

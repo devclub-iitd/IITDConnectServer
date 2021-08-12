@@ -367,3 +367,27 @@ export const loggedInUserDetails = async (
     next(e);
   }
 };
+
+export const updatefcm = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.findById(req.payload);
+    if (!user) {
+      throw createError(401, 'Unauthorized', 'Invalid Credentials');
+    }
+    const update = Object.keys(req.body);
+    if (!update.includes('fcmRegistrationToken') || update.length !== 1) {
+      throw createError(400, 'Error', 'Update field does not match');
+    }
+    await User.findByIdAndUpdate(req.payload, req.body);
+
+    res.send(
+      createResponse('Success', 'fcmRegistrationToken Updated Succesfully')
+    );
+  } catch (error) {
+    next(error);
+  }
+};
