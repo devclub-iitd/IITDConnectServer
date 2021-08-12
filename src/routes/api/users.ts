@@ -14,6 +14,7 @@ import {
   postMakeSuperAdmin,
   loggedInUserDetails,
   updateSuperAdmin,
+  updatefcm,
 } from '../../controllers/user';
 import auth from '../../middleware/auth';
 
@@ -74,5 +75,7 @@ router.patch('/users/updatesuperadmin', auth, updateSuperAdmin);
 //   [check('email').isEmail().exists().withMessage('Not a Valid Email Address')],
 //   login
 // );
+
+router.post('/user/updatefcm', auth, updatefcm);
 
 export default router;
