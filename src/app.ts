@@ -8,7 +8,8 @@ import * as compression from 'compression';
 import * as admin from 'firebase-admin';
 import * as fs from 'fs';
 import {MONGODB_URI} from './utils/secrets';
-
+import * as cron from 'node-cron';
+import {trendUpdate} from './cronJobs/trendUpdate';
 import routes from './routes';
 
 let serviceAccount;
@@ -91,4 +92,6 @@ app.use(
   }
 );
 
+// Schedule cron-Jobs
+cron.schedule('0 */30 * * * *', trendUpdate);
 export default app;

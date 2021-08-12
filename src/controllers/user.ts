@@ -349,16 +349,15 @@ export const removeAdmin = async (
 //   }
 // };
 
-export const loggedInUserDetails = (
+export const loggedInUserDetails = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const user = User.findById(req.payload)
+    const user = await User.findById(req.payload)
       .populate('adminOf')
-      .populate('superAdminOf')
-      .exec();
+      .populate('superAdminOf');
 
     if (user === null) {
       throw createError(401, 'Unauthorized', 'No Such User Found');
@@ -366,5 +365,29 @@ export const loggedInUserDetails = (
     res.send(createResponse('User Found', user));
   } catch (e) {
     next(e);
+  }
+};
+
+export const updatefcm = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.findById(req.payload);
+    if (!user) {
+      throw createError(401, 'Unauthorized', 'Invalid Credentials');
+    }
+    const update = Object.keys(req.body);
+    if (!update.includes('fcmRegistrationToken') || update.length !== 1) {
+      throw createError(400, 'Error', 'Update field does not match');
+    }
+    await User.findByIdAndUpdate(req.payload, req.body);
+
+    res.send(
+      createResponse('Success', 'fcmRegistrationToken Updated Succesfully')
+    );
+  } catch (error) {
+    next(error);
   }
 };

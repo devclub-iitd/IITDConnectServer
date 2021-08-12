@@ -11,11 +11,13 @@ export interface BodyImpl extends Document {
   imageUrl: string;
   links: object;
   typeOfBody: number;
-  members: Array<object>;
+  members: BodyMemberImpl[];
   hangoutInfo: object;
+  roles: mongoose.Types.ObjectId[];
 }
-export interface BodyMemberImpl extends Document {
-  name: string;
+//Removed extends Document from BodyMemberImpl
+export interface BodyMemberImpl {
+  userId: mongoose.Types.ObjectId;
   por: string;
   imgUrl: string;
   link: object;
@@ -40,13 +42,14 @@ const linksSchema = new Schema({
   },
 });
 const memberSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
   },
   por: {
     type: String,
     required: true,
+    trim: true,
   },
   imgUrl: {
     type: String,
@@ -110,6 +113,14 @@ const bodySchema = new Schema(
     },
     members: [memberSchema],
     hangoutInfo: hangoutSchema,
+    roles: {
+      type: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Role',
+        },
+      ],
+    },
   },
   {timestamps: true}
 );

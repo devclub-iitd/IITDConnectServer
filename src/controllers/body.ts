@@ -25,6 +25,11 @@ export const addBody = async (
   next: NextFunction
 ) => {
   try {
+    const user = await User.findById(req.payload);
+
+    if (user === null || user.superSuperAdmin === false) {
+      throw createError(401, 'Unauthorized', 'Invalid');
+    }
     const newBody = new Body(req.body);
     await newBody.save();
     res.send(createResponse('Body Created Successfully', newBody));

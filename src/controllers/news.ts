@@ -32,6 +32,7 @@ export const getNews = async (
         title: 1,
         sourceName: 1,
         createdAt: 1,
+        trendRate: 1,
       },
       {
         limit: parseInt(req.query.limit),
@@ -56,7 +57,7 @@ export const newsDetails = async (
       throw createError(401, 'Unauthorized', 'Invalid Credentials');
     }
     const news = await News.findById(req.params.id);
-    if (!news) {
+    if (!news || news.visible === false) {
       throw createError(
         401,
         'Doesnot Exists',
@@ -210,11 +211,10 @@ export const updateNews = async (
       allowedUpdates.includes(update)
     );
     if (!isValidOperation) {
-      res.send(
-        createResponse(
-          'Update fields donot match. Following can only be updated',
-          allowedUpdates
-        )
+      throw createError(
+        400,
+        'Update fields do not match',
+        'Following fields can only be updated ' + allowedUpdates
       );
     }
     // Finally updating

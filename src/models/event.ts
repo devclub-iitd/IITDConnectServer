@@ -17,6 +17,7 @@ export interface EventImpl extends Document {
   official_inti_event: boolean;
   color: string;
   eventId: string;
+  private: boolean;
 }
 
 const eventSchema = new Schema(
@@ -85,6 +86,10 @@ const eventSchema = new Schema(
     },
     eventId: {
       type: String,
+    },
+    private: {
+      type: Boolean,
+      default: false,
     },
   },
   {timestamps: true}

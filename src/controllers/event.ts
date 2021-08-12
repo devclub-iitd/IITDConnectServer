@@ -137,19 +137,61 @@ export const deleteEvent = async (
   }
 };
 
-export const getEvent = async (req: Request, res: Response) => {
-  const [user, event] = await Promise.all([
-    User.findById(req.payload),
-    Event.findById(req.params.id).populate('body').populate('updates').exec(),
-  ]);
-  if (user === null || event === null) {
-    return res.status(400).json({message: 'Error'});
+export const getStarredEvents = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.findById(req.payload);
+
+    if (user === null) {
+      throw createError(401, 'Unauthorized', 'Invalid');
+    }
+    const starredEvents = user.staredEvents;
+    res.send(createResponse('Starred Events', starredEvents));
+  } catch (error) {
+    next(error);
   }
-  // console.log(event);
-  const respData = {
-    event: toEventJSON(event, user),
-  };
-  return res.send(respData);
+};
+
+export const getEvent = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.findById(req.payload);
+    const event = await Event.findById(req.params.id)
+      .populate('body')
+      .populate('updates');
+    if (user === null) {
+      throw createError(401, 'Unauthorized', 'Invalid');
+    }
+    if (event === null) {
+      throw createError(400, 'Error ', 'Invalid Event');
+    }
+    // console.log(event);
+    const body = await Body.findById(event.body);
+    if (!body) {
+      throw createError(400, 'Error ', 'Invalid');
+    }
+    const members = body.members;
+    const valid_member = members.filter(member => {
+      return member.userId.toString() === user._id.toString();
+    });
+    // console.log(valid_member);
+    if (event.private === false || valid_member.length !== 0) {
+      const respData = {
+        event: toEventJSON(event, user),
+      };
+      res.send(createResponse('Event Found', respData));
+    } else {
+      throw createError(400, 'Error', 'Event is not public');
+    }
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const getEvents = async (
@@ -159,36 +201,58 @@ export const getEvents = async (
 ) => {
   //!TODO IF WE WANT TO ADD THE OPTION TO FILTER BY CLUB OR YEAR OR ANYTHING
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const query: any = {};
-  if (typeof req.query.body !== 'undefined') {
-    query.body = req.query.body;
-  }
-  return Promise.all([
-    Event.find(query)
-      // .sort({ endDate: "desc" })
+  try {
+    const user = await User.findById(req.payload);
+    if (user === null) {
+      throw createError(401, 'Unauthorized', 'Invalid');
+    }
+    let events;
+    let priv = false;
+    if (req.query) {
+      if (req.query.p === '1') {
+        priv = true;
+      }
+    }
+    events = await Event.find({private: priv})
       .populate('body')
-      .populate('updates')
-      .exec(),
-    User.findById(req.payload),
-  ])
-    .then(([events, user]) => {
-      if (user === null) {
-        throw createError(401, 'Unauthorized', 'Invalid');
-      }
-      if (events !== null) {
-        const respData = {
-          events: events.map(event => toEventJSON(event, user)),
-        };
-        return res.send(createResponse('Events Found', respData));
-      }
-      const respData = {
+      .populate('updates');
+    // events = await Event.find().populate('body').populate('updates');
+    if (priv) {
+      //using maps to return an array of promises
+      const promises = events.map(event => Body.findById(event.body));
+      const bodies = await Promise.all(promises);
+      const fevents = events.filter((event, index) => {
+        const body = bodies[index];
+        if (!body) {
+          return false;
+        }
+        const members = body.members;
+        const valid_member = members.filter(member => {
+          return member.userId.toString() === user._id.toString();
+        });
+        if (valid_member.length !== 0) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+      events = fevents;
+    }
+
+    let respData;
+    if (events !== null) {
+      respData = {
+        events: events.map(event => toEventJSON(event, user)),
+      };
+    } else {
+      respData = {
         events: [],
       };
-      return res.send(createResponse('Events Found', respData));
-    })
-    .catch(e => {
-      next(e);
-    });
+    }
+    res.send(createResponse('Events Found', respData));
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const addUpdate = async (
@@ -279,49 +343,49 @@ export const removeUpdate = async (
   }
 };
 
-export const putUpdateEvent = (
+export const putUpdateEvent = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  return Promise.all([
-    Event.findById(req.params.id),
-    User.findById(req.payload),
-  ])
-    .then(([event, user]) => {
-      if (event === null || user === null) {
-        throw createError(400, 'Invalid', 'No Such Event Exists');
-      }
-      if (req.body.name !== null) {
-        event.name = req.body.name;
-      }
-      if (req.body.about !== null) {
-        event.about = req.body.about;
-      }
-      if (req.body.imageLink !== null) {
-        event.imageLink = req.body.imageLink;
-      }
-      if (req.body.venue !== null) {
-        event.venue = req.body.venue;
-      }
-      if (req.body.startDate !== null) {
-        event.startDate = req.body.startDate;
-      }
-      if (req.body.endDate !== null) {
-        event.endDate = req.body.endDate;
-      }
-      event.save().then(event => {
-        // const respData = {
-        //   event: toEventJSON(event, user)
-        // };
-        // console.log(respData);
-        const respData = {
-          id: event._id,
-        };
-        return res.send(createResponse('Event Updated Successfully', respData));
-      });
-    })
-    .catch(e => {
-      next(e);
-    });
+  try {
+    const [event, user] = await Promise.all([
+      Event.findById(req.params.id),
+      User.findById(req.payload),
+    ]);
+    if (event === null || user === null) {
+      throw createError(400, 'Invalid', 'No Such Event Exists');
+    }
+    // verify allowed fields
+    const allowedUpdates = [
+      'name',
+      'about',
+      'imageLink',
+      'venue',
+      'startDate',
+      'endDate',
+    ];
+    const updates = Object.keys(req.body);
+    const isValidOperation = updates.every(update =>
+      allowedUpdates.includes(update)
+    );
+    if (!isValidOperation) {
+      throw createError(
+        400,
+        'Update fields do not match',
+        'Following fields can only be updated ' + allowedUpdates
+      );
+    }
+    // Finally updating
+    const updatedEvent = await Event.findByIdAndUpdate(req.params.id, req.body);
+    let respData = {};
+    if (updatedEvent) {
+      respData = {
+        id: updatedEvent._id,
+      };
+    }
+    res.send(createResponse('Event Updated Succesfully', respData));
+  } catch (error) {
+    next(error);
+  }
 };
