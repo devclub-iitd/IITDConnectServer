@@ -5,8 +5,5 @@ until nc -z "database" 27017; do
 	sleep 10;
 done
 
-npm run build-ts
-
-npm run post-build
-
-npm run watch-node
+npm run postinstall
+npm start
