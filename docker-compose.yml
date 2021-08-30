@@ -12,7 +12,7 @@ services:
     build: .
     image: "${REGISTRY_NAME}devclubiitd/iitdconnect:0.1"
     ports:
-      - ${PORT}:${PORT}
+      - '${PORT}'
     healthcheck:
       test: ["CMD", "curl", "http://localhost:${PORT}"]
       interval: 1m30s
