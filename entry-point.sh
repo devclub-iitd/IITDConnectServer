@@ -1,4 +1,4 @@
-?!/bin/bash
+#!/bin/bash
 
 until nc -z "database" 27017; do
 	echo "Waiting for MongoDB";
