@@ -2,41 +2,42 @@ version: '3.4'
 
 services:
   database:
-    image: "${REGISTRY_NAME}mongo:latest"
+    image: '${REGISTRY_NAME}mongo:latest'
     volumes:
       - iitdconnectdb:/data/db
     networks:
-      - "internal"
-    restart: "unless-stopped"
+      - 'internal'
+    restart: 'unless-stopped'
 
   dashboard:
     build: .
-    image: "${REGISTRY_NAME}devclubiitd/iitdconnect:0.1"
+    image: '${REGISTRY_NAME}devclubiitd/iitdconnect:0.1'
     volumes:
       - public_media:/code/media
       - protected_media:/code/protected
     ports:
       - '${PORT}'
     healthcheck:
-      test: ["CMD", "curl", "http://localhost:${PORT}"]
+      test: ['CMD', 'curl', 'http://localhost:${PORT}']
       interval: 1m30s
       timeout: 10s
       retries: 3
       start_period: 40s
-    restart: "unless-stopped" 
+    restart: 'unless-stopped'
     networks:
-      - "internal"
-      - "reverseproxy"
+      - 'internal'
+      - 'reverseproxy'
     env_file:
       - ./.env
     environment:
       - VIRTUAL_HOST
-      - MONGODB_URI_LOCAL
+      - DB_URL
+      - PORT
     depends_on:
       - database
 
   nginx:
-    image: "${REGISTRY_NAME}devclubiitd/citadel-nginx:0.1"
+    image: '${REGISTRY_NAME}devclubiitd/iitdconnect-nginx:0.1'
     build: ./nginx
     volumes:
       - public_media:/code/media
@@ -44,16 +45,16 @@ services:
     ports:
       - 7000:80
     depends_on:
-        - dashboard
+      - dashboard
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:7000"]
+      test: ['CMD', 'curl', '-f', 'http://localhost:7000']
       interval: 1m30s
       timeout: 10s
       retries: 3
       start_period: 40s
     networks:
-      - "reverseproxy"
-      - "internal"
+      - 'reverseproxy'
+      - 'internal'
     env_file:
       - ./.env
     environment:
@@ -68,5 +69,5 @@ volumes:
 networks:
   reverseproxy:
     external:
-      name: "reverseproxy"
+      name: 'reverseproxy'
   internal:
