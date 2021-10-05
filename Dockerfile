@@ -3,10 +3,9 @@ FROM node:14.17.6
 RUN mkdir /code
 WORKDIR /code
 
-RUN apt-get update
-RUN npm install -g nodemon
-RUN apt-get install netcat -y
-RUN apt-get install -y vim
+RUN apt-get update \
+    && npm install -g nodemon \
+    && apt-get install -y netcat vim
 
 COPY package*.json ./
 
