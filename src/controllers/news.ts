@@ -18,10 +18,16 @@ export const getNews = async (
     const sort: {[k: string]: number} = {};
     // const sort: LooseObject = {};
     if (req.query.sortBy !== undefined) {
-      const parts = req.query.sortBy.split(':');
+      const parts = req.query.sortBy.toString().split(':');
       sort[parts[0]] = parts[1] === 'desc' ? -1 : 1;
     }
-    console.log(sort);
+    // console.log(sort);
+    const limit =
+      req.query.limit !== undefined ? parseInt(req.query.limit.toString()) : 20;
+
+    const skip =
+      req.query.skip !== undefined ? parseInt(req.query.skip.toString()) : 20;
+
     const news = await News.find(
       {visible: true},
       {
@@ -35,8 +41,8 @@ export const getNews = async (
         trendRate: 1,
       },
       {
-        limit: parseInt(req.query.limit),
-        skip: parseInt(req.query.skip),
+        limit: limit,
+        skip: skip,
         sort,
       }
     );
@@ -336,11 +342,14 @@ export const getTrendNews = async (
     if (user === null) {
       throw createError(401, 'Unauthorized', 'Authorization Failed');
     }
+    const limit =
+      req.query.limit !== undefined ? parseInt(req.query.limit.toString()) : 20;
+
     const news = await News.find(
       {visible: true},
       {},
       {
-        limit: parseInt(req.query.limit),
+        limit: limit,
         sort: {trendRate: -1},
       }
     );
