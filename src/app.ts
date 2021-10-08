@@ -7,11 +7,13 @@ import * as lusca from 'lusca';
 import * as compression from 'compression';
 import * as admin from 'firebase-admin';
 import * as fs from 'fs';
-import {MONGODB_URI} from './utils/secrets';
+// import {MONGODB_URI} from './utils/secrets';
 import * as cron from 'node-cron';
 import {trendUpdate} from './cronJobs/trendUpdate';
 import routes from './routes';
+import {MONGODB_URI} from './utils/secrets';
 
+console.log(MONGODB_URI);
 let serviceAccount;
 if (process.env.NODE_ENV === 'production') {
   serviceAccount = JSON.parse(
@@ -29,8 +31,14 @@ const app = express();
 
 // mongoose.Promise = global.Promise;
 mongoose
-  .connect(MONGODB_URI, {useNewUrlParser: true, useUnifiedTopology: true})
-  .catch((): void => {
+  .connect(MONGODB_URI || '', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .catch((err: Error): void => {
+    if (err) {
+      console.error(err.message || '');
+    }
     throw new Error('Cannot Connect To MongoDB');
   });
 mongoose.set('useCreateIndex', true);

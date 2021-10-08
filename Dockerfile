@@ -2,11 +2,14 @@ FROM node:12.13.0
 
 RUN mkdir /code
 WORKDIR /code
+
+RUN apt-get update \
+    && npm install -g nodemon \
+    && apt-get install -y netcat vim
+
 COPY package*.json ./
 
-RUN apt-get update
-RUN apt-get install netcat -y
-RUN apt-get install -y vim
+RUN npm install
 
 COPY . .
 
