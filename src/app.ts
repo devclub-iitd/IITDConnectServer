@@ -30,18 +30,12 @@ if (process.env.NODE_ENV === 'production') {
 const app = express();
 
 // mongoose.Promise = global.Promise;
-mongoose
-  .connect(MONGODB_URI || '', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .catch((err: Error): void => {
-    if (err) {
-      console.error(err.message || '');
-    }
-    throw new Error('Cannot Connect To MongoDB');
-  });
-mongoose.set('useCreateIndex', true);
+mongoose.connect(MONGODB_URI || '').catch((err: Error): void => {
+  if (err) {
+    console.error(err.message || '');
+  }
+  throw new Error('Cannot Connect To MongoDB');
+});
 
 app.set('port', process.env.PORT || 5000);
 app.use(compression());
@@ -59,6 +53,7 @@ app.use(
     xssProtection: true,
   })
 );
+
 app.use(expressValidator());
 // app.use(logRequest);
 

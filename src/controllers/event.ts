@@ -54,48 +54,51 @@ export const createEvent = async (
   if (!errors) {
     throw createError(400, 'Validation Error', 'Validation Error');
   }
-
+  console.log(req.body);
   try {
-    const body = await Body.findById(req.body.body);
+    const requestBody = req.body;
+    console.log(requestBody, typeof requestBody);
+    const body = await Body.findById(requestBody.body);
     const user = await User.findById(req.payload);
     if (user === null || body === null) {
       throw createError(401, 'Unauthorized', 'Invalid');
     }
     const topic =
-      slug(req.body.name) +
+      slug(requestBody.name.toString()) +
       '-' +
       ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
-
+    console.log('here-1');
     const newEvent = new Event({
       ...req.body,
       createdBy: user,
       topicName: topic,
     });
+    console.log('here-2', body);
     await newEvent.save();
 
     body.events.push(newEvent._id);
     await body.save();
-
+    console.log(body);
     //Push notification to Client from Firebase admin
-    if (process.env.NODE_ENV === 'production') {
-      const message = {
-        notification: {
-          title: body.name + '-' + newEvent.name,
-          body: newEvent.about,
-        },
-        topic: body.name,
-        //TODO Provide a unique topic to body as done in events
-      };
-      admin
-        .messaging()
-        .send(message)
-        .then(() => {
-          console.log('Message sent successfully');
-        })
-        .catch(() => {
-          console.log('Message could not be sent');
-        });
-    }
+    // if (process.env.NODE_ENV === 'production') {
+    //   const message = {
+    //     notification: {
+    //       title: body.name + '-' + newEvent.name,
+    //       body: newEvent.about,
+    //     },
+    //     topic: body.name,
+    //     //TODO Provide a unique topic to body as done in events
+    //   };
+    //   admin
+    //     .messaging()
+    //     .send(message)
+    //     .then(() => {
+    //       console.log('Message sent successfully');
+    //     })
+    //     .catch(() => {
+    //       console.log('Message could not be sent');
+    //     });
+    // }
     res.send(createResponse('Event Added Successfully', {newEvent}));
   } catch (err) {
     next(err);
@@ -250,9 +253,9 @@ export const toggleStar = async (
     if (user === null || event === null) {
       throw createError(401, 'Unauthorized', 'Invalid Login Credentials');
     }
-    const index = user.staredEvents.indexOf(Types.ObjectId(req.params.id));
+    const index = user.staredEvents.indexOf(new Types.ObjectId(req.params.id));
     if (index === -1) {
-      user.staredEvents.push(Types.ObjectId(req.params.id));
+      user.staredEvents.push(new Types.ObjectId(req.params.id));
       //Subscribe the user to this event
       if (process.env.NODE_ENV === 'production') {
         admin

@@ -39,7 +39,7 @@ export const getReminder = async (
       throw createError(401, 'Unauthenticated', 'Authentication Failed');
     }
     // user has reminders as its virtual field stored
-    await user.populate('reminders').execPopulate();
+    await user.populate('reminders');
     res.send(createResponse('Successful', user.reminders));
   } catch (err) {
     return next(err);
@@ -135,17 +135,15 @@ export const getAllEventsAndReminder = async (
       );
     }
     // console.log(req.body.startDate);
-    await user
-      .populate({
-        path: 'reminders',
-        match: {
-          $or: [
-            {startDate: {$gte: req.body.startDate}},
-            {endDate: {$lte: req.body.endDate}},
-          ],
-        },
-      })
-      .execPopulate();
+    await user.populate({
+      path: 'reminders',
+      match: {
+        $or: [
+          {startDate: {$gte: req.body.startDate}},
+          {endDate: {$lte: req.body.endDate}},
+        ],
+      },
+    });
     const event = await Event.find(
       {
         $or: [
@@ -166,27 +164,25 @@ export const getAllEventsAndReminder = async (
     );
 
     // starred event
-    await user
-      .populate({
-        path: 'staredEvents',
-        match: {
-          $or: [
-            {
-              startDate: {$gte: req.body.startDate, $lte: req.body.endDate},
-            },
-            {
-              endDate: {$gte: req.body.startDate, $lte: req.body.endDate},
-            },
-          ],
-        },
-        select: {
-          name: 1,
-          startDate: 1,
-          endDate: 1,
-          topicName: 1,
-        },
-      })
-      .execPopulate();
+    await user.populate({
+      path: 'staredEvents',
+      match: {
+        $or: [
+          {
+            startDate: {$gte: req.body.startDate, $lte: req.body.endDate},
+          },
+          {
+            endDate: {$gte: req.body.startDate, $lte: req.body.endDate},
+          },
+        ],
+      },
+      select: {
+        name: 1,
+        startDate: 1,
+        endDate: 1,
+        topicName: 1,
+      },
+    });
     res.send(
       createResponse('SuccesFull', {
         reminders: user.reminders,

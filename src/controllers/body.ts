@@ -66,7 +66,7 @@ export const getAllBodies = async (
     }
     let bodies;
     if (req.query.q) {
-      bodies = await Body.find({typeOfBody: req.query.q});
+      bodies = await Body.find({typeOfBody: parseInt(req.query.q.toString())});
     } else {
       bodies = await Body.find({});
     }
@@ -161,7 +161,9 @@ export const toggleSubscribe = async (
       return res.send('Invalid Request');
     }
     const body = await Body.findById(req.params.id);
-    const index = user.subscribedBodies.indexOf(Types.ObjectId(req.params.id));
+    const index = user.subscribedBodies.indexOf(
+      new Types.ObjectId(req.params.id)
+    );
     if (index === -1) {
       //subscibe
       if (process.env.NODE_ENV === 'production') {
@@ -173,7 +175,7 @@ export const toggleSubscribe = async (
           console.log(`${user.name} subscribed to topic ${body.name}`);
         }
       }
-      user.subscribedBodies.push(Types.ObjectId(req.params.id));
+      user.subscribedBodies.push(new Types.ObjectId(req.params.id));
     } else {
       //unsubscribe
       if (process.env.NODE_ENV === 'production') {
