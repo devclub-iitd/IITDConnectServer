@@ -12,6 +12,7 @@ import {
   putUpdateEvent,
 } from '../../controllers/event';
 import auth from '../../middleware/auth';
+import {upload} from '../../utils/multer';
 
 const router = express.Router();
 
@@ -23,7 +24,7 @@ router.get('/check', auth, (req: Request, res: Response) => {
 
 //? Tested OK...
 //* Add An Event
-router.post('/', auth, createEvent);
+router.post('/', auth, upload.single('eventImage'), createEvent);
 
 //? Tested OK...
 //* Get All The Events
