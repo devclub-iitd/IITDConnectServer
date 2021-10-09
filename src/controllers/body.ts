@@ -31,6 +31,9 @@ export const addBody = async (
       throw createError(401, 'Unauthorized', 'Invalid');
     }
     const newBody = new Body(req.body);
+    if (req.file !== undefined) {
+      newBody.imageUrl = req.file.path;
+    }
     await newBody.save();
     res.send(createResponse('Body Created Successfully', newBody));
   } catch (error) {

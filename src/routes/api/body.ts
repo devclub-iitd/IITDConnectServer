@@ -8,6 +8,8 @@ import {
   addMembers,
   updateBody,
 } from '../../controllers/body';
+import {upload} from '../../middleware/multer';
+import {checkAccessBody} from '../../middleware/checkAccess';
 
 const router = express.Router();
 
@@ -15,7 +17,7 @@ const router = express.Router();
 router.get('/', auth, getAllBodies);
 
 //? Tested OK
-router.post('/', auth, addBody);
+router.post('/', auth, checkAccessBody, upload.single('bodyImage'), addBody);
 
 //? Tested OK
 router.get('/:id', auth, getBody);

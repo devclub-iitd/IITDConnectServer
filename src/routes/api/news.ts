@@ -12,7 +12,8 @@ import {
 } from '../../controllers/news';
 // import {Request, Response} from 'express';
 import auth from '../../middleware/auth';
-
+import {upload} from '../../middleware/multer';
+import {checkAccessNews} from '../../middleware/checkAccess';
 // endpoints
 const router = express.Router();
 
@@ -30,7 +31,13 @@ router.get('/news', auth, getNews);
 
 // ?Tested Ok
 // add a news
-router.post('/news', auth, addNews);
+router.post(
+  '/news',
+  auth,
+  checkAccessNews,
+  upload.single('newsImage'),
+  addNews
+);
 
 router.delete('/news/:id', auth, deleteNews);
 

@@ -54,7 +54,9 @@ export const createEvent = async (
   if (!errors) {
     throw createError(400, 'Validation Error', 'Validation Error');
   }
-  console.log(req.body);
+  // console.log(req.body);
+  console.log('file', req.file);
+
   try {
     const requestBody = req.body;
     console.log(requestBody, typeof requestBody);
@@ -74,6 +76,9 @@ export const createEvent = async (
       topicName: topic,
     });
     console.log('here-2', body);
+    if (req.file !== undefined) {
+      newEvent.imageLink = req.file.path;
+    }
     await newEvent.save();
 
     body.events.push(newEvent._id);
@@ -299,49 +304,96 @@ export const removeUpdate = async (
   }
 };
 
-export const putUpdateEvent = (
+// export const putUpdateEvent = (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   return Promise.all([
+//     Event.findById(req.params.id),
+//     User.findById(req.payload),
+//   ])
+//     .then(([event, user]) => {
+//       if (event === null || user === null) {
+//         throw createError(400, 'Invalid', 'No Such Event Exists');
+//       }
+//       if (req.body.name !== null) {
+//         event.name = req.body.name;
+//       }
+//       if (req.body.about !== null) {
+//         event.about = req.body.about;
+//       }
+//       if (req.body.imageLink !== null) {
+//         event.imageLink = req.body.imageLink;
+//       }
+//       if (req.body.venue !== null) {
+//         event.venue = req.body.venue;
+//       }
+//       if (req.body.startDate !== null) {
+//         event.startDate = req.body.startDate;
+//       }
+//       if (req.body.endDate !== null) {
+//         event.endDate = req.body.endDate;
+//       }
+//       event.save().then(event => {
+//         // const respData = {
+//         //   event: toEventJSON(event, user)
+//         // };
+//         // console.log(respData);
+//         const respData = {
+//           id: event._id,
+//         };
+//         return res.send(createResponse('Event Updated Successfully', respData));
+//       });
+//     })
+//     .catch(e => {
+//       next(e);
+//     });
+// };
+
+export const putUpdateEvent = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  return Promise.all([
-    Event.findById(req.params.id),
-    User.findById(req.payload),
-  ])
-    .then(([event, user]) => {
-      if (event === null || user === null) {
-        throw createError(400, 'Invalid', 'No Such Event Exists');
-      }
-      if (req.body.name !== null) {
-        event.name = req.body.name;
-      }
-      if (req.body.about !== null) {
-        event.about = req.body.about;
-      }
-      if (req.body.imageLink !== null) {
-        event.imageLink = req.body.imageLink;
-      }
-      if (req.body.venue !== null) {
-        event.venue = req.body.venue;
-      }
-      if (req.body.startDate !== null) {
-        event.startDate = req.body.startDate;
-      }
-      if (req.body.endDate !== null) {
-        event.endDate = req.body.endDate;
-      }
-      event.save().then(event => {
-        // const respData = {
-        //   event: toEventJSON(event, user)
-        // };
-        // console.log(respData);
-        const respData = {
-          id: event._id,
-        };
-        return res.send(createResponse('Event Updated Successfully', respData));
-      });
-    })
-    .catch(e => {
-      next(e);
-    });
+  try {
+    const [event, user] = await Promise.all([
+      Event.findById(req.params.id),
+      User.findById(req.payload),
+    ]);
+    if (event === null || user === null) {
+      throw createError(400, 'Invalid', 'No Such Event Exists');
+    }
+    // verify allowed fields
+    const allowedUpdates = [
+      'name',
+      'about',
+      'imageLink',
+      'venue',
+      'startDate',
+      'endDate',
+    ];
+    const updates = Object.keys(req.body);
+    const isValidOperation = updates.every(update =>
+      allowedUpdates.includes(update)
+    );
+    if (!isValidOperation) {
+      throw createError(
+        400,
+        'Update fields do not match',
+        'Following fields can only be updated ' + allowedUpdates
+      );
+    }
+    // Finally updating
+    const updatedEvent = await Event.findByIdAndUpdate(req.params.id, req.body);
+    let respData = {};
+    if (updatedEvent) {
+      respData = {
+        id: updatedEvent._id,
+      };
+    }
+    res.send(createResponse('Event Updated Succesfully', respData));
+  } catch (error) {
+    next(error);
+  }
 };

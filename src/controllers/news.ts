@@ -105,6 +105,9 @@ export const addNews = async (
       ...req.body,
       createdBy: user._id,
     });
+    if (req.file !== undefined) {
+      news.imgUrl = req.file.path;
+    }
     await news.save();
     res.send(createResponse('News added Successfully', news));
 
