@@ -252,6 +252,12 @@ export const updateNews = async (
       );
     }
     // Finally updating
+    if (req.body.imgUrl !== null) {
+      const oldNews = await News.findById(req.params.id);
+      if (oldNews !== null && oldNews.imgUrl.startsWith('media/')) {
+        fs.unlinkSync(oldNews.imgUrl);
+      }
+    }
     const updatedNews = await News.findByIdAndUpdate(req.params.id, req.body);
     res.send(createResponse('News Updated Succesfully', updatedNews));
   } catch (err) {

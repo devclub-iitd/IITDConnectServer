@@ -406,6 +406,12 @@ export const putUpdateEvent = async (
       req.body.imageLink = req.file.path;
     }
     // Finally updating
+    if (req.body.imageLink !== null) {
+      const oldEvent = await Event.findById(req.params.id);
+      if (oldEvent !== null && oldEvent.imageLink.startsWith('media/')) {
+        fs.unlinkSync(oldEvent.imageLink);
+      }
+    }
     const updatedEvent = await Event.findByIdAndUpdate(req.params.id, req.body);
     let respData = {};
     if (updatedEvent) {
