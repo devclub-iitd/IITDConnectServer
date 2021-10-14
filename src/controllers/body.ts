@@ -8,6 +8,7 @@ import User, {UserImpl} from '../models/user';
 import {Body, BodyMember, BodyImpl} from '../models/body';
 import * as admin from 'firebase-admin';
 // import {nextTick} from 'process';
+import fs = require('fs');
 
 const toBodyJSON = (body: BodyImpl, user: UserImpl) => {
   const isSub = user.subscribedBodies.some(bodyId => {
@@ -28,6 +29,9 @@ export const addBody = async (
     const user = await User.findById(req.payload);
 
     if (user === null || user.superSuperAdmin === false) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
+      }
       throw createError(401, 'Unauthorized', 'Invalid');
     }
     const newBody = new Body(req.body);
@@ -125,6 +129,9 @@ export const updateBody = async (
       Body.findById(req.params.id),
     ]);
     if (superadmin === null || body === null) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
+      }
       throw createError(
         400,
         'Invalid Request',
@@ -132,6 +139,9 @@ export const updateBody = async (
       );
     }
     if (!body.superAdmin) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
+      }
       throw createError(
         400,
         'Superadmin for the body donot exists, cannot add members. First create superAdmin',
@@ -139,11 +149,17 @@ export const updateBody = async (
       );
     }
     if (!body.superAdmin.equals(req.payload)) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
+      }
       throw createError(
         400,
         'Not Authorized',
         'Only users of superadmin status are allowed to add The members'
       );
+    }
+    if (req.file !== undefined) {
+      req.body.imageUrl = req.file.path;
     }
     await body.update(req.body);
     await body.save();
@@ -223,6 +239,9 @@ export const addMembers = async (
       Body.findById(req.body.bodyId),
     ]);
     if (superadmin === null || body === null) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
+      }
       throw createError(
         400,
         'Invalid Request',
@@ -230,6 +249,9 @@ export const addMembers = async (
       );
     }
     if (!body.superAdmin) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
+      }
       throw createError(
         400,
         'Superadmin for the body donot exists, cannot add members',
@@ -239,14 +261,24 @@ export const addMembers = async (
     // console.log('here 1');
     // console.log(body.superAdmin, req.payload);
     if (!body.superAdmin.equals(req.payload)) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
+      }
       throw createError(
         400,
         'Not Authorized',
         'Only users of superadmin status are allowed to add The members'
       );
     }
+    if (req.file !== undefined) {
+      req.body.member.imgUrl = req.file.path;
+    }
     const member = new BodyMember(req.body.member);
     if (body.members.includes(member)) {
+      //if image is uploaded then this would never arise as time would be different
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
+      }
       throw createError(
         400,
         'Already Exists',

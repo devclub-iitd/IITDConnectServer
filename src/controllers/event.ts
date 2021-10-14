@@ -10,7 +10,7 @@ import User, {UserImpl} from '../models/user';
 import {Body} from '../models/body';
 import Update from '../models/update';
 import admin = require('firebase-admin');
-
+import fs = require('fs');
 // import Body from "../models/body";
 
 const toEventJSON = (event: EventImpl, user: UserImpl) => {
@@ -55,27 +55,36 @@ export const createEvent = async (
     throw createError(400, 'Validation Error', 'Validation Error');
   }
   // console.log(req.body);
-  console.log('file', req.file);
+  // console.log('file', req.file);
 
   try {
     const requestBody = req.body;
-    console.log(requestBody, typeof requestBody);
+    //console.log(requestBody, typeof requestBody);
     const body = await Body.findById(requestBody.body);
     const user = await User.findById(req.payload);
-    if (user === null || body === null) {
+    if (
+      user === null ||
+      body === null ||
+      (user.isAdmin === false &&
+        user.isSuperAdmin === false &&
+        user.superSuperAdmin)
+    ) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
+      }
       throw createError(401, 'Unauthorized', 'Invalid');
     }
     const topic =
       slug(requestBody.name.toString()) +
       '-' +
       ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
-    console.log('here-1');
+    //console.log('here-1');
     const newEvent = new Event({
       ...req.body,
       createdBy: user,
       topicName: topic,
     });
-    console.log('here-2', body);
+    //console.log('here-2', body);
     if (req.file !== undefined) {
       newEvent.imageLink = req.file.path;
     }
@@ -83,7 +92,7 @@ export const createEvent = async (
 
     body.events.push(newEvent._id);
     await body.save();
-    console.log(body);
+    //console.log(body);
     //Push notification to Client from Firebase admin
     // if (process.env.NODE_ENV === 'production') {
     //   const message = {
@@ -119,6 +128,9 @@ export const deleteEvent = async (
     const event = await Event.findById(req.params.id);
     if (event === null) {
       throw createError(400, 'Invalid', 'Event Id Invalid');
+    }
+    if (event.imageLink.startsWith('media/')) {
+      fs.unlinkSync(event.imageLink);
     }
     await Body.update({_id: event.body}, {$pull: {events: event.id}});
     await event.remove();
@@ -362,6 +374,9 @@ export const putUpdateEvent = async (
       User.findById(req.payload),
     ]);
     if (event === null || user === null) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
+      }
       throw createError(400, 'Invalid', 'No Such Event Exists');
     }
     // verify allowed fields
@@ -378,11 +393,17 @@ export const putUpdateEvent = async (
       allowedUpdates.includes(update)
     );
     if (!isValidOperation) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
+      }
       throw createError(
         400,
         'Update fields do not match',
         'Following fields can only be updated ' + allowedUpdates
       );
+    }
+    if (req.file !== undefined) {
+      req.body.imageLink = req.file.path;
     }
     // Finally updating
     const updatedEvent = await Event.findByIdAndUpdate(req.params.id, req.body);

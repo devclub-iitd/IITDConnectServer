@@ -13,7 +13,7 @@ import {
 } from '../../controllers/event';
 import auth from '../../middleware/auth';
 import {upload} from '../../middleware/multer';
-import {checkAccessEvent} from '../../middleware/checkAccess';
+// import {checkAccessEvent} from '../../middleware/checkAccess';
 
 const router = express.Router();
 
@@ -28,7 +28,7 @@ router.get('/check', auth, (req: Request, res: Response) => {
 router.post(
   '/',
   auth,
-  checkAccessEvent,
+  // checkAccessEvent,
   upload.single('eventImage'),
   createEvent
 );
@@ -48,7 +48,7 @@ router.delete('/:id', auth, deleteEvent);
 
 //? Tested OK...
 //* Update An Event
-router.put('/:id', auth, putUpdateEvent);
+router.put('/:id', auth, upload.single('eventImage'), putUpdateEvent);
 
 //? Tested OK...
 //* Star/UnStar An Event
