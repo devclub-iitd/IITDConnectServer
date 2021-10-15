@@ -22,6 +22,7 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
 
     // console.log(token);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const decoded: any = await jwt.verify(token, publicKey, {
       algorithms: ['RS256'],
     });

@@ -4,7 +4,7 @@
   "repository": "https://github.com/devclub-iitd/IITDConnectServer.git",
   "scripts": {
     "start": "node build/src/server.js",
-    "postinstall": "tsc && cp ./src/middleware/public.pem ./build/src/middleware",
+    "postinstall": "tsc",
     "watch-node": "nodemon build/src/server.js",
     "build-ts": "tsc",
     "post-build": "copyfiles src/**/*.pem build/",
