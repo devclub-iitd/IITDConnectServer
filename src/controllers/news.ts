@@ -3,6 +3,7 @@ import User from '../models/user';
 import {Request, Response, NextFunction} from 'express';
 import {createError, createResponse} from '../utils/helpers';
 import admin = require('firebase-admin');
+import fs = require('fs');
 
 export const getNews = async (
   req: Request,
@@ -92,9 +93,15 @@ export const addNews = async (
   try {
     const user = await User.findById(req.payload);
     if (user === null) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
+      }
       throw createError(401, 'Invalid', 'Invalid Login Credentials');
     }
     if (!user.isAdmin && !user.isSuperAdmin && !user.superSuperAdmin) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
+      }
       throw createError(
         401,
         'Unauthorized',
@@ -105,6 +112,9 @@ export const addNews = async (
       ...req.body,
       createdBy: user._id,
     });
+    if (req.file !== undefined) {
+      news.imgUrl = req.file.path;
+    }
     await news.save();
     res.send(createResponse('News added Successfully', news));
 
@@ -145,6 +155,9 @@ export const deleteNews = async (
 
     //If user is ONLY admin , he can delete only his news. SuperAdmins can delete all news
     const news = await News.findById(req.params.id);
+    if (news !== null && news.imgUrl.startsWith('media/')) {
+      fs.unlinkSync(news.imgUrl);
+    }
     if (
       user.isSuperAdmin === false &&
       user.superSuperAdmin === false &&
@@ -175,9 +188,15 @@ export const updateNews = async (
     // verify user
     const user = await User.findById(req.payload);
     if (user === null) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
+      }
       throw createError(401, 'Invalid', 'Invalid Login credentials');
     }
     if (!user.isAdmin && !user.isSuperAdmin && !user.superSuperAdmin) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
+      }
       throw createError(
         401,
         'Unauthorized',
@@ -194,6 +213,9 @@ export const updateNews = async (
       news !== null
     ) {
       if (!news.createdBy.equals(user._id)) {
+        if (req.file !== undefined) {
+          fs.unlinkSync(req.file.path);
+        }
         throw createError(
           401,
           'Unauthorized',
@@ -212,11 +234,17 @@ export const updateNews = async (
       'content',
       'visible',
     ];
+    if (req.file !== undefined) {
+      req.body.imgUrl = req.file.path;
+    }
     const updates = Object.keys(req.body);
     const isValidOperation = updates.every(update =>
       allowedUpdates.includes(update)
     );
     if (!isValidOperation) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
+      }
       throw createError(
         400,
         'Update fields do not match',
@@ -224,6 +252,12 @@ export const updateNews = async (
       );
     }
     // Finally updating
+    if (req.body.imgUrl !== null) {
+      const oldNews = await News.findById(req.params.id);
+      if (oldNews !== null && oldNews.imgUrl.startsWith('media/')) {
+        fs.unlinkSync(oldNews.imgUrl);
+      }
+    }
     const updatedNews = await News.findByIdAndUpdate(req.params.id, req.body);
     res.send(createResponse('News Updated Succesfully', updatedNews));
   } catch (err) {

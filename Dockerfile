@@ -1,4 +1,4 @@
-FROM node:12.13.0
+FROM node:14
 
 RUN mkdir /code
 WORKDIR /code
@@ -10,8 +10,9 @@ RUN apt-get update \
 COPY package*.json ./
 
 RUN npm install
-
 COPY . .
+
+COPY ./src/middleware/public.pem  ./build/src/middleware
 
 RUN ["chmod", "+x", "/code/entry-point.sh"]
 ENTRYPOINT ["/code/entry-point.sh"] 

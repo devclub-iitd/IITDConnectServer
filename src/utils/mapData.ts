@@ -19,8 +19,7 @@ export const data = [
     id: 1,
     cd: [28.545382, 77.192265],
     name: 'Cafe Coffee Day',
-    img:
-      'https://media-cdn.tripadvisor.com/media/photo-s/11/b2/71/6b/a-nice-overall-ambience.jpg',
+    img: 'https://media-cdn.tripadvisor.com/media/photo-s/11/b2/71/6b/a-nice-overall-ambience.jpg',
     category: 'eat',
     details:
       'The famous Café cum restaurant, serving coffee, cakes and sandwiches at subsidized rates.',
@@ -37,8 +36,7 @@ export const data = [
     id: 2,
     cd: [28.545423, 77.191826],
     name: 'SCOOPS',
-    img:
-      'https://media-cdn.tripadvisor.com/media/photo-s/11/b2/71/6b/a-nice-overall-ambience.jpg',
+    img: 'https://media-cdn.tripadvisor.com/media/photo-s/11/b2/71/6b/a-nice-overall-ambience.jpg',
     category: 'shop',
     details:
       'SCOOPS or Student Co-Operative Society is the one stop for all your stationery needs, at affordable rates.',
@@ -84,8 +82,7 @@ export const data = [
     id: 5,
     cd: [28.544848, 77.191558],
     name: 'Amul Cafe',
-    img:
-      'https://content.jdmagicbox.com/comp/delhi/z3/011pxx11.xx11.170113083022.y6z3/catalogue/amul-cafe-registrar-iit-new-delhi-delhi-coffee-shops-kemiks5i3f.jpg',
+    img: 'https://content.jdmagicbox.com/comp/delhi/z3/011pxx11.xx11.170113083022.y6z3/catalogue/amul-cafe-registrar-iit-new-delhi-delhi-coffee-shops-kemiks5i3f.jpg',
     category: 'eat',
     details:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore',
@@ -146,8 +143,7 @@ export const data = [
     id: 9,
     cd: [28.544668, 77.191461],
     name: 'Central Library',
-    img:
-      'https://library.iitd.ac.in/sites/default/files/styles/slideshow_image/public/2020-08/Webp.net-compress-image.jpg?itok=X8a6OaMF',
+    img: 'https://library.iitd.ac.in/sites/default/files/styles/slideshow_image/public/2020-08/Webp.net-compress-image.jpg?itok=X8a6OaMF',
     category: 'academic',
     details:
       'IIT Delhi"s main library with a rich collection of books and academic journals. ',
@@ -162,8 +158,7 @@ export const data = [
     id: 10,
     cd: [28.546202, 77.191276],
     name: 'Dept. Of Civil Engineering',
-    img:
-      'http://civil.iitd.ac.in/gallery-images/Department/Department%20of%20Civil%20Engineering%20-%201.jpg',
+    img: 'http://civil.iitd.ac.in/gallery-images/Department/Department%20of%20Civil%20Engineering%20-%201.jpg',
     short: 'C.E. Department',
     category: 'academic',
     details: 'The Department of Civil Engineering, IIT Delhi is situated here.',
@@ -304,8 +299,7 @@ export const data = [
     id: 20,
     cd: [28.547332, 77.183122],
     name: 'Karakoram Hostel',
-    img:
-      'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQSNBV4bhbjsb0Mwtmq1wZpYxBrbBfWghHMVktY0BiSsYrRjVPq&usqp=CAU',
+    img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQSNBV4bhbjsb0Mwtmq1wZpYxBrbBfWghHMVktY0BiSsYrRjVPq&usqp=CAU',
     category: 'hostel',
     details:
       "With 450 residents, Karakoram or 'Kara' goes by the motto सर्वश्रेष्ठम् सर्वसुंदरम् काराकोरम् काराकोरम्\nWARDEN\nDr Manojkumar Ramteke, Associate Professor, Department of Chemical Engineering",
@@ -376,8 +370,7 @@ export const data = [
     id: 25,
     cd: [28.54343789812074, 77.19127982854845],
     name: 'Staff Canteen',
-    img:
-      'https://qph.fs.quoracdn.net/main-qimg-9716df72fc0640634a9e7cd2cdaa1c96',
+    img: 'https://qph.fs.quoracdn.net/main-qimg-9716df72fc0640634a9e7cd2cdaa1c96',
     category: 'eat',
     details:
       'IIT Delhi"s Staff Canteen. Unlike its name, it is open to all and provides clean, hygenic and affordable meals.',
@@ -408,8 +401,7 @@ export const data = [
     id: 27,
     cd: [28.548201298663667, 77.18435704708101],
     name: 'Rajdhani Chatkare Foods',
-    img:
-      'https://content3.jdmagicbox.com/comp/delhi/j6/011pxx11.xx11.180505105548.e1j6/catalogue/rajdhani-chatkhare-food-hauz-khas-delhi-home-delivery-restaurants-xokptgx3q6.jpg',
+    img: 'https://content3.jdmagicbox.com/comp/delhi/j6/011pxx11.xx11.180505105548.e1j6/catalogue/rajdhani-chatkhare-food-hauz-khas-delhi-home-delivery-restaurants-xokptgx3q6.jpg',
     category: 'eat',
     details: 'Affordable snacks and meals across cuisines available here.',
     infoUrl:
@@ -481,8 +473,7 @@ export const data = [
     id: 32,
     cd: [28.545126, 77.193483],
     name: 'BioTech Lawns',
-    img:
-      'https://upload.wikimedia.org/wikipedia/commons/b/bf/Multi_Storey_Building%2C_IITD.JPG',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/b/bf/Multi_Storey_Building%2C_IITD.JPG',
     category: 'park',
     details:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore',
@@ -497,8 +488,7 @@ export const data = [
     id: 33,
     cd: [28.545940430931072, 77.18602001667024],
     name: 'Swimming Pool',
-    img:
-      'https://content3.jdmagicbox.com/comp/delhi/s4/011pxx11.xx11.170904142536.a6s4/catalogue/iit-delhi-swimming-pool-hauz-khas-delhi-swimming-pools-2rwh7s4lz1.jpg',
+    img: 'https://content3.jdmagicbox.com/comp/delhi/s4/011pxx11.xx11.170904142536.a6s4/catalogue/iit-delhi-swimming-pool-hauz-khas-delhi-swimming-pools-2rwh7s4lz1.jpg',
     category: 'sport',
     details: 'IIT Delhi"s Olympic size, best in class swimming pool',
     infoUrl: 'http://www.iitd.ac.in/',
@@ -615,8 +605,7 @@ export const data = [
     id: 40,
     cd: [28.542632, 77.183011],
     name: 'Department of Management Studies ',
-    img:
-      'https://getmyuni.azureedge.net/college-image/big/department-of-management-studies-dms-iit-delhi-new-delhi.jpg',
+    img: 'https://getmyuni.azureedge.net/college-image/big/department-of-management-studies-dms-iit-delhi-new-delhi.jpg',
     short: 'DMS IITD',
     infoUrl: 'http://dms.iitd.ac.in/',
     mapUrl:
@@ -673,8 +662,7 @@ export const data = [
     id: 44,
     cd: [28.543972, 77.193585],
     name: 'Department of Textile & Fibre Engineering',
-    img:
-      'http://www.smita-iitd.com/_/rsrc/1584102045552/group-members/16-17%20dept.PNG',
+    img: 'http://www.smita-iitd.com/_/rsrc/1584102045552/group-members/16-17%20dept.PNG',
     short: 'Textile Department',
     category: 'academic',
     details: 'The Department Of Textile & Fibre Enginnering IITD.',
@@ -765,8 +753,7 @@ export const data = [
     id: 49,
     cd: [28.546196, 77.18663],
     name: 'Masala Mix',
-    img:
-      'https://content.jdmagicbox.com/comp/delhi/z6/011pxx11.xx11.181113202746.h7z6/catalogue/masala-mix-hauz-khas-delhi-l801s9i1wn.jpg',
+    img: 'https://content.jdmagicbox.com/comp/delhi/z6/011pxx11.xx11.181113202746.h7z6/catalogue/masala-mix-hauz-khas-delhi-l801s9i1wn.jpg',
     category: 'eat',
     details: 'Masala Mix IIT Delhi',
     infoUrl:
@@ -837,8 +824,7 @@ export const data = [
     id: 54,
     cd: [28.5449127, 77.184791],
     name: 'Student Activity Center',
-    img:
-      'https://s3-ap-southeast-1.amazonaws.com/sportsjig-production-assets/system/assets/files/2675/large/IMG_20151224_142649.jpg?1450948596',
+    img: 'https://s3-ap-southeast-1.amazonaws.com/sportsjig-production-assets/system/assets/files/2675/large/IMG_20151224_142649.jpg?1450948596',
     category: 'other',
     details:
       'Well maintained multi-sports facility. Accessible to the Students, Staff and Alumni only.',
@@ -854,8 +840,7 @@ export const data = [
     id: 55,
     cd: [28.5458768, 77.1880759],
     name: 'Hospital',
-    img:
-      'http://hospital.iitd.ac.in/sites/default/files/hospital/iitd_hospital.jpg',
+    img: 'http://hospital.iitd.ac.in/sites/default/files/hospital/iitd_hospital.jpg',
     category: 'medical',
     details:
       'The medical needs of the Campus population met by the Institute Hospital.',
@@ -870,8 +855,7 @@ export const data = [
     id: 56,
     cd: [28.5458568, 77.1856583],
     name: 'Apollo Pharmacy',
-    img:
-      'https://content.jdmagicbox.com/comp/delhi/v3/011pxx11.xx11.110223095948.n7v3/catalogue/apollo-pharmacy-r-k-puram-delhi-chemists-4j3skns.jpg?clr=',
+    img: 'https://content.jdmagicbox.com/comp/delhi/v3/011pxx11.xx11.110223095948.n7v3/catalogue/apollo-pharmacy-r-k-puram-delhi-chemists-4j3skns.jpg?clr=',
     category: 'medical',
     details: 'The campus pharmacy.',
     infoUrl:
@@ -960,8 +944,7 @@ export const data = [
     id: 62,
     cd: [28.5427987, 77.1979836],
     name: 'Kendriya Vidyalaya IIT Delhi',
-    img:
-      'https://d2jg2pri5bpndu.cloudfront.net/schools/covers/870_KV-IIT---Kendriya-Vidyalaya-.png',
+    img: 'https://d2jg2pri5bpndu.cloudfront.net/schools/covers/870_KV-IIT---Kendriya-Vidyalaya-.png',
     category: 'academic',
     details: 'Kendriya Vidyala IIT Delhi',
     infoUrl: '',
@@ -990,8 +973,7 @@ export const data = [
     id: 64,
     cd: [28.5433479, 77.1989034],
     name: 'Mother Dairy Booth & Safal Store',
-    img:
-      'https://content3.jdmagicbox.com/comp/delhi/q3/011pxx11.xx11.121229120836.z8q3/catalogue/safal-mother-dairy-defence-colony-delhi-fruit-vendors-isfkybyfxn.jpg',
+    img: 'https://content3.jdmagicbox.com/comp/delhi/q3/011pxx11.xx11.121229120836.z8q3/catalogue/safal-mother-dairy-defence-colony-delhi-fruit-vendors-isfkybyfxn.jpg',
     category: 'shop',
     details: 'Mother Dairy Booth & Safal Store',
     infoUrl: '',
@@ -1005,8 +987,7 @@ export const data = [
     id: 65,
     cd: [28.5436112, 77.1983934],
     name: 'Main Guest House',
-    img:
-      'https://upload.wikimedia.org/wikipedia/commons/0/02/IIT_Delhi_guest_house.jpg',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/0/02/IIT_Delhi_guest_house.jpg',
     category: 'other',
     details: 'Main Guest House IIT Delhi',
     infoUrl: 'http://iitd.ac.in/',

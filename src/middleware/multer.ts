@@ -6,7 +6,10 @@ const storage = multer.diskStorage({
     cb(null, 'media/');
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    cb(
+      null,
+      new Date().toISOString().replace(/:|\./g, '') + '-' + file.originalname
+    );
   },
 });
 export const upload = multer({
