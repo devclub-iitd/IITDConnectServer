@@ -5,9 +5,11 @@ import logger from '../utils/logger';
 function logRequest(req: Request, res: Response, next: NextFunction) {
   // http://www.senchalabs.org/connect/responseTime.html
   const start = new Date();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   if ((<any>res)._responseTime) {
     return next();
   }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (<any>res)._responseTime = true;
 
   const ip =

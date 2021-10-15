@@ -22,6 +22,7 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
 
     // console.log(token);
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const decoded: any = await jwt.verify(token, publicKey, {
       algorithms: ['RS256'],
     });
@@ -34,7 +35,7 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
     if (user) {
       // console.log('User Created');
       // console.log(user.id);
-      req.payload = mongoose.Types.ObjectId(user.id);
+      req.payload = new mongoose.Types.ObjectId(user.id);
       return next();
     }
 
@@ -55,7 +56,7 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
     // req.payload : {
     //   id : anal
     // }
-    req.payload = mongoose.Types.ObjectId(newUser.id);
+    req.payload = new mongoose.Types.ObjectId(newUser.id);
 
     return next();
   } catch (error) {

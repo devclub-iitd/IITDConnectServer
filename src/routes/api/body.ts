@@ -8,6 +8,8 @@ import {
   addMembers,
   updateBody,
 } from '../../controllers/body';
+import {upload} from '../../middleware/multer';
+// import {checkAccessBody} from '../../middleware/checkAccess';
 
 const router = express.Router();
 
@@ -15,12 +17,12 @@ const router = express.Router();
 router.get('/', auth, getAllBodies);
 
 //? Tested OK
-router.post('/', auth, addBody);
+router.post('/', auth, upload.single('bodyImage'), addBody);
 
 //? Tested OK
 router.get('/:id', auth, getBody);
 
-router.patch('/:id', auth, updateBody);
+router.patch('/:id', auth, upload.single('bodyImage'), updateBody);
 
 //? Tested OK
 //! Google Firebase Integration is Left
@@ -28,5 +30,5 @@ router.post('/:id/subscribe', auth, toggleSubscribe);
 
 // ?Tested Ok
 // Add members to the Body , Only by Superadmin
-router.post('/addMember', auth, addMembers);
+router.post('/addMember', auth, upload.single('bodyMemberImage'), addMembers);
 export default router;

@@ -15,7 +15,7 @@ export interface BodyImpl extends Document {
   hangoutInfo: object;
 }
 export interface BodyMemberImpl extends Document {
-  name: string;
+  userId: object;
   por: string;
   imgUrl: string;
   link: object;
@@ -40,8 +40,8 @@ const linksSchema = new Schema({
   },
 });
 const memberSchema = new Schema({
-  name: {
-    type: String,
+  userId: {
+    type: Schema.Types.ObjectId,
     required: true,
   },
   por: {

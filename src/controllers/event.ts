@@ -10,7 +10,7 @@ import User, {UserImpl} from '../models/user';
 import {Body} from '../models/body';
 import Update from '../models/update';
 import admin = require('firebase-admin');
-
+import fs = require('fs');
 // import Body from "../models/body";
 
 const toEventJSON = (event: EventImpl, user: UserImpl) => {
@@ -54,48 +54,65 @@ export const createEvent = async (
   if (!errors) {
     throw createError(400, 'Validation Error', 'Validation Error');
   }
+  // console.log(req.body);
+  // console.log('file', req.file);
 
   try {
-    const body = await Body.findById(req.body.body);
+    const requestBody = req.body;
+    //console.log(requestBody, typeof requestBody);
+    const body = await Body.findById(requestBody.body);
     const user = await User.findById(req.payload);
-    if (user === null || body === null) {
+    if (
+      user === null ||
+      body === null ||
+      (user.isAdmin === false &&
+        user.isSuperAdmin === false &&
+        user.superSuperAdmin)
+    ) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
+      }
       throw createError(401, 'Unauthorized', 'Invalid');
     }
     const topic =
-      slug(req.body.name) +
+      slug(requestBody.name.toString()) +
       '-' +
       ((Math.random() * Math.pow(36, 6)) | 0).toString(36);
-
+    //console.log('here-1');
     const newEvent = new Event({
       ...req.body,
       createdBy: user,
       topicName: topic,
     });
+    //console.log('here-2', body);
+    if (req.file !== undefined) {
+      newEvent.imageLink = req.file.path;
+    }
     await newEvent.save();
 
     body.events.push(newEvent._id);
     await body.save();
-
+    //console.log(body);
     //Push notification to Client from Firebase admin
-    if (process.env.NODE_ENV === 'production') {
-      const message = {
-        notification: {
-          title: body.name + '-' + newEvent.name,
-          body: newEvent.about,
-        },
-        topic: body.name,
-        //TODO Provide a unique topic to body as done in events
-      };
-      admin
-        .messaging()
-        .send(message)
-        .then(() => {
-          console.log('Message sent successfully');
-        })
-        .catch(() => {
-          console.log('Message could not be sent');
-        });
-    }
+    // if (process.env.NODE_ENV === 'production') {
+    //   const message = {
+    //     notification: {
+    //       title: body.name + '-' + newEvent.name,
+    //       body: newEvent.about,
+    //     },
+    //     topic: body.name,
+    //     //TODO Provide a unique topic to body as done in events
+    //   };
+    //   admin
+    //     .messaging()
+    //     .send(message)
+    //     .then(() => {
+    //       console.log('Message sent successfully');
+    //     })
+    //     .catch(() => {
+    //       console.log('Message could not be sent');
+    //     });
+    // }
     res.send(createResponse('Event Added Successfully', {newEvent}));
   } catch (err) {
     next(err);
@@ -111,6 +128,9 @@ export const deleteEvent = async (
     const event = await Event.findById(req.params.id);
     if (event === null) {
       throw createError(400, 'Invalid', 'Event Id Invalid');
+    }
+    if (event.imageLink.startsWith('media/')) {
+      fs.unlinkSync(event.imageLink);
     }
     await Body.update({_id: event.body}, {$pull: {events: event.id}});
     await event.remove();
@@ -250,9 +270,9 @@ export const toggleStar = async (
     if (user === null || event === null) {
       throw createError(401, 'Unauthorized', 'Invalid Login Credentials');
     }
-    const index = user.staredEvents.indexOf(Types.ObjectId(req.params.id));
+    const index = user.staredEvents.indexOf(new Types.ObjectId(req.params.id));
     if (index === -1) {
-      user.staredEvents.push(Types.ObjectId(req.params.id));
+      user.staredEvents.push(new Types.ObjectId(req.params.id));
       //Subscribe the user to this event
       if (process.env.NODE_ENV === 'production') {
         admin
@@ -296,49 +316,111 @@ export const removeUpdate = async (
   }
 };
 
-export const putUpdateEvent = (
+// export const putUpdateEvent = (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   return Promise.all([
+//     Event.findById(req.params.id),
+//     User.findById(req.payload),
+//   ])
+//     .then(([event, user]) => {
+//       if (event === null || user === null) {
+//         throw createError(400, 'Invalid', 'No Such Event Exists');
+//       }
+//       if (req.body.name !== null) {
+//         event.name = req.body.name;
+//       }
+//       if (req.body.about !== null) {
+//         event.about = req.body.about;
+//       }
+//       if (req.body.imageLink !== null) {
+//         event.imageLink = req.body.imageLink;
+//       }
+//       if (req.body.venue !== null) {
+//         event.venue = req.body.venue;
+//       }
+//       if (req.body.startDate !== null) {
+//         event.startDate = req.body.startDate;
+//       }
+//       if (req.body.endDate !== null) {
+//         event.endDate = req.body.endDate;
+//       }
+//       event.save().then(event => {
+//         // const respData = {
+//         //   event: toEventJSON(event, user)
+//         // };
+//         // console.log(respData);
+//         const respData = {
+//           id: event._id,
+//         };
+//         return res.send(createResponse('Event Updated Successfully', respData));
+//       });
+//     })
+//     .catch(e => {
+//       next(e);
+//     });
+// };
+
+export const putUpdateEvent = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  return Promise.all([
-    Event.findById(req.params.id),
-    User.findById(req.payload),
-  ])
-    .then(([event, user]) => {
-      if (event === null || user === null) {
-        throw createError(400, 'Invalid', 'No Such Event Exists');
+  try {
+    const [event, user] = await Promise.all([
+      Event.findById(req.params.id),
+      User.findById(req.payload),
+    ]);
+    if (event === null || user === null) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
       }
-      if (req.body.name !== null) {
-        event.name = req.body.name;
+      throw createError(400, 'Invalid', 'No Such Event Exists');
+    }
+    // verify allowed fields
+    const allowedUpdates = [
+      'name',
+      'about',
+      'imageLink',
+      'venue',
+      'startDate',
+      'endDate',
+    ];
+    const updates = Object.keys(req.body);
+    const isValidOperation = updates.every(update =>
+      allowedUpdates.includes(update)
+    );
+    if (!isValidOperation) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
       }
-      if (req.body.about !== null) {
-        event.about = req.body.about;
+      throw createError(
+        400,
+        'Update fields do not match',
+        'Following fields can only be updated ' + allowedUpdates
+      );
+    }
+    if (req.file !== undefined) {
+      req.body.imageLink = req.file.path;
+    }
+    // Finally updating
+    if (req.body.imageLink !== null) {
+      const oldEvent = await Event.findById(req.params.id);
+      if (oldEvent !== null && oldEvent.imageLink.startsWith('media/')) {
+        fs.unlinkSync(oldEvent.imageLink);
       }
-      if (req.body.imageLink !== null) {
-        event.imageLink = req.body.imageLink;
-      }
-      if (req.body.venue !== null) {
-        event.venue = req.body.venue;
-      }
-      if (req.body.startDate !== null) {
-        event.startDate = req.body.startDate;
-      }
-      if (req.body.endDate !== null) {
-        event.endDate = req.body.endDate;
-      }
-      event.save().then(event => {
-        // const respData = {
-        //   event: toEventJSON(event, user)
-        // };
-        // console.log(respData);
-        const respData = {
-          id: event._id,
-        };
-        return res.send(createResponse('Event Updated Successfully', respData));
-      });
-    })
-    .catch(e => {
-      next(e);
-    });
+    }
+    const updatedEvent = await Event.findByIdAndUpdate(req.params.id, req.body);
+    let respData = {};
+    if (updatedEvent) {
+      respData = {
+        id: updatedEvent._id,
+      };
+    }
+    res.send(createResponse('Event Updated Succesfully', respData));
+  } catch (error) {
+    next(error);
+  }
 };
