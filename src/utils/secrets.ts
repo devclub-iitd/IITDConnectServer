@@ -20,3 +20,5 @@ export const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 export const MONGODB_URI =
   process.env.DB_URL ||
   'mongodb://database:27017/iitdconnect?retryWrites=true&w=majority';
+
+export const SSA_PSWD = process.env.SSA_PSWD || 'secret';

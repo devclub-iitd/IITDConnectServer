@@ -33,14 +33,14 @@ router.get('/news', auth, getNews);
 // add a news
 router.post('/news', auth, upload.single('newsImage'), addNews);
 
-router.delete('/news/:id', auth, deleteNews);
+router.post('/news/:id', auth, deleteNews);
 
 // ?Tested Ok
 // get news details
 router.get('/news/:id', auth, newsDetails);
 
 // ?Tested Ok
-router.patch('/news/:id', auth, upload.single('newsImage'), updateNews);
+router.put('/news/:id', auth, upload.single('newsImage'), updateNews);
 
 // report news
 router.post('/news/report/:id', auth, reportNews);

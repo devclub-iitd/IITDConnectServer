@@ -65,9 +65,7 @@ export const createEvent = async (
     if (
       user === null ||
       body === null ||
-      (user.isAdmin === false &&
-        user.isSuperAdmin === false &&
-        user.superSuperAdmin)
+      (!user.isAdmin && !user.isSuperAdmin && !user.superSuperAdmin)
     ) {
       if (req.file !== undefined) {
         fs.unlinkSync(req.file.path);
@@ -129,7 +127,7 @@ export const deleteEvent = async (
     if (event === null) {
       throw createError(400, 'Invalid', 'Event Id Invalid');
     }
-    if (event.imageLink.startsWith('media/')) {
+    if (event.imageLink !== undefined && event.imageLink.startsWith('media/')) {
       fs.unlinkSync(event.imageLink);
     }
     await Body.update({_id: event.body}, {$pull: {events: event.id}});
@@ -408,7 +406,11 @@ export const putUpdateEvent = async (
     // Finally updating
     if (req.body.imageLink !== null) {
       const oldEvent = await Event.findById(req.params.id);
-      if (oldEvent !== null && oldEvent.imageLink.startsWith('media/')) {
+      if (
+        oldEvent !== null &&
+        oldEvent.imageLink !== undefined &&
+        oldEvent.imageLink.startsWith('media/')
+      ) {
         fs.unlinkSync(oldEvent.imageLink);
       }
     }

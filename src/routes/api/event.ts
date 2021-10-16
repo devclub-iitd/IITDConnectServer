@@ -44,7 +44,7 @@ router.get('/:id', auth, getEvent);
 
 //? Tested OK...
 //* Delete An Event
-router.delete('/:id', auth, deleteEvent);
+router.post('/:id', auth, deleteEvent);
 
 //? Tested OK...
 //* Update An Event
@@ -58,6 +58,6 @@ router.post('/:id/star', auth, toggleStar);
 router.post('/:id/addUpdate', auth, addUpdate);
 
 //? Tested OK...
-router.delete('/:id/removeUpdate', auth, removeUpdate);
+router.post('/:id/removeUpdate', auth, removeUpdate);
 
 export default router;

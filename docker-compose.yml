@@ -2,21 +2,18 @@ version: '3.4'
 
 services:
   database:
-    image: '${REGISTRY_NAME}mongo:latest'
+    image: '${REGISTRY_NAME}mongo:5.0.3-focal'
     volumes:
       - iitdconnectdb:/data/db
     networks:
       - 'internal'
     restart: 'unless-stopped'
-
   dashboard:
     build: .
     image: '${REGISTRY_NAME}devclubiitd/iitdconnect:0.1'
     volumes:
       - public_media:/code/media
       - protected_media:/code/protected
-    ports:
-      - '${PORT}'
     healthcheck:
       test: ['CMD', 'curl', 'http://localhost:${PORT}']
       interval: 1m30s
@@ -24,13 +21,13 @@ services:
       retries: 3
       start_period: 40s
     restart: 'unless-stopped'
+    ports:
+      - ${PORT}
     networks:
       - 'internal'
-      - 'reverseproxy'
     env_file:
       - ./.env
     environment:
-      - VIRTUAL_HOST
       - DB_URL
       - PORT
     depends_on:
@@ -43,15 +40,9 @@ services:
       - public_media:/code/media
       - protected_media:/code/protected
     ports:
-      - 7000:80
+      - 80
     depends_on:
       - dashboard
-    healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:7000']
-      interval: 1m30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
     networks:
       - 'reverseproxy'
       - 'internal'

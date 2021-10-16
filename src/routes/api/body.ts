@@ -22,7 +22,7 @@ router.post('/', auth, upload.single('bodyImage'), addBody);
 //? Tested OK
 router.get('/:id', auth, getBody);
 
-router.patch('/:id', auth, upload.single('bodyImage'), updateBody);
+router.put('/:id', auth, upload.single('bodyImage'), updateBody);
 
 //? Tested OK
 //! Google Firebase Integration is Left

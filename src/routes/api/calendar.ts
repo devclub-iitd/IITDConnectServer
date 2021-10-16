@@ -24,11 +24,11 @@ router.get('/calendar/reminder', auth, getReminder);
 
 // ?Tested Ok
 // Update a Reminder
-router.patch('/calendar/reminder/:id', auth, updateReminder);
+router.put('/calendar/reminder/:id', auth, updateReminder);
 
 // Tested Ok ?
 //delete Reminder
-router.delete('/calendar/reminder/:id', auth, deleteReminder);
+router.post('/calendar/reminder/:id', auth, deleteReminder);
 
 router.post('/calendar/all', auth, getAllEventsAndReminder);
 export default router;
