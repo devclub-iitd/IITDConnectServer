@@ -7,13 +7,15 @@ import * as lusca from 'lusca';
 import * as compression from 'compression';
 import * as admin from 'firebase-admin';
 import * as fs from 'fs';
-// import {MONGODB_URI} from './utils/secrets';
+// import logRequest from './middleware/logRequest';
 import * as cron from 'node-cron';
 import {trendUpdate} from './cronJobs/trendUpdate';
 import routes from './routes';
 import {MONGODB_URI} from './utils/secrets';
+const morgan = require('morgan');
+const cluster = require('cluster');
 
-console.log(MONGODB_URI);
+// Firebase Admin Configuration
 let serviceAccount;
 if (process.env.NODE_ENV === 'production') {
   serviceAccount = JSON.parse(
@@ -55,6 +57,8 @@ app.use(
 );
 
 app.use(expressValidator());
+// Logg incoming connections
+if (process.env.NODE_ENV === 'production') app.use(morgan('default'));
 // app.use(logRequest);
 
 //* Takes Care of All The Routing
@@ -95,6 +99,8 @@ app.use(
   }
 );
 
-// Schedule cron-Jobs
-cron.schedule('0 */30 * * * *', trendUpdate);
+if (process.env.NODE_ENV !== 'production' || cluster.isMaster) {
+  // Schedule cron-Jobs
+  cron.schedule('0 */30 * * * *', trendUpdate);
+}
 export default app;
