@@ -124,38 +124,37 @@ export const updateBody = async (
   next: NextFunction
 ) => {
   try {
-    const [superadmin, body] = await Promise.all([
-      User.findById(req.payload),
+    const [body, user] = await Promise.all([
       Body.findById(req.params.id),
+      User.findById(req.payload),
     ]);
-    if (superadmin === null || body === null) {
+    if (body === null || user === null) {
       if (req.file !== undefined) {
         fs.unlinkSync(req.file.path);
       }
-      throw createError(
-        400,
-        'Invalid Request',
-        'Invalid credentials or request'
-      );
+      throw createError(400, 'Invalid', 'No Such Body Exists');
     }
-    if (!body.superAdmin) {
+    if (!body.superAdmin && user.superSuperAdmin === false) {
       if (req.file !== undefined) {
         fs.unlinkSync(req.file.path);
       }
       throw createError(
         400,
-        'Superadmin for the body donot exists, cannot add members. First create superAdmin',
+        'Superadmin for the body donot exist, cannot update body. First create superAdmin',
         ''
       );
     }
-    if (!body.superAdmin.equals(req.payload)) {
+    if (
+      user.superSuperAdmin === false &&
+      !body.superAdmin.equals(req.payload)
+    ) {
       if (req.file !== undefined) {
         fs.unlinkSync(req.file.path);
       }
       throw createError(
         400,
         'Not Authorized',
-        'Only users of superadmin status are allowed to add The members'
+        'Only users of superadmin status are allowed to update body'
       );
     }
     if (req.file !== undefined) {

@@ -412,7 +412,8 @@ export const putUpdateEvent = async (
         fs.unlinkSync(oldEvent.imageLink);
       }
     }
-    const updatedEvent = await Event.findByIdAndUpdate(req.params.id, req.body);
+    await Event.findByIdAndUpdate(req.params.id, req.body);
+    const updatedEvent = await Event.findById(req.params.id);
     let respData = {};
     if (updatedEvent) {
       respData = {
