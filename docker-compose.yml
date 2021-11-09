@@ -43,7 +43,7 @@ services:
       - public_media:/code/media
       - protected_media:/code/protected
     ports:
-      - 7000:80
+      - 80
     depends_on:
       - dashboard
     healthcheck:
