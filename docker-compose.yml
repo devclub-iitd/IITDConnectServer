@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   database:
-    image: '${REGISTRY_NAME}mongo:latest'
+    image: '${REGISTRY_NAME}mongo:5.0.3-focal'
     volumes:
       - iitdconnectdb:/data/db
     networks:
@@ -43,7 +43,7 @@ services:
       - public_media:/code/media
       - protected_media:/code/protected
     ports:
-      - 7000:80
+      - 80
     depends_on:
       - dashboard
     healthcheck:
