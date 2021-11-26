@@ -7,6 +7,9 @@ import {
   addBody,
   addMembers,
   updateBody,
+  updateMember,
+  addMemberImage,
+  updateMemberImage,
 } from '../../controllers/body';
 import {upload} from '../../middleware/multer';
 // import {checkAccessBody} from '../../middleware/checkAccess';
@@ -30,5 +33,22 @@ router.post('/:id/subscribe', auth, toggleSubscribe);
 
 // ?Tested Ok
 // Add members to the Body , Only by Superadmin
-router.post('/addMember', auth, upload.single('bodyMemberImage'), addMembers);
+router.post('/addMember', auth, addMembers);
+
+router.post(
+  '/addMemberImage',
+  auth,
+  upload.single('bodyMemberImage'),
+  addMemberImage
+);
+
+router.put('/updateMember', auth, updateMember);
+
+router.post(
+  '/updateMemberImage',
+  auth,
+  upload.single('bodyMemberImage'),
+  updateMemberImage
+);
+
 export default router;

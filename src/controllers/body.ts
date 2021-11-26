@@ -243,6 +243,56 @@ export const addMembers = async (
       Body.findById(req.body.bodyId),
     ]);
     if (superadmin === null || body === null) {
+      throw createError(
+        400,
+        'Invalid Request',
+        'Invalid credentials or request'
+      );
+    }
+    if (!body.superAdmin) {
+      throw createError(
+        400,
+        'Superadmin for the body donot exists, cannot add members',
+        ''
+      );
+    }
+    if (!body.superAdmin.equals(req.payload)) {
+      throw createError(
+        400,
+        'Not Authorized',
+        'Only users of superadmin status are allowed to add The members'
+      );
+    }
+    const member = new BodyMember(req.body.member);
+    if (body.members.includes(member)) {
+      //if image is uploaded then this would never arise as time would be different
+      throw createError(
+        400,
+        'Already Exists',
+        'The given member already exists'
+      );
+    }
+    body.members.push(member);
+    await body.save();
+
+    res.send(createResponse('Sucess', member));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const addMemberImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const [user, body, bodyMember] = await Promise.all([
+      User.findById(req.payload),
+      Body.findById(req.body.bodyId),
+      BodyMember.findById(req.body.memberId),
+    ]);
+    if (user === null || body === null || bodyMember === null) {
       if (req.file !== undefined) {
         fs.unlinkSync(req.file.path);
       }
@@ -258,12 +308,10 @@ export const addMembers = async (
       }
       throw createError(
         400,
-        'Superadmin for the body donot exists, cannot add members',
+        'Superadmin for the body donot exists, cannot add member image',
         ''
       );
     }
-    // console.log('here 1');
-    // console.log(body.superAdmin, req.payload);
     if (!body.superAdmin.equals(req.payload)) {
       if (req.file !== undefined) {
         fs.unlinkSync(req.file.path);
@@ -271,28 +319,127 @@ export const addMembers = async (
       throw createError(
         400,
         'Not Authorized',
-        'Only users of superadmin status are allowed to add The members'
+        "Only users of superadmin status are allowed to add member's image"
       );
     }
     if (req.file !== undefined) {
-      req.body.member.imgUrl = req.file.path;
+      bodyMember.imgUrl = req.file.path;
+      await bodyMember.save();
     }
-    const member = new BodyMember(req.body.member);
-    if (body.members.includes(member)) {
-      //if image is uploaded then this would never arise as time would be different
+    res.send(createResponse('Sucess', bodyMember));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateMember = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const [user, body, bodyMember] = await Promise.all([
+      User.findById(req.payload),
+      Body.findById(req.body.bodyId),
+      BodyMember.findById(req.body.memberId),
+    ]);
+    if (user === null || body === null || bodyMember === null) {
+      throw createError(
+        400,
+        'Invalid Request',
+        'Invalid credentials or request'
+      );
+    }
+    if (!body.superAdmin) {
+      throw createError(
+        400,
+        'Superadmin for the body donot exists, cannot update member',
+        ''
+      );
+    }
+    if (!body.superAdmin.equals(req.payload)) {
+      throw createError(
+        400,
+        'Not Authorized',
+        'Only users of superadmin status are allowed to update members'
+      );
+    }
+    // verify allowed fields
+    const allowedUpdates = ['por', 'imgUrl', 'link'];
+    const updates = Object.keys(req.body.member);
+    const isValidOperation = updates.every(update =>
+      allowedUpdates.includes(update)
+    );
+    if (!isValidOperation) {
+      throw createError(
+        400,
+        'Update fields do not match',
+        'Following fields can only be updated ' + allowedUpdates
+      );
+    }
+    // Finally updating
+    await BodyMember.findByIdAndUpdate(req.body.memberId, req.body.member);
+
+    const updatedMember = await BodyMember.findById(req.body.memberId);
+    let respData = {};
+    if (updatedMember) {
+      respData = {
+        id: updatedMember._id,
+      };
+    }
+    res.send(createResponse('Member Updated Succesfully', respData));
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateMemberImage = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const [user, body, bodyMember] = await Promise.all([
+      User.findById(req.payload),
+      Body.findById(req.body.bodyId),
+      BodyMember.findById(req.body.memberId),
+    ]);
+    if (user === null || body === null || bodyMember === null) {
       if (req.file !== undefined) {
         fs.unlinkSync(req.file.path);
       }
       throw createError(
         400,
-        'Already Exists',
-        'The given member already exists'
+        'Invalid Request',
+        'Invalid credentials or request'
       );
     }
-    body.members.push(member);
-    await body.save();
-
-    res.send(createResponse('Sucess', member));
+    if (!body.superAdmin) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
+      }
+      throw createError(
+        400,
+        'Superadmin for the body donot exists, cannot update member image',
+        ''
+      );
+    }
+    if (!body.superAdmin.equals(req.payload)) {
+      if (req.file !== undefined) {
+        fs.unlinkSync(req.file.path);
+      }
+      throw createError(
+        400,
+        'Not Authorized',
+        'Only users of superadmin status are allowed to update members image'
+      );
+    }
+    if (req.file !== undefined) {
+      fs.unlinkSync(bodyMember.imgUrl);
+      bodyMember.imgUrl = req.file.path;
+      await bodyMember.save();
+    }
+    res.send(createResponse('Member Updated Succesfully', bodyMember));
   } catch (error) {
     next(error);
   }
