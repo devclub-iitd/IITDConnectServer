@@ -252,7 +252,7 @@ export const updateNews = async (
       );
     }
     // Finally updating
-    if (req.body.imgUrl !== null) {
+    if (req.body.imgUrl !== undefined) {
       const oldNews = await News.findById(req.params.id);
       if (oldNews !== null && oldNews.imgUrl.startsWith('media/')) {
         fs.unlinkSync(oldNews.imgUrl);

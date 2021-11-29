@@ -160,7 +160,7 @@ export const updateBody = async (
     if (req.file !== undefined) {
       req.body.imageUrl = req.file.path;
     }
-    if (req.body.imageUrl !== null) {
+    if (req.body.imageUrl !== undefined) {
       if (body.imageUrl.startsWith('media/')) {
         fs.unlinkSync(body.imageUrl);
       }
@@ -274,6 +274,7 @@ export const addMembers = async (
     }
     body.members.push(member);
     await body.save();
+    await member.save();
 
     res.send(createResponse('Sucess', member));
   } catch (error) {
@@ -323,9 +324,10 @@ export const addMemberImage = async (
       );
     }
     if (req.file !== undefined) {
-      bodyMember.imgUrl = req.file.path;
-      await bodyMember.save();
+      req.body.imgUrl = req.file.path;
     }
+    bodyMember.imgUrl = req.body.imgUrl;
+    await bodyMember.save();
     res.send(createResponse('Sucess', bodyMember));
   } catch (error) {
     next(error);
@@ -365,7 +367,7 @@ export const updateMember = async (
       );
     }
     // verify allowed fields
-    const allowedUpdates = ['por', 'imgUrl', 'link'];
+    const allowedUpdates = ['por', 'link'];
     const updates = Object.keys(req.body.member);
     const isValidOperation = updates.every(update =>
       allowedUpdates.includes(update)
@@ -435,10 +437,15 @@ export const updateMemberImage = async (
       );
     }
     if (req.file !== undefined) {
-      fs.unlinkSync(bodyMember.imgUrl);
-      bodyMember.imgUrl = req.file.path;
-      await bodyMember.save();
+      req.body.imgUrl = req.file.path;
     }
+    if (req.body.imgUrl !== undefined) {
+      if (bodyMember.imgUrl.startsWith('media/')) {
+        fs.unlinkSync(bodyMember.imgUrl);
+      }
+    }
+    bodyMember.imgUrl = req.body.imgUrl;
+    await bodyMember.save();
     res.send(createResponse('Member Updated Succesfully', bodyMember));
   } catch (error) {
     next(error);
