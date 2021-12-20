@@ -14,6 +14,7 @@ import routes from './routes';
 import {MONGODB_URI} from './utils/secrets';
 const morgan = require('morgan');
 const cluster = require('cluster');
+import {logger} from './middleware/logger';
 
 // Firebase Admin Configuration
 let serviceAccount;
@@ -24,22 +25,25 @@ if (process.env.NODE_ENV === 'production') {
 
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: 'https://iitd-connect-b0113.firebaseio.com',
+    databaseURL: 'https://iitd-connect-c6554.firebaseio.com',
   });
 }
 // import logRequest from "./middleware/logRequest";
 
 const app = express();
 
-// mongoose.Promise = global.Promise;
 mongoose.connect(MONGODB_URI || '').catch((err: Error): void => {
   if (err) {
-    console.error(err.message || '');
+    logger.error(err || '');
   }
   throw new Error('Cannot Connect To MongoDB');
 });
 
 app.set('port', process.env.PORT || 5000);
+
+// #########################
+// MIDDLEWARES
+
 app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -59,55 +63,79 @@ app.use(
 app.use(expressValidator());
 // Logg incoming connections
 if (process.env.NODE_ENV === 'production') app.use(morgan('default'));
-// app.use(logRequest);
+
+// END of MIDDLEWARES
+// #######################
+
+// ###########
+// TEST for firebase notification
+const notification_options = {
+  priority: 'high',
+  timeToLive: 60 * 60 * 24,
+};
+app.post('/firebase/notification', async (req: Request, res: Response) => {
+  try {
+    logger.debug('here');
+    const registrationToken = req.body.registrationToken;
+    const message = req.body.message;
+    const options = notification_options;
+
+    await admin.messaging().sendToDevice(registrationToken, message, options);
+
+    res.status(200).send('Notification sent successfully');
+  } catch (error) {
+    logger.error(error);
+    res.send(error);
+  }
+});
+
+// ##################################
+// Endpoints-Registered
+// #################################
+
+// LOGS Endpoint
+app.get(
+  '/api/logs',
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      res.sendFile('combined.log', {root: './'});
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 //* Takes Care of All The Routing
 app.use(routes);
 
+// Endpoint not found
+// If no url matches then return 404 not fouund .
 app.use((_req: Request, _res: Response, next: NextFunction): void => {
   const err = new Error('Not Found');
   err.status = 404;
   next(err);
 });
 
-// will print stacktrace
-if (process.env.NODE_ENV !== 'production') {
-  app.use(
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (err: Error, _req: Request, res: Response, _next: NextFunction): void => {
-      if (err.status) {
-        res.status(err.status);
-      } else {
-        res.status(500);
-      }
-      res.json({
-        errors: {
-          message: err.message,
-          error: err,
-        },
-      });
-    }
-  );
-}
-
-app.use(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  (err: Error, _req: Request, res: Response, _next: NextFunction): void => {
-    if (err.status) {
-      res.status(err.status);
-    } else {
-      res.status(500);
-    }
-    res.json({
-      errors: {
-        message: err.message,
-        error: err,
-      },
-    });
+// ## Found error in Endpoints
+// If there occurs in the controllers above the error is taken to here.
+app.use((err: Error, _req: Request, res: Response): void => {
+  if (err.status) {
+    res.status(err.status);
+  } else {
+    res.status(500);
   }
-);
 
-if (process.env.NODE_ENV !== 'production' || cluster.isMaster) {
+  // Print the error logs in logger outputs as well
+  logger.error(err);
+  res.json({
+    errors: {
+      message: err.message,
+      error: err,
+    },
+  });
+});
+
+if (cluster.isMaster) {
   // Schedule cron-Jobs
   cron.schedule('0 */30 * * * *', trendUpdate);
 }

@@ -256,7 +256,7 @@ export const updateNews = async (
       );
     }
     // Finally updating
-    if (req.body.imgUrl !== null) {
+    if (req.body.imgUrl !== undefined) {
       const oldNews = await News.findById(req.params.id);
       if (
         oldNews !== null &&
@@ -266,7 +266,8 @@ export const updateNews = async (
         fs.unlinkSync(oldNews.imgUrl);
       }
     }
-    const updatedNews = await News.findByIdAndUpdate(req.params.id, req.body);
+    await News.findByIdAndUpdate(req.params.id, req.body);
+    const updatedNews = await News.findById(req.params.id);
     res.send(createResponse('News Updated Succesfully', updatedNews));
   } catch (err) {
     next(err);
@@ -359,7 +360,7 @@ export const getReportedNews = async (
     if (user === null) {
       throw createError(401, 'Unauthorized', 'Invalid Login credentials');
     }
-    if (!user.isAdmin && !user.isSuperAdmin && !user.superSuperAdmin) {
+    if (!user.isSuperAdmin && !user.superSuperAdmin) {
       throw createError(
         401,
         'Unauthorized',
@@ -367,8 +368,8 @@ export const getReportedNews = async (
       );
     }
     // fetch only  news reported more than and equal to 1
-    const count = req.params.count !== undefined ? req.params.count : 5;
-    const news = await News.find({reports: {$size: {$gt: count}}});
+    const count = req.query.count !== undefined ? req.query.count : 1;
+    const news = await News.find({$expr: {$gte: [{$size: '$reports'}, count]}});
     res.send(createResponse('Reported News', news));
   } catch (error) {
     next(error);
