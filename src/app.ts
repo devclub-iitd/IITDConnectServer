@@ -75,7 +75,11 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (err: Error, _req: Request, res: Response, _next: NextFunction): void => {
-      res.status(500);
+      if (err.status) {
+        res.status(err.status);
+      } else {
+        res.status(500);
+      }
       res.json({
         errors: {
           message: err.message,
@@ -89,11 +93,15 @@ if (process.env.NODE_ENV !== 'production') {
 app.use(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   (err: Error, _req: Request, res: Response, _next: NextFunction): void => {
-    res.status(500);
+    if (err.status) {
+      res.status(err.status);
+    } else {
+      res.status(500);
+    }
     res.json({
       errors: {
         message: err.message,
-        error: {},
+        error: err,
       },
     });
   }

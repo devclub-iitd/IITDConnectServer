@@ -12,7 +12,7 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 
-COPY ./src/middleware/public.pem  ./build/src/middleware
+COPY ./src/middleware/public.pem  ./build/src/middleware/
 
 RUN ["chmod", "+x", "/code/entry-point.sh"]
 ENTRYPOINT ["/code/entry-point.sh"] 

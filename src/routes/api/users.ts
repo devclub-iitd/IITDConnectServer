@@ -15,6 +15,7 @@ import {
   loggedInUserDetails,
   updateSuperAdmin,
   updatefcm,
+  toggleMakeSuperSuperAdmin,
 } from '../../controllers/user';
 import auth from '../../middleware/auth';
 
@@ -60,8 +61,9 @@ router.post('/users/addSuperAdmin', auth, postMakeSuperAdmin);
 //? Tested OK...
 router.post('/users/removeAdmin', auth, removeAdmin);
 
-router.patch('/users/updatesuperadmin', auth, updateSuperAdmin);
+router.put('/users/updatesuperadmin', auth, updateSuperAdmin);
 
+router.post('/users/togglesupersuperadmin', auth, toggleMakeSuperSuperAdmin);
 //? Tested OK...
 // router.post(
 //   '/signup',

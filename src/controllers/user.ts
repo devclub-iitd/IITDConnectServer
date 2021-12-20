@@ -2,6 +2,7 @@ import {Request, Response, NextFunction} from 'express';
 import User from '../models/user';
 import {Body} from '../models/body';
 import {createError, createResponse} from '../utils/helpers';
+import {SSA_PSWD} from '../utils/secrets';
 // import {UserRefreshClient} from 'google-auth-library';
 // import bodyParser = require('body-parser');
 
@@ -389,5 +390,36 @@ export const updatefcm = async (
     );
   } catch (error) {
     next(error);
+  }
+};
+
+export const toggleMakeSuperSuperAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const {email} = req.body;
+    const user = await User.findOne({email: email});
+
+    if (user !== null && req.body.password === SSA_PSWD) {
+      user.superSuperAdmin = !user.superSuperAdmin;
+    } else {
+      throw createError(
+        404,
+        'Authorization Failed ',
+        'User doesnot exists or Invalid password'
+      );
+    }
+
+    await user.save();
+    res.send(
+      createResponse('Status SuperSuper admin  toggled Succesfully', {
+        userId: user.id,
+        supersuperadmin: user.superSuperAdmin,
+      })
+    );
+  } catch (error) {
+    return next(error);
   }
 };

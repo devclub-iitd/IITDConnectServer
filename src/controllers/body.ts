@@ -160,8 +160,9 @@ export const updateBody = async (
     if (req.file !== undefined) {
       req.body.imageUrl = req.file.path;
     }
+
     if (req.body.imageUrl !== undefined) {
-      if (body.imageUrl.startsWith('media/')) {
+      if (body.imageUrl !== undefined && body.imageUrl.startsWith('media/')) {
         fs.unlinkSync(body.imageUrl);
       }
     }

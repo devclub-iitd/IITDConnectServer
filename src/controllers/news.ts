@@ -27,7 +27,7 @@ export const getNews = async (
       req.query.limit !== undefined ? parseInt(req.query.limit.toString()) : 20;
 
     const skip =
-      req.query.skip !== undefined ? parseInt(req.query.skip.toString()) : 20;
+      req.query.skip !== undefined ? parseInt(req.query.skip.toString()) : 0;
 
     const news = await News.find(
       {visible: true},
@@ -155,7 +155,11 @@ export const deleteNews = async (
 
     //If user is ONLY admin , he can delete only his news. SuperAdmins can delete all news
     const news = await News.findById(req.params.id);
-    if (news !== null && news.imgUrl.startsWith('media/')) {
+    if (
+      news !== null &&
+      news.imgUrl !== undefined &&
+      news.imgUrl.startsWith('media/')
+    ) {
       fs.unlinkSync(news.imgUrl);
     }
     if (
@@ -254,7 +258,11 @@ export const updateNews = async (
     // Finally updating
     if (req.body.imgUrl !== undefined) {
       const oldNews = await News.findById(req.params.id);
-      if (oldNews !== null && oldNews.imgUrl.startsWith('media/')) {
+      if (
+        oldNews !== null &&
+        oldNews.imgUrl !== undefined &&
+        oldNews.imgUrl.startsWith('media/')
+      ) {
         fs.unlinkSync(oldNews.imgUrl);
       }
     }

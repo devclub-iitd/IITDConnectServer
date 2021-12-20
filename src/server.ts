@@ -19,11 +19,11 @@ if (process.env.NODE_ENV === 'production') {
       cluster.fork();
     });
   } else {
-    app.listen(5000);
+    app.listen(process.env.PORT);
     console.log(`Worker ${process.pid} started`);
   }
 } else {
-  app.listen(5000, () => {
-    console.log('Listening on Port 5000');
+  app.listen(process.env.PORT, () => {
+    console.log(`Listening on Port ${process.env.PORT}`);
   });
 }
