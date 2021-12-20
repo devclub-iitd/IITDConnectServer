@@ -404,7 +404,7 @@ export const putUpdateEvent = async (
       req.body.imageLink = req.file.path;
     }
     // Finally updating
-    if (req.body.imageLink !== null) {
+    if (req.body.imageLink !== undefined) {
       const oldEvent = await Event.findById(req.params.id);
       if (
         oldEvent !== null &&
@@ -414,7 +414,8 @@ export const putUpdateEvent = async (
         fs.unlinkSync(oldEvent.imageLink);
       }
     }
-    const updatedEvent = await Event.findByIdAndUpdate(req.params.id, req.body);
+    await Event.findByIdAndUpdate(req.params.id, req.body);
+    const updatedEvent = await Event.findById(req.params.id);
     let respData = {};
     if (updatedEvent) {
       respData = {

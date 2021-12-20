@@ -256,7 +256,7 @@ export const updateNews = async (
       );
     }
     // Finally updating
-    if (req.body.imgUrl !== null) {
+    if (req.body.imgUrl !== undefined) {
       const oldNews = await News.findById(req.params.id);
       if (
         oldNews !== null &&
@@ -266,7 +266,8 @@ export const updateNews = async (
         fs.unlinkSync(oldNews.imgUrl);
       }
     }
-    const updatedNews = await News.findByIdAndUpdate(req.params.id, req.body);
+    await News.findByIdAndUpdate(req.params.id, req.body);
+    const updatedNews = await News.findById(req.params.id);
     res.send(createResponse('News Updated Succesfully', updatedNews));
   } catch (err) {
     next(err);
