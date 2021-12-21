@@ -360,7 +360,7 @@ export const getReportedNews = async (
     if (user === null) {
       throw createError(401, 'Unauthorized', 'Invalid Login credentials');
     }
-    if (!user.isAdmin && !user.isSuperAdmin && !user.superSuperAdmin) {
+    if (!user.isSuperAdmin && !user.superSuperAdmin) {
       throw createError(
         401,
         'Unauthorized',
@@ -368,8 +368,8 @@ export const getReportedNews = async (
       );
     }
     // fetch only  news reported more than and equal to 1
-    const count = req.params.count !== undefined ? req.params.count : 5;
-    const news = await News.find({reports: {$size: {$gt: count}}});
+    const count = req.query.count !== undefined ? req.query.count : 1;
+    const news = await News.find({$expr: {$gte: [{$size: '$reports'}, count]}});
     res.send(createResponse('Reported News', news));
   } catch (error) {
     next(error);

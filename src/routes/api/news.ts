@@ -35,6 +35,9 @@ router.post('/news', auth, upload.single('newsImage'), addNews);
 
 router.post('/news/:id', auth, deleteNews);
 
+//Get all trend News
+router.get('/news/trend', auth, getTrendNews);
+
 // ?Tested Ok
 // get news details
 router.get('/news/:id', auth, newsDetails);
@@ -52,6 +55,4 @@ router.get('/news/report/toggle/:id', auth, toggleVisibilityOfNews);
 // Get all Reported News
 router.get('/news/report/all', auth, getReportedNews);
 
-//Get all trend News
-router.get('/news/trend', auth, getTrendNews);
 export default router;
