@@ -68,6 +68,7 @@ export const updateReminder = async (
       'participants',
       'url',
       'eventId',
+      'reminder',
     ];
     const updates = Object.keys(req.body);
     const isValidOperation = updates.every(update =>

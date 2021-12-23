@@ -6,8 +6,6 @@ import * as cors from 'cors';
 import * as lusca from 'lusca';
 import * as compression from 'compression';
 import * as admin from 'firebase-admin';
-
-// import logRequest from './middleware/logRequest';
 import * as cron from 'node-cron';
 import {trendUpdate} from './cronJobs/trendUpdate';
 import routes from './routes';
@@ -15,19 +13,23 @@ import {MONGODB_URI} from './utils/secrets';
 const morgan = require('morgan');
 const cluster = require('cluster');
 import {logger} from './middleware/logger';
+import * as fs from 'fs';
 
-// Firebase Admin Configuration
-// eslint-disable-next-line node/no-unpublished-import
-import * as serviceAccountKey from './serviceAccountKey.json';
+const HttpsProxyAgent = require('https-proxy-agent');
 
+let serviceAccount;
 if (process.env.NODE_ENV === 'production') {
-  const serviceAccount = serviceAccountKey as admin.ServiceAccount;
+  const proxyAgent = new HttpsProxyAgent('http://devclub.iitd.ac.in:3128');
+  serviceAccount = JSON.parse(
+    fs.readFileSync('src/serviceAccountKey.json', 'utf8')
+  );
+
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+    credential: admin.credential.cert(serviceAccount, proxyAgent),
     databaseURL: 'https://iitd-connect-c6554.firebaseio.com',
+    httpAgent: proxyAgent,
   });
 }
-// import logRequest from "./middleware/logRequest";
 
 const app = express();
 
@@ -87,27 +89,23 @@ app.post('/firebase/notification', async (req: Request, res: Response) => {
     res.send(error);
   }
 });
-app.post(
-  '/firebase/notification/subscribe',
-  async (req: Request, res: Response) => {
-    try {
-      logger.debug('here');
-      const registrationToken = req.body.registrationToken;
-      const topic = req.body.topic;
+// app.post(
+//   '/firebase/notification/subscribe',
+//   async (req: Request, res: Response) => {
+//     try {
+//       logger.debug('here');
+//       const registrationToken = req.body.registrationToken;
+//       const topic = req.body.topic;
 
-      await admin.messaging().subscribeToTopic(registrationToken, topic);
+//       await admin.messaging().subscribeToTopic(registrationToken, topic);
 
-      res.status(200).send('Subscribed Successfully');
-    } catch (error) {
-      logger.error(error);
-      res.send(error);
-    }
-  }
-);
-
-// ##################################
-// Endpoints-Registered
-// #################################
+//       res.status(200).send('Subscribed Successfully');
+//     } catch (error) {
+//       logger.error(error);
+//       res.send(error);
+//     }
+//   }
+// );
 
 // LOGS Endpoint
 app.get(
