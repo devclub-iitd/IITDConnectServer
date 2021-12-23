@@ -6,7 +6,7 @@ import * as cors from 'cors';
 import * as lusca from 'lusca';
 import * as compression from 'compression';
 import * as admin from 'firebase-admin';
-import * as fs from 'fs';
+
 // import logRequest from './middleware/logRequest';
 import * as cron from 'node-cron';
 import {trendUpdate} from './cronJobs/trendUpdate';
@@ -15,7 +15,10 @@ import {MONGODB_URI} from './utils/secrets';
 const morgan = require('morgan');
 const cluster = require('cluster');
 import {logger} from './middleware/logger';
+import * as fs from 'fs';
 
+// Firebase Admin Configuration
+// eslint-disable-next-line node/no-unpublished-import
 // Firebase Admin Configuration
 let serviceAccount;
 if (process.env.NODE_ENV === 'production') {
@@ -88,10 +91,23 @@ app.post('/firebase/notification', async (req: Request, res: Response) => {
     res.send(error);
   }
 });
+// app.post(
+//   '/firebase/notification/subscribe',
+//   async (req: Request, res: Response) => {
+//     try {
+//       logger.debug('here');
+//       const registrationToken = req.body.registrationToken;
+//       const topic = req.body.topic;
 
-// ##################################
-// Endpoints-Registered
-// #################################
+//       await admin.messaging().subscribeToTopic(registrationToken, topic);
+
+//       res.status(200).send('Subscribed Successfully');
+//     } catch (error) {
+//       logger.error(error);
+//       res.send(error);
+//     }
+//   }
+// );
 
 // LOGS Endpoint
 app.get(
@@ -118,22 +134,25 @@ app.use((_req: Request, _res: Response, next: NextFunction): void => {
 
 // ## Found error in Endpoints
 // If there occurs in the controllers above the error is taken to here.
-app.use((err: Error, _req: Request, res: Response): void => {
-  if (err.status) {
-    res.status(err.status);
-  } else {
-    res.status(500);
-  }
+app.use(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  (err: Error, _req: Request, res: Response, _next: NextFunction): void => {
+    if (err.status) {
+      res.status(err.status);
+    } else {
+      res.status(500);
+    }
 
-  // Print the error logs in logger outputs as well
-  logger.error(err);
-  res.json({
-    errors: {
-      message: err.message,
-      error: err,
-    },
-  });
-});
+    // Print the error logs in logger outputs as well
+    logger.error(err);
+    res.json({
+      errors: {
+        message: err.message,
+        error: err,
+      },
+    });
+  }
+);
 
 if (cluster.isMaster) {
   // Schedule cron-Jobs
