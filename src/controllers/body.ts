@@ -9,6 +9,7 @@ import {Body, BodyMember, BodyImpl} from '../models/body';
 import * as admin from 'firebase-admin';
 // import {nextTick} from 'process';
 import fs = require('fs');
+import {logger} from '../middleware/logger';
 
 const toBodyJSON = (body: BodyImpl, user: UserImpl) => {
   const isSub = user.subscribedBodies.some(bodyId => {
@@ -190,40 +191,30 @@ export const toggleSubscribe = async (
     );
     if (index === -1) {
       //subscibe
+      user.subscribedBodies.push(new Types.ObjectId(req.params.id));
       if (process.env.NODE_ENV === 'production') {
         // Subscribe user to Firebase topic of the current body
         if (body) {
           await admin
             .messaging()
             .subscribeToTopic(user.fcmRegistrationToken, body.name);
-          console.log(`${user.name} subscribed to topic ${body.name}`);
+          logger.info(`${user.name} subscribed to topic ${body.name}`);
         }
       }
-      user.subscribedBodies.push(new Types.ObjectId(req.params.id));
     } else {
       //unsubscribe
+      user.subscribedBodies.splice(index, 1);
       if (process.env.NODE_ENV === 'production') {
-        // Subscribe user to Firebase topic of the current body
+        // UnSubscribe user to Firebase topic of the current body
         if (body) {
           await admin
             .messaging()
             .unsubscribeFromTopic(user.fcmRegistrationToken, body.name);
-          console.log(`${user.name} unsubscribed to topic ${body.name}`);
+          logger.info(`${user.name} unsubscribed to topic ${body.name}`);
         }
       }
-      user.subscribedBodies.splice(index, 1);
     }
 
-    if (process.env.NODE_ENV === 'production') {
-      // Subscribe user to Firebase topic of the current body
-      const body = await Body.findById(req.params.id);
-      if (body) {
-        await admin
-          .messaging()
-          .subscribeToTopic(user.fcmRegistrationToken, body.name);
-        console.log(`${user.name} subscribed to topic ${body.name}`);
-      }
-    }
     await user.save();
     return res.status(200).json({
       message: 'Successfully Toggled Subscribe',

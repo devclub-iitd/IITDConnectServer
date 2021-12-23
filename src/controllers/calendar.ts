@@ -160,6 +160,8 @@ export const getAllEventsAndReminder = async (
         startDate: 1,
         endDate: 1,
         topicName: 1,
+        venue: 1,
+        about: 1,
       }
     );
 
@@ -181,6 +183,8 @@ export const getAllEventsAndReminder = async (
         startDate: 1,
         endDate: 1,
         topicName: 1,
+        venue: 1,
+        about: 1,
       },
     });
     res.send(
