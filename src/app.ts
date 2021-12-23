@@ -109,10 +109,6 @@ app.post('/firebase/notification', async (req: Request, res: Response) => {
 //   }
 // );
 
-// ##################################
-// Endpoints-Registered
-// #################################
-
 // LOGS Endpoint
 app.get(
   '/api/logs',
