@@ -15,13 +15,17 @@ import {MONGODB_URI} from './utils/secrets';
 const morgan = require('morgan');
 const cluster = require('cluster');
 import {logger} from './middleware/logger';
+import * as fs from 'fs';
 
 // Firebase Admin Configuration
 // eslint-disable-next-line node/no-unpublished-import
-import * as serviceAccountKey from './serviceAccountKey.json';
-
+// Firebase Admin Configuration
+let serviceAccount;
 if (process.env.NODE_ENV === 'production') {
-  const serviceAccount = serviceAccountKey as admin.ServiceAccount;
+  serviceAccount = JSON.parse(
+    fs.readFileSync('src/serviceAccountKey.json', 'utf8')
+  );
+
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: 'https://iitd-connect-c6554.firebaseio.com',
@@ -87,23 +91,23 @@ app.post('/firebase/notification', async (req: Request, res: Response) => {
     res.send(error);
   }
 });
-app.post(
-  '/firebase/notification/subscribe',
-  async (req: Request, res: Response) => {
-    try {
-      logger.debug('here');
-      const registrationToken = req.body.registrationToken;
-      const topic = req.body.topic;
+// app.post(
+//   '/firebase/notification/subscribe',
+//   async (req: Request, res: Response) => {
+//     try {
+//       logger.debug('here');
+//       const registrationToken = req.body.registrationToken;
+//       const topic = req.body.topic;
 
-      await admin.messaging().subscribeToTopic(registrationToken, topic);
+//       await admin.messaging().subscribeToTopic(registrationToken, topic);
 
-      res.status(200).send('Subscribed Successfully');
-    } catch (error) {
-      logger.error(error);
-      res.send(error);
-    }
-  }
-);
+//       res.status(200).send('Subscribed Successfully');
+//     } catch (error) {
+//       logger.error(error);
+//       res.send(error);
+//     }
+//   }
+// );
 
 // ##################################
 // Endpoints-Registered
