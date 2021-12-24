@@ -25,6 +25,7 @@ services:
       - ${PORT}
     networks:
       - 'internal'
+      - 'reverseproxy'
     env_file:
       - ./.env
     environment:
