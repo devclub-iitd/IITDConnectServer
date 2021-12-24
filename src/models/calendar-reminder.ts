@@ -48,7 +48,7 @@ const reminderSchema = new Schema({
   description: {
     type: String,
   },
-  reminders: {
+  reminder: {
     type: String,
   },
   participants: [String],
