@@ -186,6 +186,9 @@ export const toggleSubscribe = async (
       return res.send('Invalid Request');
     }
     const body = await Body.findById(req.params.id);
+    if (!body) {
+      throw createError(400, 'Invalid request', 'Body doesnot exists');
+    }
     const index = user.subscribedBodies.indexOf(
       new Types.ObjectId(req.params.id)
     );
@@ -194,24 +197,22 @@ export const toggleSubscribe = async (
       user.subscribedBodies.push(new Types.ObjectId(req.params.id));
       if (process.env.NODE_ENV === 'production') {
         // Subscribe user to Firebase topic of the current body
-        if (body) {
-          await admin
-            .messaging()
-            .subscribeToTopic(user.fcmRegistrationToken, body.name);
-          logger.info(`${user.name} subscribed to topic ${body.name}`);
-        }
+
+        await admin
+          .messaging()
+          .subscribeToTopic(user.fcmRegistrationToken, body.name);
+        logger.info(`${user.name} subscribed to topic ${body.name}`);
       }
     } else {
       //unsubscribe
       user.subscribedBodies.splice(index, 1);
       if (process.env.NODE_ENV === 'production') {
         // UnSubscribe user to Firebase topic of the current body
-        if (body) {
-          await admin
-            .messaging()
-            .unsubscribeFromTopic(user.fcmRegistrationToken, body.name);
-          logger.info(`${user.name} unsubscribed to topic ${body.name}`);
-        }
+
+        await admin
+          .messaging()
+          .unsubscribeFromTopic(user.fcmRegistrationToken, body.name);
+        logger.info(`${user.name} unsubscribed to topic ${body.name}`);
       }
     }
 
