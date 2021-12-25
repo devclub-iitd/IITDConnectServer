@@ -6,8 +6,6 @@ import * as cors from 'cors';
 import * as lusca from 'lusca';
 import * as compression from 'compression';
 import * as admin from 'firebase-admin';
-
-// import logRequest from './middleware/logRequest';
 import * as cron from 'node-cron';
 import {trendUpdate} from './cronJobs/trendUpdate';
 import routes from './routes';
@@ -17,30 +15,21 @@ const cluster = require('cluster');
 import {logger} from './middleware/logger';
 import * as fs from 'fs';
 
-import {httpsOverHttp} from 'tunnel';
+const HttpsProxyAgent = require('https-proxy-agent');
 
-// Firebase Admin Configuration
-// eslint-disable-next-line node/no-unpublished-import
-// Firebase Admin Configuration
 let serviceAccount;
 if (process.env.NODE_ENV === 'production') {
-  const proxyAgent = httpsOverHttp({
-    proxy: {
-      host: 'http://devclub.iitd.ac.in',
-      port: 3128,
-    },
-  });
+  const proxyAgent = new HttpsProxyAgent('http://devclub.iitd.ac.in:3128');
   serviceAccount = JSON.parse(
     fs.readFileSync('src/serviceAccountKey.json', 'utf8')
   );
 
   admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+    credential: admin.credential.cert(serviceAccount, proxyAgent),
     databaseURL: 'https://iitd-connect-c6554.firebaseio.com',
     httpAgent: proxyAgent,
   });
 }
-// import logRequest from "./middleware/logRequest";
 
 const app = express();
 

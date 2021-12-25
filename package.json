@@ -40,6 +40,7 @@
     "firebase-admin": "^9.12.0",
     "google-auth-library": "^7.10.0",
     "googleapis": "^88.2.0",
+    "https-proxy-agent": "^5.0.0",
     "jsonwebtoken": "^8.5.1",
     "lusca": "^1.7.0",
     "mongoose": "^6.0.9",
