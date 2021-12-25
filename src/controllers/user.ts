@@ -3,7 +3,7 @@ import User from '../models/user';
 import {Body} from '../models/body';
 import {createError, createResponse} from '../utils/helpers';
 import {SSA_PSWD} from '../utils/secrets';
-import { logger } from '../middleware/logger';
+import {logger} from '../middleware/logger';
 import * as admin from 'firebase-admin';
 
 // import {UserRefreshClient} from 'google-auth-library';
