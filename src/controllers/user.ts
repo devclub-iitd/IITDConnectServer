@@ -3,6 +3,9 @@ import User from '../models/user';
 import {Body} from '../models/body';
 import {createError, createResponse} from '../utils/helpers';
 import {SSA_PSWD} from '../utils/secrets';
+import { logger } from '../middleware/logger';
+import * as admin from 'firebase-admin';
+
 // import {UserRefreshClient} from 'google-auth-library';
 // import bodyParser = require('body-parser');
 
@@ -382,6 +385,26 @@ export const updatefcm = async (
     const update = Object.keys(req.body);
     if (!update.includes('fcmRegistrationToken') || update.length !== 1) {
       throw createError(400, 'Error', 'Update field does not match');
+    }
+    if (process.env.NODE_ENV === 'production') {
+      if (user.fcmRegistrationToken) {
+        //for loop
+        for (let i = 0; i < user.subscribedBodies.length; i++) {
+          //get bpdy
+          const body = await Body.findById(user.subscribedBodies[i]);
+          if (body !== null) {
+            await admin
+              .messaging()
+              .unsubscribeFromTopic(user.fcmRegistrationToken, body.name);
+            logger.info(`${user.name} unsubscribed to topic ${body.name}`);
+
+            await admin
+              .messaging()
+              .subscribeToTopic(req.body.fcmRegistrationToken, body.name);
+            logger.info(`${user.name} subscribed to topic ${body.name}`);
+          }
+        }
+      }
     }
     await User.findByIdAndUpdate(req.payload, req.body);
 
