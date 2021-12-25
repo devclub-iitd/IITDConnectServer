@@ -17,11 +17,19 @@ const cluster = require('cluster');
 import {logger} from './middleware/logger';
 import * as fs from 'fs';
 
+import {httpsOverHttp} from 'tunnel';
+
 // Firebase Admin Configuration
 // eslint-disable-next-line node/no-unpublished-import
 // Firebase Admin Configuration
 let serviceAccount;
 if (process.env.NODE_ENV === 'production') {
+  const proxyAgent = httpsOverHttp({
+    proxy: {
+      host: 'http://devclub.iitd.ac.in',
+      port: 3128,
+    },
+  });
   serviceAccount = JSON.parse(
     fs.readFileSync('src/serviceAccountKey.json', 'utf8')
   );
@@ -29,6 +37,7 @@ if (process.env.NODE_ENV === 'production') {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     databaseURL: 'https://iitd-connect-c6554.firebaseio.com',
+    httpAgent: proxyAgent,
   });
 }
 // import logRequest from "./middleware/logRequest";
