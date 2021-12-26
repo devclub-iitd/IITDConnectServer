@@ -149,7 +149,7 @@ export const updateBody = async (
     next(error);
   }
 };
-export const toggleSubscribe = async (
+export const toggleSubscribeBody = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -170,7 +170,10 @@ export const toggleSubscribe = async (
     if (index === -1) {
       //subscibe
       user.subscribedBodies.push(new Types.ObjectId(req.params.id));
-      if (process.env.NODE_ENV === 'production') {
+      if (
+        process.env.NODE_ENV === 'production' &&
+        user.notifications.eventNotifications
+      ) {
         // Subscribe user to Firebase topic of the current body
 
         await admin
@@ -181,7 +184,10 @@ export const toggleSubscribe = async (
     } else {
       //unsubscribe
       user.subscribedBodies.splice(index, 1);
-      if (process.env.NODE_ENV === 'production') {
+      if (
+        process.env.NODE_ENV === 'production' &&
+        user.notifications.eventNotifications
+      ) {
         // UnSubscribe user to Firebase topic of the current body
 
         await admin

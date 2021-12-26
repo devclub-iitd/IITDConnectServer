@@ -5,11 +5,12 @@ import {
   getEvents,
   getEvent,
   getStarredEvents,
-  toggleStar,
+  toggleStarEvent,
   addUpdate,
   deleteEvent,
   removeUpdate,
   putUpdateEvent,
+  toggleSubscribeEventNotifications,
 } from '../../controllers/event';
 import auth from '../../middleware/auth';
 import {upload} from '../../middleware/multer';
@@ -52,7 +53,7 @@ router.put('/:id', auth, upload.single('eventImage'), putUpdateEvent);
 
 //? Tested OK...
 //* Star/UnStar An Event
-router.post('/:id/star', auth, toggleStar);
+router.post('/:id/star', auth, toggleStarEvent);
 
 //? Tested OK...
 router.post('/:id/addUpdate', auth, addUpdate);
@@ -60,4 +61,10 @@ router.post('/:id/addUpdate', auth, addUpdate);
 //? Tested OK...
 router.post('/:id/removeUpdate', auth, removeUpdate);
 
+// Toggle subscribe starred events Notifs
+router.post(
+  '/toggle-subscribe-event-notification',
+  auth,
+  toggleSubscribeEventNotifications
+);
 export default router;

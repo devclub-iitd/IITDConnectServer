@@ -279,7 +279,94 @@ export const addUpdate = async (
   }
 };
 
-export const toggleStar = async (
+export const toggleSubscribeEventNotifications = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.findById(req.payload);
+    if (user === null) {
+      throw createError(401, 'Unauthorized', 'Authorization Failed');
+    }
+
+    user.notifications.eventNotifications =
+      !user.notifications.eventNotifications;
+
+    await user.save();
+
+    /**
+     * Firebase notifications : Subscribing/Unsubscribing Topics from user
+     */
+    const starredEvents = await Event.find(
+      {_id: {$in: user.staredEvents}},
+      {topicName: 1}
+    );
+    const subscribedBodies = await Body.find(
+      {_id: {$in: user.subscribedBodies}},
+      {name: 1}
+    );
+    if (process.env.NODE_ENV === 'production') {
+      if (user.notifications.eventNotifications) {
+        // resubscribe user to starred event topics and subscribed Bodies for notifications
+        starredEvents.forEach(async event => {
+          await admin
+            .messaging()
+            .subscribeToTopic(user.fcmRegistrationToken, event.topicName);
+          logger.debug(
+            'user ->' +
+              user.name +
+              ' Subscribed to event topic -> ' +
+              event.topicName
+          );
+        });
+        subscribedBodies.forEach(async body => {
+          await admin
+            .messaging()
+            .subscribeToTopic(user.fcmRegistrationToken, body.name);
+          logger.debug(
+            'user ->' + user.name + ' Subscribed to event topic -> ' + body.name
+          );
+        });
+      }
+      // unsubscribe to the starred events
+      else {
+        starredEvents.forEach(async event => {
+          await admin
+            .messaging()
+            .unsubscribeFromTopic(user.fcmRegistrationToken, event.topicName);
+          logger.debug(
+            'user ->' +
+              user.name +
+              ' UnSubscribed to body topic -> ' +
+              event.topicName
+          );
+        });
+        subscribedBodies.forEach(async body => {
+          await admin
+            .messaging()
+            .unsubscribeFromTopic(user.fcmRegistrationToken, body.name);
+          logger.debug(
+            'user ->' +
+              user.name +
+              ' UnSubscribed to body topic -> ' +
+              body.name
+          );
+        });
+      }
+    }
+
+    res.send(
+      createResponse('Success', {
+        message: 'toggled Successfully',
+        eventNotifications: user.notifications.eventNotifications,
+      })
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+export const toggleStarEvent = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -294,7 +381,10 @@ export const toggleStar = async (
     if (index === -1) {
       user.staredEvents.push(new Types.ObjectId(req.params.id));
       //Subscribe the user to this event
-      if (process.env.NODE_ENV === 'production') {
+      if (
+        process.env.NODE_ENV === 'production' &&
+        user.notifications.eventNotifications
+      ) {
         admin
           .messaging()
           .subscribeToTopic(user.fcmRegistrationToken, event.topicName);
@@ -302,7 +392,10 @@ export const toggleStar = async (
     } else {
       user.staredEvents.splice(index, 1);
       //UnSubscribe the user to this event
-      if (process.env.NODE_ENV === 'production') {
+      if (
+        process.env.NODE_ENV === 'production' &&
+        user.notifications.eventNotifications
+      ) {
         admin
           .messaging()
           .unsubscribeFromTopic(user.fcmRegistrationToken, event.topicName);

@@ -3,7 +3,7 @@ import auth from '../../middleware/auth';
 import {
   getAllBodies,
   getBody,
-  toggleSubscribe,
+  toggleSubscribeBody,
   addBody,
   addMembers,
   updateBody,
@@ -29,7 +29,7 @@ router.put('/:id', auth, upload.single('bodyImage'), updateBody);
 
 //? Tested OK
 //! Google Firebase Integration is Left
-router.post('/:id/subscribe', auth, toggleSubscribe);
+router.post('/:id/subscribe', auth, toggleSubscribeBody);
 
 // ?Tested Ok
 // Add members to the Body , Only by Superadmin
