@@ -4,7 +4,9 @@ import {Request, Response, NextFunction} from 'express';
 import {createError, createResponse} from '../utils/helpers';
 import admin = require('firebase-admin');
 import fs = require('fs');
+import {logger} from '../middleware/logger';
 
+const newsFirebaseTopicName = 'News and Announcements';
 export const getNews = async (
   req: Request,
   res: Response,
@@ -116,20 +118,37 @@ export const addNews = async (
       news.imgUrl = req.file.path;
     }
     await news.save();
-    res.send(createResponse('News added Successfully', news));
 
-    //TODO send PNS to subscribed users
+    /**
+     * Firebase Notifications
+     */
     if (process.env.NODE_ENV === 'production') {
       const message = {
         notification: {
           title: news.title,
-          image: news.imgUrl,
+          image: process.env.API_URL + news.imgUrl,
           body: news.description,
         },
-        topic: 'NEWS',
+        data: {
+          click_action: 'FLUTTER_NOTIFICATION_CLICK',
+          sound: 'default',
+          // status: '',
+          screen: 'news',
+          id: news.id,
+        },
+        topic: newsFirebaseTopicName,
       };
       await admin.messaging().send(message);
     }
+
+    // Logging outputs
+    logger.info(
+      'News created successfully , Title ->' +
+        news.title +
+        'By user ->' +
+        user.name
+    );
+    res.send(createResponse('News added Successfully', news));
   } catch (err) {
     next(err);
   }
@@ -400,5 +419,50 @@ export const getTrendNews = async (
     res.send(news);
   } catch (e) {
     next(e);
+  }
+};
+
+export const toggleSubscribeNewsNotifications = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.findById(req.payload);
+    if (user === null) {
+      throw createError(401, 'Unauthorized', 'Authorization Failed');
+    }
+
+    user.notifications.newsNotifications =
+      !user.notifications.newsNotifications;
+
+    // Saving User
+    await user.save();
+
+    /***
+     * Firebase subscription to Topics
+     */
+    if (process.env.NODE_ENV === 'production') {
+      if (user.notifications.newsNotifications) {
+        await admin
+          .messaging()
+          .subscribeToTopic(user.fcmRegistrationToken, newsFirebaseTopicName);
+      } else {
+        await admin
+          .messaging()
+          .unsubscribeFromTopic(
+            user.fcmRegistrationToken,
+            newsFirebaseTopicName
+          );
+      }
+    }
+    res.send(
+      createResponse('Success', {
+        message: 'toggled Successfully to topic -> ' + newsFirebaseTopicName,
+        newsNotifications: user.notifications.newsNotifications,
+      })
+    );
+  } catch (error) {
+    next(error);
   }
 };

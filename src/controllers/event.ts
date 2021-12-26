@@ -98,7 +98,7 @@ export const createEvent = async (
         notification: {
           title: body.name + '-' + newEvent.name,
           body: newEvent.about,
-          image: newEvent.imageLink || '',
+          image: process.env.API_URL + newEvent.imageLink || '',
         },
         data: {
           click_action: 'FLUTTER_NOTIFICATION_CLICK',
@@ -140,6 +140,13 @@ export const deleteEvent = async (
         notification: {
           title: body.name + '-' + event.name,
           body: 'Event Cancelled',
+          image: process.env.API_URL + event.imageLink || '',
+        },
+        data: {
+          click_action: 'FLUTTER_NOTIFICATION_CLICK',
+          sound: 'default',
+          // status: '',
+          screen: 'event',
         },
         topic: body.name, // User subscribed to body should be notified
       };
@@ -251,7 +258,7 @@ export const addUpdate = async (
         notification: {
           title: event.name + 'Updated',
           body: 'There are new updates to the ' + event.name,
-          image: event.imageLink || '',
+          image: process.env.API_URL + event.imageLink || '',
         },
         data: {
           click_action: 'FLUTTER_NOTIFICATION_CLICK',
