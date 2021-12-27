@@ -14,6 +14,7 @@ const morgan = require('morgan');
 const cluster = require('cluster');
 import {logger} from './middleware/logger';
 import * as fs from 'fs';
+import {createResponse} from './utils/helpers';
 
 const HttpsProxyAgent = require('https-proxy-agent');
 
@@ -119,6 +120,17 @@ app.get(
   }
 );
 
+app.get('/', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.send(
+      createResponse('Success', {
+        data: 'refer to the postman docs for API documentations',
+      })
+    );
+  } catch (error) {
+    next(error);
+  }
+});
 //* Takes Care of All The Routing
 app.use(routes);
 

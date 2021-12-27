@@ -9,7 +9,7 @@ import {Body, BodyMember, BodyImpl} from '../models/body';
 import * as admin from 'firebase-admin';
 // import {nextTick} from 'process';
 import fs = require('fs');
-import {logger} from '../middleware/logger';
+// import {logger} from '../middleware/logger';
 
 const toBodyJSON = (body: BodyImpl, user: UserImpl) => {
   const isSub = user.subscribedBodies.some(bodyId => {
@@ -46,21 +46,6 @@ export const addBody = async (
   }
 };
 
-// const newBody = new Body(req.body);
-// newBody
-//   .save()
-//   .then(body => {
-//     const respData = {
-//       body: {
-//         name: body.name,
-//       },
-//     };
-//     return res.send(createResponse('Body Created Successfully', respData));
-//   })
-//   .catch(err => {
-//     next(err);
-//   });
-
 export const getAllBodies = async (
   req: Request,
   res: Response,
@@ -84,16 +69,6 @@ export const getAllBodies = async (
     next(error);
   }
 };
-// return Promise.all([User.findById(req.payload), Body.find()])
-//   .then(([user, bodies]) => {
-//     if (user === null || bodies === null) {
-//       return null;
-//     }
-//     return res.status(200).json({
-//       bodies: bodies.map(body => toBodyJSON(body, user)),
-//     });
-//   })
-//   .catch(err => next(err));
 
 export const getBody = async (
   req: Request,
@@ -174,7 +149,7 @@ export const updateBody = async (
     next(error);
   }
 };
-export const toggleSubscribe = async (
+export const toggleSubscribeBody = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -195,24 +170,30 @@ export const toggleSubscribe = async (
     if (index === -1) {
       //subscibe
       user.subscribedBodies.push(new Types.ObjectId(req.params.id));
-      if (process.env.NODE_ENV === 'production') {
+      if (
+        process.env.NODE_ENV === 'production' &&
+        user.notifications.eventNotifications
+      ) {
         // Subscribe user to Firebase topic of the current body
 
         await admin
           .messaging()
           .subscribeToTopic(user.fcmRegistrationToken, body.name);
-        logger.info(`${user.name} subscribed to topic ${body.name}`);
+        // logger.info(`${user.name} subscribed to topic ${body.name}`);
       }
     } else {
       //unsubscribe
       user.subscribedBodies.splice(index, 1);
-      if (process.env.NODE_ENV === 'production') {
+      if (
+        process.env.NODE_ENV === 'production' &&
+        user.notifications.eventNotifications
+      ) {
         // UnSubscribe user to Firebase topic of the current body
 
         await admin
           .messaging()
           .unsubscribeFromTopic(user.fcmRegistrationToken, body.name);
-        logger.info(`${user.name} unsubscribed to topic ${body.name}`);
+        // logger.info(`${user.name} unsubscribed to topic ${body.name}`);
       }
     }
 

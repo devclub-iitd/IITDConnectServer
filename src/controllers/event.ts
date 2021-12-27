@@ -11,7 +11,7 @@ import {Body} from '../models/body';
 import Update from '../models/update';
 import admin = require('firebase-admin');
 import fs = require('fs');
-// import Body from "../models/body";
+import {logger} from '../middleware/logger';
 
 const toEventJSON = (event: EventImpl, user: UserImpl) => {
   const isStarred = user.staredEvents.some(starId => {
@@ -54,8 +54,6 @@ export const createEvent = async (
   if (!errors) {
     throw createError(400, 'Validation Error', 'Validation Error');
   }
-  // console.log(req.body);
-  // console.log('file', req.file);
 
   try {
     const requestBody = req.body;
@@ -82,7 +80,7 @@ export const createEvent = async (
       createdBy: user,
       topicName: topic,
     });
-    //console.log('here-2', body);
+
     if (req.file !== undefined) {
       newEvent.imageLink = req.file.path;
     }
@@ -90,27 +88,30 @@ export const createEvent = async (
 
     body.events.push(newEvent._id);
     await body.save();
-    //console.log(body);
-    //Push notification to Client from Firebase admin
-    // if (process.env.NODE_ENV === 'production') {
-    //   const message = {
-    //     notification: {
-    //       title: body.name + '-' + newEvent.name,
-    //       body: newEvent.about,
-    //     },
-    //     topic: body.name,
-    //     //TODO Provide a unique topic to body as done in events
-    //   };
-    //   admin
-    //     .messaging()
-    //     .send(message)
-    //     .then(() => {
-    //       console.log('Message sent successfully');
-    //     })
-    //     .catch(() => {
-    //       console.log('Message could not be sent');
-    //     });
-    // }
+
+    /**
+     *  Push notification to Client from Firebase admin
+     * Notification only to subscribed members of the body i.e body topic
+     * **/
+    if (process.env.NODE_ENV === 'production') {
+      const message = {
+        notification: {
+          title: body.name + '-' + newEvent.name,
+          body: newEvent.about,
+          image: process.env.API_URL + newEvent.imageLink || '',
+        },
+        data: {
+          click_action: 'FLUTTER_NOTIFICATION_CLICK',
+          sound: 'default',
+          // status: '',
+          screen: 'event',
+          id: newEvent.id,
+        },
+        topic: body.name,
+        //TODO Provide a unique topic to body as done in events
+      };
+      await admin.messaging().send(message);
+    }
     res.send(createResponse('Event Added Successfully', {newEvent}));
   } catch (err) {
     next(err);
@@ -139,6 +140,13 @@ export const deleteEvent = async (
         notification: {
           title: body.name + '-' + event.name,
           body: 'Event Cancelled',
+          image: process.env.API_URL + event.imageLink || '',
+        },
+        data: {
+          click_action: 'FLUTTER_NOTIFICATION_CLICK',
+          sound: 'default',
+          // status: '',
+          screen: 'event',
         },
         topic: body.name, // User subscribed to body should be notified
       };
@@ -226,6 +234,7 @@ export const getEvents = async (
     });
 };
 
+// Updates regarding to events changes , etc major changes
 export const addUpdate = async (
   req: Request,
   res: Response,
@@ -241,15 +250,28 @@ export const addUpdate = async (
     event.updates.push(newUpdate.id);
     await event.save();
 
+    /**
+     * Sending Firebase Notification
+     */
     if (process.env.NODE_ENV === 'production') {
       const message = {
         notification: {
-          title: event.topicName + '- New Update, Important',
+          title: event.name + 'Updated',
+          body: 'There are new updates to the ' + event.name,
+          image: process.env.API_URL + event.imageLink || '',
+        },
+        data: {
+          click_action: 'FLUTTER_NOTIFICATION_CLICK',
+          sound: 'default',
+          // status: '',
+          screen: 'event',
+          id: event.id,
         },
         topic: event.topicName,
+        //TODO Provide a unique topic to body as done in events
       };
       await admin.messaging().send(message);
-      console.log('Users who starred the event , are notified');
+      logger.info('Event -' + event + 'Updated successfully');
     }
     res.send(createResponse('Update Added Successfully', newUpdate));
   } catch (error) {
@@ -257,7 +279,94 @@ export const addUpdate = async (
   }
 };
 
-export const toggleStar = async (
+export const toggleSubscribeEventNotifications = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const user = await User.findById(req.payload);
+    if (user === null) {
+      throw createError(401, 'Unauthorized', 'Authorization Failed');
+    }
+
+    user.notifications.eventNotifications =
+      !user.notifications.eventNotifications;
+
+    await user.save();
+
+    /**
+     * Firebase notifications : Subscribing/Unsubscribing Topics from user
+     */
+    const starredEvents = await Event.find(
+      {_id: {$in: user.staredEvents}},
+      {topicName: 1}
+    );
+    const subscribedBodies = await Body.find(
+      {_id: {$in: user.subscribedBodies}},
+      {name: 1}
+    );
+    if (process.env.NODE_ENV === 'production') {
+      if (user.notifications.eventNotifications) {
+        // resubscribe user to starred event topics and subscribed Bodies for notifications
+        starredEvents.forEach(async event => {
+          await admin
+            .messaging()
+            .subscribeToTopic(user.fcmRegistrationToken, event.topicName);
+          logger.debug(
+            'user ->' +
+              user.name +
+              ' Subscribed to event topic -> ' +
+              event.topicName
+          );
+        });
+        subscribedBodies.forEach(async body => {
+          await admin
+            .messaging()
+            .subscribeToTopic(user.fcmRegistrationToken, body.name);
+          logger.debug(
+            'user ->' + user.name + ' Subscribed to event topic -> ' + body.name
+          );
+        });
+      }
+      // unsubscribe to the starred events
+      else {
+        starredEvents.forEach(async event => {
+          await admin
+            .messaging()
+            .unsubscribeFromTopic(user.fcmRegistrationToken, event.topicName);
+          logger.debug(
+            'user ->' +
+              user.name +
+              ' UnSubscribed to body topic -> ' +
+              event.topicName
+          );
+        });
+        subscribedBodies.forEach(async body => {
+          await admin
+            .messaging()
+            .unsubscribeFromTopic(user.fcmRegistrationToken, body.name);
+          logger.debug(
+            'user ->' +
+              user.name +
+              ' UnSubscribed to body topic -> ' +
+              body.name
+          );
+        });
+      }
+    }
+
+    res.send(
+      createResponse('Success', {
+        message: 'toggled Successfully',
+        eventNotifications: user.notifications.eventNotifications,
+      })
+    );
+  } catch (error) {
+    next(error);
+  }
+};
+export const toggleStarEvent = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -272,7 +381,10 @@ export const toggleStar = async (
     if (index === -1) {
       user.staredEvents.push(new Types.ObjectId(req.params.id));
       //Subscribe the user to this event
-      if (process.env.NODE_ENV === 'production') {
+      if (
+        process.env.NODE_ENV === 'production' &&
+        user.notifications.eventNotifications
+      ) {
         admin
           .messaging()
           .subscribeToTopic(user.fcmRegistrationToken, event.topicName);
@@ -280,7 +392,10 @@ export const toggleStar = async (
     } else {
       user.staredEvents.splice(index, 1);
       //UnSubscribe the user to this event
-      if (process.env.NODE_ENV === 'production') {
+      if (
+        process.env.NODE_ENV === 'production' &&
+        user.notifications.eventNotifications
+      ) {
         admin
           .messaging()
           .unsubscribeFromTopic(user.fcmRegistrationToken, event.topicName);
@@ -314,53 +429,9 @@ export const removeUpdate = async (
   }
 };
 
-// export const putUpdateEvent = (
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   return Promise.all([
-//     Event.findById(req.params.id),
-//     User.findById(req.payload),
-//   ])
-//     .then(([event, user]) => {
-//       if (event === null || user === null) {
-//         throw createError(400, 'Invalid', 'No Such Event Exists');
-//       }
-//       if (req.body.name !== null) {
-//         event.name = req.body.name;
-//       }
-//       if (req.body.about !== null) {
-//         event.about = req.body.about;
-//       }
-//       if (req.body.imageLink !== null) {
-//         event.imageLink = req.body.imageLink;
-//       }
-//       if (req.body.venue !== null) {
-//         event.venue = req.body.venue;
-//       }
-//       if (req.body.startDate !== null) {
-//         event.startDate = req.body.startDate;
-//       }
-//       if (req.body.endDate !== null) {
-//         event.endDate = req.body.endDate;
-//       }
-//       event.save().then(event => {
-//         // const respData = {
-//         //   event: toEventJSON(event, user)
-//         // };
-//         // console.log(respData);
-//         const respData = {
-//           id: event._id,
-//         };
-//         return res.send(createResponse('Event Updated Successfully', respData));
-//       });
-//     })
-//     .catch(e => {
-//       next(e);
-//     });
-// };
-
+/**
+ * Inplace Update of an event , for-example for the typos and all
+ * **/
 export const putUpdateEvent = async (
   req: Request,
   res: Response,
@@ -403,7 +474,7 @@ export const putUpdateEvent = async (
     if (req.file !== undefined) {
       req.body.imageLink = req.file.path;
     }
-    // Finally updating
+
     if (req.body.imageLink !== undefined) {
       const oldEvent = await Event.findById(req.params.id);
       if (
@@ -414,15 +485,10 @@ export const putUpdateEvent = async (
         fs.unlinkSync(oldEvent.imageLink);
       }
     }
+    // Finally updating
     await Event.findByIdAndUpdate(req.params.id, req.body);
-    const updatedEvent = await Event.findById(req.params.id);
-    let respData = {};
-    if (updatedEvent) {
-      respData = {
-        id: updatedEvent._id,
-      };
-    }
-    res.send(createResponse('Event Updated Succesfully', respData));
+
+    res.send(createResponse('Event Updated Succesfully', {id: req.params.id}));
   } catch (error) {
     next(error);
   }

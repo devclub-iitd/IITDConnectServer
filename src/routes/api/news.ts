@@ -9,6 +9,7 @@ import {
   toggleVisibilityOfNews,
   getReportedNews,
   getTrendNews,
+  toggleSubscribeNewsNotifications,
 } from '../../controllers/news';
 // import {Request, Response} from 'express';
 import auth from '../../middleware/auth';
@@ -55,4 +56,10 @@ router.get('/news/report/toggle/:id', auth, toggleVisibilityOfNews);
 // Get all Reported News
 router.get('/news/report/all', auth, getReportedNews);
 
+// Toggle subscribe news/Announcements Notifs
+router.post(
+  '/news/toggle-subscribe-news-notification',
+  auth,
+  toggleSubscribeNewsNotifications
+);
 export default router;

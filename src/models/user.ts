@@ -21,6 +21,10 @@ export interface UserImpl extends Document {
   email: string;
   superSuperAdmin: boolean;
   superAdminOf: mongoose.Types.ObjectId[];
+  notifications: {
+    newsNotifications: Boolean;
+    eventNotifications: Boolean;
+  };
   // eslint-disable-next-line @typescript-eslint/ban-types
   reminders: Object;
   isAdmin: boolean;
@@ -123,6 +127,16 @@ const userSchema: Schema = new Schema(
     isSuperAdmin: {
       type: Boolean,
       default: false,
+    },
+    notifications: {
+      eventNotifications: {
+        type: Boolean,
+        default: true,
+      },
+      newsNotifications: {
+        type: Boolean,
+        default: true,
+      },
     },
   },
   {timestamps: true}
