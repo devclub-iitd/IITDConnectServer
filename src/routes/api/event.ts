@@ -34,6 +34,13 @@ router.post(
   createEvent
 );
 
+// Toggle subscribe starred events Notifs
+router.post(
+  '/toggle-subscribe-event-notification',
+  auth,
+  toggleSubscribeEventNotifications
+);
+
 //? Tested OK...
 //* Get All The Events
 router.get('/', auth, getEvents);
@@ -61,10 +68,4 @@ router.post('/:id/addUpdate', auth, addUpdate);
 //? Tested OK...
 router.post('/:id/removeUpdate', auth, removeUpdate);
 
-// Toggle subscribe starred events Notifs
-router.post(
-  '/toggle-subscribe-event-notification',
-  auth,
-  toggleSubscribeEventNotifications
-);
 export default router;

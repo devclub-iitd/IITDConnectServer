@@ -6,7 +6,7 @@ import admin = require('firebase-admin');
 import fs = require('fs');
 import {logger} from '../middleware/logger';
 
-const newsFirebaseTopicName = 'News and Announcements';
+export const newsFirebaseTopicName = 'News-Announcements';
 export const getNews = async (
   req: Request,
   res: Response,
@@ -100,14 +100,14 @@ export const addNews = async (
       }
       throw createError(401, 'Invalid', 'Invalid Login Credentials');
     }
-    if (!user.isAdmin && !user.isSuperAdmin && !user.superSuperAdmin) {
+    if (!user.isSuperAdmin && !user.superSuperAdmin) {
       if (req.file !== undefined) {
         fs.unlinkSync(req.file.path);
       }
       throw createError(
         401,
         'Unauthorized',
-        'You are not authorized to add news'
+        'You are not authorized to add news only SA and SSA can add news'
       );
     }
     const news = new News({
@@ -164,7 +164,7 @@ export const deleteNews = async (
     if (user === null) {
       throw createError(401, 'Invalid', 'Invalid Login credentials');
     }
-    if (!user.isAdmin && !user.isSuperAdmin && !user.superSuperAdmin) {
+    if (!user.isSuperAdmin && !user.superSuperAdmin) {
       throw createError(
         401,
         'Unauthorized',
@@ -181,20 +181,20 @@ export const deleteNews = async (
     ) {
       fs.unlinkSync(news.imgUrl);
     }
-    if (
-      user.isSuperAdmin === false &&
-      user.superSuperAdmin === false &&
-      user.isAdmin === true &&
-      news !== null
-    ) {
-      if (!news.createdBy.equals(user._id)) {
-        throw createError(
-          401,
-          'Unauthorized',
-          'Admins can delete only their own news'
-        );
-      }
-    }
+    // if (
+    //   user.isSuperAdmin === false &&
+    //   user.superSuperAdmin === false &&
+    //   user.isAdmin === true &&
+    //   news !== null
+    // ) {
+    //   if (!news.createdBy.equals(user._id)) {
+    //     throw createError(
+    //       401,
+    //       'Unauthorized',
+    //       'Admins can delete only their own news'
+    //     );
+    //   }
+    // }
     await News.findByIdAndDelete(req.params.id);
     res.send(createResponse('News deleted Successfully', {}));
   } catch (error) {
@@ -216,7 +216,7 @@ export const updateNews = async (
       }
       throw createError(401, 'Invalid', 'Invalid Login credentials');
     }
-    if (!user.isAdmin && !user.isSuperAdmin && !user.superSuperAdmin) {
+    if (!user.isSuperAdmin && !user.superSuperAdmin) {
       if (req.file !== undefined) {
         fs.unlinkSync(req.file.path);
       }
@@ -228,24 +228,24 @@ export const updateNews = async (
     }
 
     //Admins can update ONLY their own news
-    const news = await News.findById(req.params.id);
-    if (
-      user.isSuperAdmin === false &&
-      user.superSuperAdmin === false &&
-      user.isAdmin === true &&
-      news !== null
-    ) {
-      if (!news.createdBy.equals(user._id)) {
-        if (req.file !== undefined) {
-          fs.unlinkSync(req.file.path);
-        }
-        throw createError(
-          401,
-          'Unauthorized',
-          'Admins can update only their own news'
-        );
-      }
-    }
+    // const news = await News.findById(req.params.id);
+    // if (
+    //   user.isSuperAdmin === false &&
+    //   user.superSuperAdmin === false &&
+    //   user.isAdmin === true &&
+    //   news !== null
+    // ) {
+    //   if (!news.createdBy.equals(user._id)) {
+    //     if (req.file !== undefined) {
+    //       fs.unlinkSync(req.file.path);
+    //     }
+    //     throw createError(
+    //       401,
+    //       'Unauthorized',
+    //       'Admins can update only their own news'
+    //     );
+    //   }
+    // }
     // verify allowed fields
     const allowedUpdates = [
       'sourceName',
@@ -334,7 +334,7 @@ export const toggleVisibilityOfNews = async (
     if (user === null) {
       throw createError(401, 'Unauthorized', 'Invalid Login credentials');
     }
-    if (!user.isAdmin && !user.isSuperAdmin && !user.superSuperAdmin) {
+    if (!user.isSuperAdmin && !user.superSuperAdmin) {
       throw createError(
         401,
         'Unauthorized',
@@ -346,20 +346,20 @@ export const toggleVisibilityOfNews = async (
     if (!news) {
       throw createError(400, 'field doesnt exist', 'News donot exists');
     }
-    if (
-      user.isSuperAdmin === false &&
-      user.superSuperAdmin === false &&
-      user.isAdmin === true &&
-      news !== null
-    ) {
-      if (!news.createdBy.equals(user._id)) {
-        throw createError(
-          401,
-          'Unauthorized',
-          'Admins can toggleOffVisibility only their own news'
-        );
-      }
-    }
+    // if (
+    //   user.isSuperAdmin === false &&
+    //   user.superSuperAdmin === false &&
+    //   user.isAdmin === true &&
+    //   news !== null
+    // ) {
+    //   if (!news.createdBy.equals(user._id)) {
+    //     throw createError(
+    //       401,
+    //       'Unauthorized',
+    //       'Admins can toggleOffVisibility only their own news'
+    //     );
+    //   }
+    // }
 
     news.visible = !news.visible;
     await news.save();

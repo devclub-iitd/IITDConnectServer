@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
+import * as slug from 'slug';
 import {Request, Response, NextFunction} from 'express';
 import {Types} from 'mongoose';
 import {createResponse, createError} from '../utils/helpers';
@@ -35,7 +36,8 @@ export const addBody = async (
       }
       throw createError(401, 'Unauthorized', 'Invalid');
     }
-    const newBody = new Body(req.body);
+    const topic = slug(req.body.name.toString());
+    const newBody = new Body({...req.body, topicName: topic});
     if (req.file !== undefined) {
       newBody.imageUrl = req.file.path;
     }
@@ -178,7 +180,7 @@ export const toggleSubscribeBody = async (
 
         await admin
           .messaging()
-          .subscribeToTopic(user.fcmRegistrationToken, body.name);
+          .subscribeToTopic(user.fcmRegistrationToken, body.topicName);
         // logger.info(`${user.name} subscribed to topic ${body.name}`);
       }
     } else {
@@ -192,7 +194,7 @@ export const toggleSubscribeBody = async (
 
         await admin
           .messaging()
-          .unsubscribeFromTopic(user.fcmRegistrationToken, body.name);
+          .unsubscribeFromTopic(user.fcmRegistrationToken, body.topicName);
         // logger.info(`${user.name} unsubscribed to topic ${body.name}`);
       }
     }

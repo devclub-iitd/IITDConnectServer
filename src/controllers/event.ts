@@ -107,7 +107,7 @@ export const createEvent = async (
           screen: 'event',
           id: newEvent.id,
         },
-        topic: body.name,
+        topic: body.topicName,
         //TODO Provide a unique topic to body as done in events
       };
       await admin.messaging().send(message);
@@ -148,7 +148,7 @@ export const deleteEvent = async (
           // status: '',
           screen: 'event',
         },
-        topic: body.name, // User subscribed to body should be notified
+        topic: body.topicName, // User subscribed to body should be notified
       };
       await admin.messaging().send(message);
     }
@@ -256,7 +256,7 @@ export const addUpdate = async (
     if (process.env.NODE_ENV === 'production') {
       const message = {
         notification: {
-          title: event.name + 'Updated',
+          title: event.name + ' Updated',
           body: 'There are new updates to the ' + event.name,
           image: process.env.API_URL + event.imageLink || '',
         },
@@ -323,9 +323,12 @@ export const toggleSubscribeEventNotifications = async (
         subscribedBodies.forEach(async body => {
           await admin
             .messaging()
-            .subscribeToTopic(user.fcmRegistrationToken, body.name);
+            .subscribeToTopic(user.fcmRegistrationToken, body.topicName);
           logger.debug(
-            'user ->' + user.name + ' Subscribed to event topic -> ' + body.name
+            'user ->' +
+              user.name +
+              ' Subscribed to event topic -> ' +
+              body.topicName
           );
         });
       }
@@ -345,12 +348,12 @@ export const toggleSubscribeEventNotifications = async (
         subscribedBodies.forEach(async body => {
           await admin
             .messaging()
-            .unsubscribeFromTopic(user.fcmRegistrationToken, body.name);
+            .unsubscribeFromTopic(user.fcmRegistrationToken, body.topicName);
           logger.debug(
             'user ->' +
               user.name +
               ' UnSubscribed to body topic -> ' +
-              body.name
+              body.topicName
           );
         });
       }

@@ -34,6 +34,13 @@ router.get('/news', auth, getNews);
 // add a news
 router.post('/news', auth, upload.single('newsImage'), addNews);
 
+// Toggle subscribe news/Announcements Notifs
+router.post(
+  '/news/toggle-subscribe-news-notification',
+  auth,
+  toggleSubscribeNewsNotifications
+);
+
 router.post('/news/:id', auth, deleteNews);
 
 //Get all trend News
@@ -56,10 +63,4 @@ router.get('/news/report/toggle/:id', auth, toggleVisibilityOfNews);
 // Get all Reported News
 router.get('/news/report/all', auth, getReportedNews);
 
-// Toggle subscribe news/Announcements Notifs
-router.post(
-  '/news/toggle-subscribe-news-notification',
-  auth,
-  toggleSubscribeNewsNotifications
-);
 export default router;

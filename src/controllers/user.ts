@@ -1,8 +1,13 @@
 import {Request, Response, NextFunction} from 'express';
 import User from '../models/user';
 import {Body} from '../models/body';
+import Event from '../models/event';
 import {createError, createResponse} from '../utils/helpers';
 import {SSA_PSWD} from '../utils/secrets';
+import {logger} from '../middleware/logger';
+import * as admin from 'firebase-admin';
+import {newsFirebaseTopicName} from './news';
+
 // import {UserRefreshClient} from 'google-auth-library';
 // import bodyParser = require('body-parser');
 
@@ -180,8 +185,9 @@ export const postMakeAdmin = async (
       }),
       Body.findById(clubId),
     ]);
-    if (user !== null && body !== null) {
-      if (body.superAdmin.equals(req.payload)) {
+    const user_req = await User.findById(req.payload);
+    if (user !== null && body !== null && user_req !== null) {
+      if (body.superAdmin.equals(req.payload) || user_req.superSuperAdmin) {
         user.adminOf.push(body.id);
         body.admins.push(user.id);
         user.isAdmin = true;
@@ -376,12 +382,69 @@ export const updatefcm = async (
 ) => {
   try {
     const user = await User.findById(req.payload);
-    if (!user) {
+    if (user === null) {
       throw createError(401, 'Unauthorized', 'Invalid Credentials');
     }
     const update = Object.keys(req.body);
     if (!update.includes('fcmRegistrationToken') || update.length !== 1) {
       throw createError(400, 'Error', 'Update field does not match');
+    }
+    const starredEvents = await Event.find(
+      {_id: {$in: user.staredEvents}},
+      {topicName: 1}
+    );
+    const subscribedBodies = await Body.find(
+      {_id: {$in: user.subscribedBodies}},
+      {name: 1}
+    );
+
+    if (process.env.NODE_ENV === 'production') {
+      if (user.fcmRegistrationToken) {
+        // resubscribe user to starred event topics and subscribed Bodies for notifications
+        starredEvents.forEach(async event => {
+          await admin
+            .messaging()
+            .unsubscribeFromTopic(user.fcmRegistrationToken, event.topicName);
+          await admin
+            .messaging()
+            .subscribeToTopic(req.body.fcmRegistrationToken, event.topicName);
+          logger.debug(
+            'user ->' +
+              user.name +
+              ' Resubscribed to event topic -> ' +
+              event.topicName
+          );
+        });
+        subscribedBodies.forEach(async body => {
+          await admin
+            .messaging()
+            .unsubscribeFromTopic(user.fcmRegistrationToken, body.topicName);
+          await admin
+            .messaging()
+            .subscribeToTopic(req.body.fcmRegistrationToken, body.topicName);
+          logger.debug(
+            'user ->' +
+              user.name +
+              ' Resubscribed to body topic -> ' +
+              body.topicName
+          );
+        });
+        if (user.notifications.newsNotifications) {
+          await admin
+            .messaging()
+            .unsubscribeFromTopic(
+              user.fcmRegistrationToken,
+              newsFirebaseTopicName
+            );
+          await admin
+            .messaging()
+            .subscribeToTopic(
+              req.body.fcmRegistrationToken,
+              newsFirebaseTopicName
+            );
+          logger.debug('user ->' + user.name + ' Resubscribed to news');
+        }
+      }
     }
     await User.findByIdAndUpdate(req.payload, req.body);
 
