@@ -6,7 +6,7 @@ import admin = require('firebase-admin');
 import fs = require('fs');
 import {logger} from '../middleware/logger';
 
-const newsFirebaseTopicName = 'News and Announcements';
+export const newsFirebaseTopicName = 'News-Announcements';
 export const getNews = async (
   req: Request,
   res: Response,

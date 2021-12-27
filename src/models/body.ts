@@ -13,6 +13,7 @@ export interface BodyImpl extends Document {
   typeOfBody: number;
   members: Array<object>;
   hangoutInfo: object;
+  topicName: string;
 }
 export interface BodyMemberImpl extends Document {
   userId: object;
@@ -107,6 +108,10 @@ const bodySchema = new Schema(
       min: 0,
       max: 2, // 0-Hostel , 1-boards&clubs , 2-Hangout Places
       required: true,
+    },
+    topicName: {
+      type: String,
+      trim: true,
     },
     members: [memberSchema],
     hangoutInfo: hangoutSchema,
