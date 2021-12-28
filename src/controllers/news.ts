@@ -432,28 +432,29 @@ export const toggleSubscribeNewsNotifications = async (
     if (user === null) {
       throw createError(401, 'Unauthorized', 'Authorization Failed');
     }
+    if (req.body.newsNotifications !== user.notifications.newsNotifications) {
+      user.notifications.newsNotifications =
+        !user.notifications.newsNotifications;
 
-    user.notifications.newsNotifications =
-      !user.notifications.newsNotifications;
+      // Saving User
+      await user.save();
 
-    // Saving User
-    await user.save();
-
-    /***
-     * Firebase subscription to Topics
-     */
-    if (process.env.NODE_ENV === 'production') {
-      if (user.notifications.newsNotifications) {
-        await admin
-          .messaging()
-          .subscribeToTopic(user.fcmRegistrationToken, newsFirebaseTopicName);
-      } else {
-        await admin
-          .messaging()
-          .unsubscribeFromTopic(
-            user.fcmRegistrationToken,
-            newsFirebaseTopicName
-          );
+      /***
+       * Firebase subscription to Topics
+       */
+      if (process.env.NODE_ENV === 'production') {
+        if (user.notifications.newsNotifications) {
+          await admin
+            .messaging()
+            .subscribeToTopic(user.fcmRegistrationToken, newsFirebaseTopicName);
+        } else {
+          await admin
+            .messaging()
+            .unsubscribeFromTopic(
+              user.fcmRegistrationToken,
+              newsFirebaseTopicName
+            );
+        }
       }
     }
     res.send(

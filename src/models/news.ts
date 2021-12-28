@@ -56,7 +56,6 @@ const newsSchema = new Schema(
     },
     description: {
       type: String,
-      required: true,
     },
     imgUrl: {
       type: String,

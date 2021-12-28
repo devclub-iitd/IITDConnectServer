@@ -120,11 +120,19 @@ app.get(
   }
 );
 
+//For healthchecks
+app.get('/healthz', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.send('Ok, Healthy!');
+  } catch (error) {
+    next(error);
+  }
+});
 app.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     res.send(
       createResponse('Success', {
-        data: 'refer to the postman docs for API documentations',
+        data: 'Check Postman for Documentation',
       })
     );
   } catch (error) {
