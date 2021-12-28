@@ -289,76 +289,76 @@ export const toggleSubscribeEventNotifications = async (
     if (user === null) {
       throw createError(401, 'Unauthorized', 'Authorization Failed');
     }
+    if (req.body.eventNotifications !== user.notifications.eventNotifications) {
+      user.notifications.eventNotifications =
+        !user.notifications.eventNotifications;
 
-    user.notifications.eventNotifications =
-      !user.notifications.eventNotifications;
+      await user.save();
 
-    await user.save();
-
-    /**
-     * Firebase notifications : Subscribing/Unsubscribing Topics from user
-     */
-    const starredEvents = await Event.find(
-      {_id: {$in: user.staredEvents}},
-      {topicName: 1}
-    );
-    const subscribedBodies = await Body.find(
-      {_id: {$in: user.subscribedBodies}},
-      {name: 1}
-    );
-    if (process.env.NODE_ENV === 'production') {
-      if (user.notifications.eventNotifications) {
-        // resubscribe user to starred event topics and subscribed Bodies for notifications
-        starredEvents.forEach(async event => {
-          await admin
-            .messaging()
-            .subscribeToTopic(user.fcmRegistrationToken, event.topicName);
-          logger.debug(
-            'user ->' +
-              user.name +
-              ' Subscribed to event topic -> ' +
-              event.topicName
-          );
-        });
-        subscribedBodies.forEach(async body => {
-          await admin
-            .messaging()
-            .subscribeToTopic(user.fcmRegistrationToken, body.topicName);
-          logger.debug(
-            'user ->' +
-              user.name +
-              ' Subscribed to event topic -> ' +
-              body.topicName
-          );
-        });
-      }
-      // unsubscribe to the starred events
-      else {
-        starredEvents.forEach(async event => {
-          await admin
-            .messaging()
-            .unsubscribeFromTopic(user.fcmRegistrationToken, event.topicName);
-          logger.debug(
-            'user ->' +
-              user.name +
-              ' UnSubscribed to body topic -> ' +
-              event.topicName
-          );
-        });
-        subscribedBodies.forEach(async body => {
-          await admin
-            .messaging()
-            .unsubscribeFromTopic(user.fcmRegistrationToken, body.topicName);
-          logger.debug(
-            'user ->' +
-              user.name +
-              ' UnSubscribed to body topic -> ' +
-              body.topicName
-          );
-        });
+      /**
+       * Firebase notifications : Subscribing/Unsubscribing Topics from user
+       */
+      const starredEvents = await Event.find(
+        {_id: {$in: user.staredEvents}},
+        {topicName: 1}
+      );
+      const subscribedBodies = await Body.find(
+        {_id: {$in: user.subscribedBodies}},
+        {name: 1}
+      );
+      if (process.env.NODE_ENV === 'production') {
+        if (user.notifications.eventNotifications) {
+          // resubscribe user to starred event topics and subscribed Bodies for notifications
+          starredEvents.forEach(async event => {
+            await admin
+              .messaging()
+              .subscribeToTopic(user.fcmRegistrationToken, event.topicName);
+            logger.debug(
+              'user ->' +
+                user.name +
+                ' Subscribed to event topic -> ' +
+                event.topicName
+            );
+          });
+          subscribedBodies.forEach(async body => {
+            await admin
+              .messaging()
+              .subscribeToTopic(user.fcmRegistrationToken, body.topicName);
+            logger.debug(
+              'user ->' +
+                user.name +
+                ' Subscribed to event topic -> ' +
+                body.topicName
+            );
+          });
+        }
+        // unsubscribe to the starred events
+        else {
+          starredEvents.forEach(async event => {
+            await admin
+              .messaging()
+              .unsubscribeFromTopic(user.fcmRegistrationToken, event.topicName);
+            logger.debug(
+              'user ->' +
+                user.name +
+                ' UnSubscribed to body topic -> ' +
+                event.topicName
+            );
+          });
+          subscribedBodies.forEach(async body => {
+            await admin
+              .messaging()
+              .unsubscribeFromTopic(user.fcmRegistrationToken, body.topicName);
+            logger.debug(
+              'user ->' +
+                user.name +
+                ' UnSubscribed to body topic -> ' +
+                body.topicName
+            );
+          });
+        }
       }
     }
-
     res.send(
       createResponse('Success', {
         message: 'toggled Successfully',
