@@ -16,6 +16,9 @@ import {
   updateSuperAdmin,
   updatefcm,
   toggleMakeSuperSuperAdmin,
+  getCourses,
+  modifyCourses,
+  getListCourses,
 } from '../../controllers/user';
 import auth from '../../middleware/auth';
 
@@ -79,5 +82,14 @@ router.post('/users/togglesupersuperadmin', auth, toggleMakeSuperSuperAdmin);
 // );
 
 router.post('/user/updatefcm', auth, updatefcm);
+
+//To fetch the courses of a user
+router.get('/user/getCourses', auth, getCourses);
+
+//To modify the courses of a user
+router.post('/user/modifyCourse', auth, modifyCourses);
+
+//To fetch list of all courses
+router.get('/user/getAllCourses', auth, getListCourses);
 
 export default router;

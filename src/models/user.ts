@@ -29,6 +29,10 @@ export interface UserImpl extends Document {
   reminders: Object;
   isAdmin: boolean;
   isSuperAdmin: boolean;
+  courses: {
+    name: string;
+    slot: string;
+  }[];
 }
 
 const userSchema: Schema = new Schema(
@@ -138,6 +142,14 @@ const userSchema: Schema = new Schema(
         default: true,
       },
     },
+    //Recheck this
+    courses: [
+      {
+        _id: false,
+        name: String,
+        slot: String,
+      },
+    ],
   },
   {timestamps: true}
 );
