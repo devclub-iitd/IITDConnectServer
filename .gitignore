@@ -113,3 +113,5 @@ dist
 build/
 .vscode
 src/serviceAccountKey.json
+data/courseSlot.json
+data/userCourse.json
