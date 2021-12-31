@@ -172,6 +172,7 @@ export const toggleSubscribeBody = async (
     if (index === -1) {
       //subscibe
       user.subscribedBodies.push(new Types.ObjectId(req.params.id));
+      user.subscribedTopics.bodies.push(body.topicName);
       if (
         process.env.NODE_ENV === 'production' &&
         user.notifications.eventNotifications
@@ -186,6 +187,10 @@ export const toggleSubscribeBody = async (
     } else {
       //unsubscribe
       user.subscribedBodies.splice(index, 1);
+      const ind = user.subscribedTopics.bodies.indexOf(body.topicName);
+      if (ind !== -1) {
+        user.subscribedTopics.bodies.splice(ind, 1);
+      }
       if (
         process.env.NODE_ENV === 'production' &&
         user.notifications.eventNotifications
