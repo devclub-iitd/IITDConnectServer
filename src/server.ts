@@ -2,11 +2,11 @@ import app from './app';
 
 import {cpus} from 'os';
 
-import cluster from 'cluster';
+const cluster = require('cluster');
 const numCPUs = cpus().length;
 
 if (process.env.NODE_ENV === 'production') {
-  if (cluster.isPrimary) {
+  if (cluster.isMaster) {
     console.log(`Primary ${process.pid} is running`);
 
     for (let i = 0; i < numCPUs; i++) {

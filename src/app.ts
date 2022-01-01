@@ -18,6 +18,7 @@ import {createResponse} from './utils/helpers';
 // import path = require('path');
 
 const HttpsProxyAgent = require('https-proxy-agent');
+// Express monitoring
 
 let serviceAccount;
 if (process.env.NODE_ENV === 'production') {
@@ -46,7 +47,21 @@ app.set('port', process.env.PORT || 5000);
 
 // #########################
 // MIDDLEWARES
-
+app.use(
+  require('express-status-monitor')({
+    chartVisibility: {
+      cpu: true,
+      mem: true,
+      load: true,
+      eventLoop: true,
+      heap: true,
+      responseTime: true,
+      rps: true,
+      statusCodes: true,
+    },
+    path: '/server-status',
+  })
+);
 app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
