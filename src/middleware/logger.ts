@@ -15,7 +15,7 @@ const logger = createLogger({
   level: process.env.LOG_LEVEl || 'info',
   transports: [
     new transports.Console(),
-    new transports.File({filename: 'combined.log'}),
+    new transports.File({filename: 'combined.log', level: 'debug'}),
   ],
 });
 

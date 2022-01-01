@@ -4,7 +4,7 @@ export const data = [
     cd: [28.544966, 77.192497],
     name: 'Dogra Hall',
     img: 'https://live.staticflickr.com/65535/50466766363_db7d2beecd_z.jpg',
-    category: 'ent',
+    category: 'Entertainment',
     details:
       'IIT Delhi"s main multipurpose auditorium hall with the iconic hyperbolic paraboloid roof.',
     infoUrl:
@@ -20,7 +20,7 @@ export const data = [
     cd: [28.545382, 77.192265],
     name: 'Cafe Coffee Day',
     img: 'https://media-cdn.tripadvisor.com/media/photo-s/11/b2/71/6b/a-nice-overall-ambience.jpg',
-    category: 'eat',
+    category: 'Eat',
     details:
       'The famous Café cum restaurant, serving coffee, cakes and sandwiches at subsidized rates.',
     infoUrl:
@@ -37,7 +37,7 @@ export const data = [
     cd: [28.545423, 77.191826],
     name: 'SCOOPS',
     img: 'https://media-cdn.tripadvisor.com/media/photo-s/11/b2/71/6b/a-nice-overall-ambience.jpg',
-    category: 'shop',
+    category: 'Shop',
     details:
       'SCOOPS or Student Co-Operative Society is the one stop for all your stationery needs, at affordable rates.',
     infoUrl: '',
@@ -53,7 +53,7 @@ export const data = [
     name: 'Dept. Of Electrical Engineering',
     img: 'https://live.staticflickr.com/65535/50466766413_1fa17c1283_h.jpg',
     short: 'E.E. Department',
-    category: 'academic',
+    category: 'Academic',
     details:
       'The Department of Electrical Engineering, IIT Delhi is situated here.',
     infoUrl: 'http://ee.iitd.ernet.in/programmes.html',
@@ -68,7 +68,7 @@ export const data = [
     cd: [28.545119, 77.191288],
     name: 'Red Square',
     img: 'https://live.staticflickr.com/65535/50467622817_5315589ae7_k.jpg',
-    category: 'academic',
+    category: 'Academic',
     details:
       'A popular hangout spot, Red Square is so named because of the colour of its flooring. ',
     infoUrl: '',
@@ -83,7 +83,7 @@ export const data = [
     cd: [28.544848, 77.191558],
     name: 'Amul Cafe',
     img: 'https://content.jdmagicbox.com/comp/delhi/z3/011pxx11.xx11.170113083022.y6z3/catalogue/amul-cafe-registrar-iit-new-delhi-delhi-coffee-shops-kemiks5i3f.jpg',
-    category: 'eat',
+    category: 'Eat',
     details:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore',
     infoUrl:
@@ -99,7 +99,7 @@ export const data = [
     cd: [28.544719, 77.19118],
     name: 'Shiru Cafe',
     img: 'https://live.staticflickr.com/65535/50466859293_668e643ecd_b.jpg',
-    category: 'eat',
+    category: 'Eat',
     details:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore',
     infoUrl: '',
@@ -114,7 +114,7 @@ export const data = [
     cd: [28.544717, 77.191666],
     name: 'HPMC Store',
     img: 'https://live.staticflickr.com/65535/50467863657_4c71b82256_h.jpg',
-    category: 'eat',
+    category: 'Eat',
     details:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore',
     infoUrl: '',
@@ -129,7 +129,7 @@ export const data = [
     cd: [28.544595, 77.191713],
     name: 'Nescafé',
     img: 'https://blogs.ubc.ca/dominicinindia/files/2012/09/D-Nescafe.jpg',
-    category: 'eat',
+    category: 'Eat',
     details:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore',
     infoUrl: '',
@@ -144,7 +144,7 @@ export const data = [
     cd: [28.544668, 77.191461],
     name: 'Central Library',
     img: 'https://library.iitd.ac.in/sites/default/files/styles/slideshow_image/public/2020-08/Webp.net-compress-image.jpg?itok=X8a6OaMF',
-    category: 'academic',
+    category: 'Academic',
     details:
       'IIT Delhi"s main library with a rich collection of books and academic journals. ',
     infoUrl: '',
@@ -160,7 +160,7 @@ export const data = [
     name: 'Dept. Of Civil Engineering',
     img: 'http://civil.iitd.ac.in/gallery-images/Department/Department%20of%20Civil%20Engineering%20-%201.jpg',
     short: 'C.E. Department',
-    category: 'academic',
+    category: 'Academic',
     details: 'The Department of Civil Engineering, IIT Delhi is situated here.',
     infoUrl: 'http://civil.iitd.ac.in/index.php?lmenuid=academicprograms',
     mapUrl:
@@ -174,7 +174,7 @@ export const data = [
     cd: [28.547591, 77.188799],
     name: 'Girnar House',
     img: 'https://live.staticflickr.com/65535/50458900598_f798439126_w.jpg',
-    category: 'hostel',
+    category: 'Hostel',
     details:
       'One of the latest hostels in the campus, the red bricked building has a capacity of over 600 residents.\nWARDEN\nDr. D. Sundar, Professor and Head, Department of Biochemical Engineering and Biotechnology',
     infoUrl: 'http://www.iitd.ac.in/content/halls-residence',
@@ -188,7 +188,7 @@ export const data = [
     cd: [28.547718, 77.1892],
     name: 'Udaigiri Hostel',
     img: 'https://live.staticflickr.com/65535/50458900058_be4bb438a6_z.jpg',
-    category: 'hostel',
+    category: 'Hostel',
     details:
       'The newest and arguably the biggest hostel at IIT Delhi with a capacity of over 600 residents.\nWARDEN\nSR Sarangi, Department of Computer Science & Engineering',
     infoUrl: 'http://www.iitd.ac.in/content/halls-residence',
@@ -202,7 +202,7 @@ export const data = [
     cd: [28.548277, 77.187985],
     name: 'Satpura House',
     img: 'https://live.staticflickr.com/65535/50458901523_5df7dbc4ad_h.jpg',
-    category: 'hostel',
+    category: 'Hostel',
     details:
       "Satpura houses around 450 'Samurais' and being a new hostel, has some cool architecture.\nWARDEN\nSudip Kumar Pattanayek, Professor, Department of Chemical Engineering",
     infoUrl: 'http://www.iitd.ac.in/content/halls-residence',
@@ -216,7 +216,7 @@ export const data = [
     cd: [28.548729, 77.18622],
     name: 'Vindhyachal Hostel',
     img: 'https://live.staticflickr.com/65535/50459604371_c04e428227_z.jpg',
-    category: 'hostel',
+    category: 'Hostel',
     details:
       'One of the oldest hostels in IIT Delhi, Vindhyachal is also the smallest with a capacity of under 400. Jai Vindy!\nWARDEN\nDr, Dipti Ranjan Sahoo, Associate Professor, Structural Engineering Section',
     infoUrl: 'http://www.iitd.ac.in/content/halls-residence',
@@ -230,7 +230,7 @@ export const data = [
     cd: [28.54764, 77.185877],
     name: 'Shivalik Hostel',
     img: 'https://live.staticflickr.com/65535/50459604666_0d0540c2e1_h.jpg',
-    category: 'hostel',
+    category: 'Hostel',
     details:
       'The oldest hostel of IIT Delhi, Shivalik has a capacity of around 420 residents. Jai Shiva!\nWARDEN\nDipayan Das, Professor, Department of Textile Technology',
     infoUrl: 'http://www.iitd.ac.in/content/halls-residence',
@@ -244,7 +244,7 @@ export const data = [
     cd: [28.54667, 77.18626],
     name: 'Zanskar Hostel',
     img: 'https://live.staticflickr.com/65535/50459772322_626c8584aa_b.jpg',
-    category: 'hostel',
+    category: 'Hostel',
     details:
       'Zanskar has a unique infrastructure and is one of the newer hostels. It houses ~450 students.\nWARDEN\nSaif K Mohammed, Associate Professor, Department of Electrical Engineering',
     infoUrl: 'http://www.iitd.ac.in/content/halls-residence',
@@ -258,7 +258,7 @@ export const data = [
     cd: [28.549264, 77.185153],
     name: 'Kumaon Hostel',
     img: 'https://live.staticflickr.com/65535/50458900283_bc0e7fd6f8_b.jpg',
-    category: 'hostel',
+    category: 'Hostel',
     details:
       'Kumaon has around 440 residents and is one of the oldest hostels in the campus.\nWARDEN\nRajendra S. Dhaka, Associate Professor , Department of Physics',
     infoUrl: 'http://www.iitd.ac.in/',
@@ -272,7 +272,7 @@ export const data = [
     cd: [28.549678, 77.18394],
     name: 'Jwalamukhi Hostel',
     img: 'https://live.staticflickr.com/65535/50459772907_8b8d152b1c_b.jpg',
-    category: 'hostel',
+    category: 'Hostel',
     details:
       'One of the oldest hostels, Jwala house 450 \'dragons\', often heard chanting "Jai Jwala!"\nWARDEN\nRavi P. Singh, Associate Professor, Department of Chemistry',
     infoUrl: 'http://jwalamukhi.iitd.ac.in/',
@@ -286,7 +286,7 @@ export const data = [
     cd: [28.548771, 77.183583],
     name: 'Aravali Hostel',
     img: 'https://live.staticflickr.com/65535/50459605101_522b60b4e2_k.jpg',
-    category: 'hostel',
+    category: 'Hostel',
     details:
       'Aravali is one of the oldest hostels, abode of the Ara Knights! It has a capacity of over 400 residents.\nWARDEN\nDr SUDARSHAN GHOSH, Associate Professor, Department of Mechanical Engineering',
     infoUrl: 'http://www.iitd.ac.in/content/halls-residence',
@@ -300,7 +300,7 @@ export const data = [
     cd: [28.547332, 77.183122],
     name: 'Karakoram Hostel',
     img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQSNBV4bhbjsb0Mwtmq1wZpYxBrbBfWghHMVktY0BiSsYrRjVPq&usqp=CAU',
-    category: 'hostel',
+    category: 'Hostel',
     details:
       "With 450 residents, Karakoram or 'Kara' goes by the motto सर्वश्रेष्ठम् सर्वसुंदरम् काराकोरम् काराकोरम्\nWARDEN\nDr Manojkumar Ramteke, Associate Professor, Department of Chemical Engineering",
     infoUrl: 'http://www.iitd.ac.in/',
@@ -314,7 +314,7 @@ export const data = [
     cd: [28.546281, 77.182476],
     name: 'Nilgiri Hostel',
     img: 'https://live.staticflickr.com/65535/50459604706_0434f8d318_b.jpg',
-    category: 'hostel',
+    category: 'Hostel',
     details:
       "Nilgiri is home to ~410 'Nilgirites'. Lovingly called Nil, memories made here are anything but nil.\nWARDEN\nAbhijit Majumdar, Professor, Department of Textile Technology",
     infoUrl: 'http://www.iitd.ac.in/',
@@ -328,7 +328,7 @@ export const data = [
     cd: [28.545202, 77.197092],
     name: 'Himadri Hostel',
     img: 'https://live.staticflickr.com/65535/50459772987_776b9e686f_h.jpg',
-    category: 'hostel',
+    category: 'Hostel',
     details:
       "The second girls' hostel, Himadri has over 450 residents and boasts of its food outlet BBC- Best Brains Cafe\nWARDEN\nDr. Sreedevi Upadhyayula, Professor, Department of Chemical Engineering",
     infoUrl: 'http://www.iitd.ac.in/content/contact-us',
@@ -342,7 +342,7 @@ export const data = [
     cd: [28.544632, 77.196963],
     name: 'Kailash Hostel',
     img: 'https://live.staticflickr.com/65535/50459772852_612a3efc97_k.jpg',
-    category: 'hostel',
+    category: 'Hostel',
     details:
       'Kailash is the first girl\'s hostel @ IITD, with the motto "Burn to Emerge". It is home to 450 students.\nWARDEN\nDr. Seema Sharma, Professor, Department of Management Studies',
     infoUrl: 'http://www.iitd.ac.in/content/contact-us',
@@ -356,7 +356,7 @@ export const data = [
     cd: [28.5428665, 77.1931332],
     name: 'Lecture Hall Complex',
     img: 'https://cas.iitd.ac.in/img/slides/5.JPG',
-    category: 'academic',
+    category: 'Academic',
     details:
       'Arguably the most modern part of IIT Delhi, all the classes take place here.',
     infoUrl: 'http://www.iitd.ac.in/',
@@ -371,7 +371,7 @@ export const data = [
     cd: [28.54343789812074, 77.19127982854845],
     name: 'Staff Canteen',
     img: 'https://qph.fs.quoracdn.net/main-qimg-9716df72fc0640634a9e7cd2cdaa1c96',
-    category: 'eat',
+    category: 'Eat',
     details:
       'IIT Delhi"s Staff Canteen. Unlike its name, it is open to all and provides clean, hygenic and affordable meals.',
     infoUrl: '',
@@ -387,7 +387,7 @@ export const data = [
     name: 'Dept. of Biotechnology',
     img: 'https://live.staticflickr.com/65535/50466765793_a4b9589627_h.jpg',
     short: 'BioTech Department',
-    category: 'academic',
+    category: 'Academic',
     details:
       'The Dept. of Biochemical Engineering and Biotechnology, IIT Delhi is situated here.',
     infoUrl: 'http://beb.iitd.ac.in/academics.html',
@@ -402,7 +402,7 @@ export const data = [
     cd: [28.548201298663667, 77.18435704708101],
     name: 'Rajdhani Chatkare Foods',
     img: 'https://content3.jdmagicbox.com/comp/delhi/j6/011pxx11.xx11.180505105548.e1j6/catalogue/rajdhani-chatkhare-food-hauz-khas-delhi-home-delivery-restaurants-xokptgx3q6.jpg',
-    category: 'eat',
+    category: 'Eat',
     details: 'Affordable snacks and meals across cuisines available here.',
     infoUrl:
       'https://www.zomato.com/ncr/rajdhani-chatkhare-food-hauz-khas-new-delhi',
@@ -417,7 +417,7 @@ export const data = [
     cd: [28.54370308948772, 77.19027936458589],
     name: 'HockeyField',
     img: 'https://live.staticflickr.com/65535/50467605611_1a22770e16_k.jpg',
-    category: 'sport',
+    category: 'Sport',
     details: 'The Institute hockey and athletics field.',
     infoUrl: '',
     mapUrl:
@@ -430,8 +430,8 @@ export const data = [
     id: 29,
     cd: [28.544343680524918, 77.1889114379883],
     name: 'Cricket Ground',
-    img: 'https://i.ytimg.com/vi/bod83g8iPPc/maxresdefault.jpg',
-    category: 'sport',
+    img: 'https://home.iitd.ac.in/images/for-faculty/football.jpg',
+    category: 'Sport',
     details: 'The institute cricket ground.',
     infoUrl: '',
     mapUrl:
@@ -445,7 +445,7 @@ export const data = [
     cd: [28.544941875990535, 77.18845009803773],
     name: 'Basketball Courts',
     img: 'http://www.bsa-iitd.in/static/MainSite/img_slideshow/005.jpg',
-    category: 'sport',
+    category: 'Sport',
     details: 'The Institute basketball courts',
     infoUrl: '',
     mapUrl:
@@ -459,9 +459,9 @@ export const data = [
     cd: [28.544833541630556, 77.18754887580873],
     name: 'Football Ground',
     img: 'https://live.staticflickr.com/65535/50467761162_634f65624d_b.jpg',
-    category: 'sport',
+    category: 'Sport',
     details:
-      'The institute football ground. Also home to the BHaichung Bhutia Football Schools.',
+      'The institute football ground. Also home to the Baichung Bhutia Football Schools.',
     infoUrl: '',
     mapUrl:
       'https://www.google.com/maps/place/Bhaichung+Bhutia+Football+Schools/@28.5440509,77.1879436,18.68z/data=!4m8!1m2!2m1!1sathletics+iit+delhi!3m4!1s0x390d1df143ff6a31:0x978fc174afc22b46!8m2!3d28.5449102!4d77.1876917?hl=en',
@@ -474,9 +474,8 @@ export const data = [
     cd: [28.545126, 77.193483],
     name: 'BioTech Lawns',
     img: 'https://upload.wikimedia.org/wikipedia/commons/b/bf/Multi_Storey_Building%2C_IITD.JPG',
-    category: 'park',
-    details:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore',
+    category: 'Park',
+    details: 'The famous BioTech Lawns are situated here.',
     infoUrl: '',
     mapUrl:
       'https://www.google.com/maps/place/Biotech+Lawns/@28.5449,77.192805,19.24z/data=!4m8!1m2!2m1!1sathletics+iit+delhi!3m4!1s0x390d1df6164b7e83:0xf3f35535e518cc44!8m2!3d28.5452118!4d77.1936167?hl=en',
@@ -489,7 +488,7 @@ export const data = [
     cd: [28.545940430931072, 77.18602001667024],
     name: 'Swimming Pool',
     img: 'https://content3.jdmagicbox.com/comp/delhi/s4/011pxx11.xx11.170904142536.a6s4/catalogue/iit-delhi-swimming-pool-hauz-khas-delhi-swimming-pools-2rwh7s4lz1.jpg',
-    category: 'sport',
+    category: 'Sport',
     details: 'IIT Delhi"s Olympic size, best in class swimming pool',
     infoUrl: 'http://www.iitd.ac.in/',
     mapUrl:
@@ -503,7 +502,7 @@ export const data = [
     cd: [28.548183537902325, 77.18495249748231],
     name: 'Volleyball Courts',
     img: 'https://live.staticflickr.com/65535/50467592356_69c00b5415_b.jpg',
-    category: 'sport',
+    category: 'Sport',
     details: 'Institute Volleyball courts.',
     infoUrl: '',
     mapUrl:
@@ -517,7 +516,7 @@ export const data = [
     cd: [28.54758896789944, 77.18481838703157],
     name: 'Lawn Tennis Courts',
     img: 'https://live.staticflickr.com/65535/50467761857_6e21171774.jpg',
-    category: 'sport',
+    category: 'Sport',
     details:
       'The institute Lawn Tennis courts. Home to the Peninsula Tennis Academy.',
     infoUrl: 'http://www.iitd.ac.in/',
@@ -533,7 +532,7 @@ export const data = [
     name: 'Department of Mathematics',
     img: 'https://live.staticflickr.com/65535/50466928878_1c0515b941_c.jpg',
     short: 'Maths Department',
-    category: 'academic',
+    category: 'Academic',
     details: 'The department of Mathematics IIT Delhi is situated here.',
     infoUrl: 'http://maths.iitd.ac.in/drupal/Undergraduate',
     mapUrl:
@@ -548,7 +547,7 @@ export const data = [
     name: 'Department of Chemical Engineering',
     img: 'https://live.staticflickr.com/65535/50467622152_714b2d52c8_h.jpg',
     short: 'Ch.E. Department',
-    category: 'academic',
+    category: 'Academic',
     details:
       'The department of Chemical Engineering IIT Delhi is situated here.',
     infoUrl: 'http://chemistry.iitd.ac.in/courses.html',
@@ -564,6 +563,9 @@ export const data = [
     name: 'Department of Computer Science & Engineering  ',
     img: 'https://photos.wikimapia.org/p/00/00/30/72/84_big.jpg',
     short: 'C.S.E. Department',
+    category: 'Academic',
+    details:
+      'The department of Computer Science & Engineering IIT Delhi is situated here.',
     infoUrl:
       'https://www.cse.iitd.ernet.in/index.php/2011-12-29-22-45-50/courses',
     mapUrl:
@@ -577,7 +579,7 @@ export const data = [
     cd: [28.543435, 77.192915],
     name: 'Department of Design',
     img: 'https://pbs.twimg.com/media/DZX5isGUQAUCa68.jpg',
-    category: 'academic',
+    category: 'Academic',
     details: 'The Department Of Design IIT Delhi is situated here.',
     infoUrl: 'http://iddcweb.iitd.ac.in/',
     mapUrl:
@@ -592,7 +594,7 @@ export const data = [
     name: 'Department of Humanities and Social Sciences',
     img: 'https://live.staticflickr.com/65535/50467465486_cf388e618c_z.jpg',
     short: 'HSS Department',
-    category: 'academic',
+    category: 'Academic',
     details: 'The Department Of HuSS IIT Delhi is situated here.',
     infoUrl: 'http://hss.iitd.ac.in/courses',
     mapUrl:
@@ -607,6 +609,8 @@ export const data = [
     name: 'Department of Management Studies ',
     img: 'https://getmyuni.azureedge.net/college-image/big/department-of-management-studies-dms-iit-delhi-new-delhi.jpg',
     short: 'DMS IITD',
+    category: 'Academic',
+    details: 'The Department Of Management Studies IIT Delhi is situated here.',
     infoUrl: 'http://dms.iitd.ac.in/',
     mapUrl:
       'https://www.google.com/maps/place/Department+of+Management+Studies,+IIT+Delhi/@28.5426238,77.1808715,17z/data=!3m1!4b1!4m5!3m4!1s0x390d1df1d55fb887:0xe469935d376ee021!8m2!3d28.5426238!4d77.1830602',
@@ -620,7 +624,7 @@ export const data = [
     name: 'Department of Material Science and Engineering',
     img: 'https://live.staticflickr.com/65535/50467530931_a44664b50c_c.jpg',
     short: 'M.S.E. Department',
-    category: 'academic',
+    category: 'Academic',
     details: 'The Department Of Material Science and Engineering IITD.',
     infoUrl: 'http://mse.iitd.ac.in/',
     mapUrl:
@@ -635,7 +639,7 @@ export const data = [
     name: 'Department of Mechanical Engineering',
     img: 'https://images.shiksha.com/mediadata/images/1504611236phpFGRISD.jpeg',
     short: 'M.E. Department',
-    category: 'academic',
+    category: 'Academic',
     details: 'The Department Of Mechanical Engineering IITD.',
     infoUrl: 'http://mech.iitd.ac.in/content/academic-programmes',
     mapUrl:
@@ -649,7 +653,7 @@ export const data = [
     cd: [28.545239, 77.192466],
     name: 'Department of Physics',
     img: 'https://live.staticflickr.com/65535/50467552246_b54c3919f3.jpg',
-    category: 'academic',
+    category: 'Academic',
     details: 'The Department Of Physics IITD.',
     infoUrl: 'http://www.iitd.ac.in/',
     mapUrl:
@@ -664,7 +668,7 @@ export const data = [
     name: 'Department of Textile & Fibre Engineering',
     img: 'http://www.smita-iitd.com/_/rsrc/1584102045552/group-members/16-17%20dept.PNG',
     short: 'Textile Department',
-    category: 'academic',
+    category: 'Academic',
     details: 'The Department Of Textile & Fibre Enginnering IITD.',
     infoUrl: 'http://textile.iitd.ac.in/programs.htm',
     mapUrl:
@@ -679,7 +683,7 @@ export const data = [
     name: 'Kusuma School of Biological Sciences',
     img: 'http://bioschool.iitd.ac.in/img/Kusuma-2.png',
     short: 'Kusuma BioSchool',
-    category: 'academic',
+    category: 'Academic',
     details: 'The Kusuma Schhol of Biological Sciences.',
     infoUrl: 'http://bioschool.iitd.ac.in/',
     mapUrl:
@@ -694,7 +698,7 @@ export const data = [
     name: 'Amar Nath and Shashi Khosla School of Information Technology',
     img: 'http://www.sit.iitd.ac.in/images/1-scaled.jpg',
     short: 'Khosla SIT',
-    category: 'academic',
+    category: 'Academic',
     details: 'School of IT.',
     infoUrl: 'http://www.sit.iitd.ernet.in/',
     mapUrl:
@@ -708,7 +712,7 @@ export const data = [
     cd: [28.546522, 77.18683],
     name: 'Chaayos',
     img: 'https://pbs.twimg.com/media/DUJgLPlXcAAp4Rk?format=jpg&name=large',
-    category: 'eat',
+    category: 'Eat',
     details:
       'Chaayos" IIT Delhi outlet. Subsidized rates, amazing ambience and some great chai.',
     infoUrl:
@@ -724,7 +728,7 @@ export const data = [
     cd: [28.54639, 77.186725],
     name: 'Roopsagar Bakery',
     img: 'https://img4.nbstatic.in/tr:w-500/5b0277acd60180000c8384fc.jpg',
-    category: 'eat',
+    category: 'Eat',
     details:
       'This bakery serves pure-vegetarian treats such as cakes, pastries, cookies, snacks, cheesecakes and muffins.',
     infoUrl:
@@ -740,7 +744,7 @@ export const data = [
     cd: [28.546673, 77.186768],
     name: 'Quiet Kitchen',
     img: 'https://img4.nbstatic.in/tr:w-500/5cbdb3e7d60180000d7ad0f2.png',
-    category: 'eat',
+    category: 'Eat',
     details: 'Quiet Kitchen IIT Delhi',
     infoUrl: 'https://www.nearbuy.com/delhi-ncr/quiet-kitchen-iit-campus',
     mapUrl:
@@ -754,7 +758,7 @@ export const data = [
     cd: [28.546196, 77.18663],
     name: 'Masala Mix',
     img: 'https://content.jdmagicbox.com/comp/delhi/z6/011pxx11.xx11.181113202746.h7z6/catalogue/masala-mix-hauz-khas-delhi-l801s9i1wn.jpg',
-    category: 'eat',
+    category: 'Eat',
     details: 'Masala Mix IIT Delhi',
     infoUrl:
       'https://magicpin.in/New-Delhi/Jia-Sarai/Restaurant/Masala-Mix/store/24c966/',
@@ -769,7 +773,7 @@ export const data = [
     cd: [28.5471611, 77.186354],
     name: 'Shadab Cafe',
     img: 'https://live.staticflickr.com/65535/50467465801_9d9f130c4e_b.jpg',
-    category: 'eat',
+    category: 'Eat',
     details: 'Shadab Cafe, near Zanskar Hostel IIT Delhi',
     infoUrl: '',
     mapUrl:
@@ -783,7 +787,7 @@ export const data = [
     cd: [28.5483362, 77.1841118],
     name: 'Koolees',
     img: 'https://live.staticflickr.com/65535/50466766463_b01a3cd043_b.jpg',
-    category: 'eat',
+    category: 'Eat',
     details: 'Koolees Shakes and Ice Creams',
     infoUrl: '',
     mapUrl:
@@ -797,7 +801,7 @@ export const data = [
     cd: [28.5450913, 77.1852827],
     name: 'Open Air Theatre',
     img: 'https://pbs.twimg.com/media/DppLhogWkAMdR6I.jpg',
-    category: 'ent',
+    category: 'Entertainment',
     details: 'Open Air Theatre IIT Delhi',
     infoUrl: '',
     mapUrl:
@@ -811,7 +815,7 @@ export const data = [
     cd: [28.545478, 77.183595],
     name: 'Faculty Guest House',
     img: 'https://live.staticflickr.com/90/236146739_bfacd506d3_b.jpg',
-    category: 'other',
+    category: 'Other',
     details: 'Faculty Guest House IIT Delhi',
     infoUrl: 'http://iitd.ac.in/',
     mapUrl:
@@ -825,7 +829,7 @@ export const data = [
     cd: [28.5449127, 77.184791],
     name: 'Student Activity Center',
     img: 'https://s3-ap-southeast-1.amazonaws.com/sportsjig-production-assets/system/assets/files/2675/large/IMG_20151224_142649.jpg?1450948596',
-    category: 'other',
+    category: 'Other',
     details:
       'Well maintained multi-sports facility. Accessible to the Students, Staff and Alumni only.',
     infoUrl:
@@ -841,7 +845,7 @@ export const data = [
     cd: [28.5458768, 77.1880759],
     name: 'Hospital',
     img: 'http://hospital.iitd.ac.in/sites/default/files/hospital/iitd_hospital.jpg',
-    category: 'medical',
+    category: 'Medical',
     details:
       'The medical needs of the Campus population met by the Institute Hospital.',
     infoUrl: 'http://hospital.iitd.ac.in/',
@@ -856,7 +860,7 @@ export const data = [
     cd: [28.5458568, 77.1856583],
     name: 'Apollo Pharmacy',
     img: 'https://content.jdmagicbox.com/comp/delhi/v3/011pxx11.xx11.110223095948.n7v3/catalogue/apollo-pharmacy-r-k-puram-delhi-chemists-4j3skns.jpg?clr=',
-    category: 'medical',
+    category: 'Medical',
     details: 'The campus pharmacy.',
     infoUrl:
       'http://stores.apollopharmacy.in/apollo-pharmacy-greater-kailash-ii-s-block-pharmacy-hauz-khas-new-delhi-30329/Home?utm_source=locator&utm_medium=googleplaces',
@@ -872,7 +876,7 @@ export const data = [
     cd: [28.5438559, 77.1933482],
     name: 'Chai Point',
     img: 'https://live.staticflickr.com/65535/50467622212_b2a6d097a8_b.jpg',
-    category: 'eat',
+    category: 'Eat',
     details:
       'Best place for a cup of tea inside IIT and it"s quite pocket friendly as well .',
     infoUrl: '',
@@ -887,7 +891,7 @@ export const data = [
     cd: [28.5437328, 77.1930072],
     name: 'State Bank Of India',
     img: 'https://live.staticflickr.com/65535/50467622522_2176f5eb6c_h.jpg',
-    category: 'bank',
+    category: 'Bank',
     details: 'State Bank of India',
     infoUrl:
       'https://banksifsccode.com/state-bank-of-india-ifsc-code/delhi/new-delhi/iit-hauz-khas-branch/',
@@ -902,7 +906,7 @@ export const data = [
     cd: [28.5453426, 77.1909557],
     name: 'Computer Services Centre',
     img: 'https://live.staticflickr.com/65535/50466766348_8a1f2ef27b_b.jpg',
-    category: 'other',
+    category: 'Other',
     details:
       'The CSC manages all of the centrally available network, IT resources in IIT .',
     infoUrl: '',
@@ -917,7 +921,7 @@ export const data = [
     cd: [28.5450672, 77.1920865],
     name: 'Seminar Hall',
     img: 'https://live.staticflickr.com/65535/50468070382_cdef2478d7_k.jpg',
-    category: 'ent',
+    category: 'Entertainment',
     details: 'IIT Delhi Seminar Hall.',
     infoUrl: '',
     mapUrl:
@@ -931,7 +935,7 @@ export const data = [
     cd: [28.5427956, 77.1984536],
     name: 'Post Office',
     img: 'https://live.staticflickr.com/65535/50467622452_b22e18d821_b.jpg',
-    category: 'other',
+    category: 'Other',
     details: 'IIT Delhi Post Office.',
     infoUrl: '',
     mapUrl:
@@ -945,7 +949,7 @@ export const data = [
     cd: [28.5427987, 77.1979836],
     name: 'Kendriya Vidyalaya IIT Delhi',
     img: 'https://d2jg2pri5bpndu.cloudfront.net/schools/covers/870_KV-IIT---Kendriya-Vidyalaya-.png',
-    category: 'academic',
+    category: 'Academic',
     details: 'Kendriya Vidyala IIT Delhi',
     infoUrl: '',
     mapUrl:
@@ -959,7 +963,7 @@ export const data = [
     cd: [28.5423368, 77.1992711],
     name: 'Kids Planet School',
     img: 'https://live.staticflickr.com/65535/50466766363_db7d2beecd_z.jpg',
-    category: 'academic',
+    category: 'Academic',
     details:
       'Kids Planet IIT Delhi : Play School, Nursery School, Kindergarten or Daycare',
     infoUrl: '',
@@ -974,7 +978,7 @@ export const data = [
     cd: [28.5433479, 77.1989034],
     name: 'Mother Dairy Booth & Safal Store',
     img: 'https://content3.jdmagicbox.com/comp/delhi/q3/011pxx11.xx11.121229120836.z8q3/catalogue/safal-mother-dairy-defence-colony-delhi-fruit-vendors-isfkybyfxn.jpg',
-    category: 'shop',
+    category: 'Shop',
     details: 'Mother Dairy Booth & Safal Store',
     infoUrl: '',
     mapUrl:
@@ -988,7 +992,7 @@ export const data = [
     cd: [28.5436112, 77.1983934],
     name: 'Main Guest House',
     img: 'https://upload.wikimedia.org/wikipedia/commons/0/02/IIT_Delhi_guest_house.jpg',
-    category: 'other',
+    category: 'Other',
     details: 'Main Guest House IIT Delhi',
     infoUrl: 'http://iitd.ac.in/',
     phoneUrl: '+911126597287',

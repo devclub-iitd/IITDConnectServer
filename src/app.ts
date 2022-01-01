@@ -15,6 +15,7 @@ const cluster = require('cluster');
 import {logger} from './middleware/logger';
 import * as fs from 'fs';
 import {createResponse} from './utils/helpers';
+// import path = require('path');
 
 const HttpsProxyAgent = require('https-proxy-agent');
 
@@ -61,7 +62,8 @@ app.use(
     xssProtection: true,
   })
 );
-
+app.use('/privacy-policy.html', express.static('./data/privacy-policy.html'));
+app.use('/release-notes.html', express.static('./data/release-notes.html'));
 app.use(expressValidator());
 // Logg incoming connections
 if (process.env.NODE_ENV === 'production') app.use(morgan('default'));

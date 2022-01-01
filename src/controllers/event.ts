@@ -304,61 +304,161 @@ export const toggleSubscribeEventNotifications = async (
       );
       const subscribedBodies = await Body.find(
         {_id: {$in: user.subscribedBodies}},
-        {name: 1}
+        {topicName: 1}
       );
       if (process.env.NODE_ENV === 'production') {
         if (user.notifications.eventNotifications) {
           // resubscribe user to starred event topics and subscribed Bodies for notifications
-          starredEvents.forEach(async event => {
-            await admin
-              .messaging()
-              .subscribeToTopic(user.fcmRegistrationToken, event.topicName);
-            logger.debug(
-              'user ->' +
-                user.name +
-                ' Subscribed to event topic -> ' +
-                event.topicName
-            );
-          });
-          subscribedBodies.forEach(async body => {
-            await admin
-              .messaging()
-              .subscribeToTopic(user.fcmRegistrationToken, body.topicName);
-            logger.debug(
-              'user ->' +
-                user.name +
-                ' Subscribed to event topic -> ' +
-                body.topicName
-            );
-          });
+          await Promise.all(
+            starredEvents.map(async event => {
+              await admin
+                .messaging()
+                .subscribeToTopic(user.fcmRegistrationToken, event.topicName);
+              //user.subscribedTopics.events.push(event.topicName);
+              logger.debug(
+                'user ->' +
+                  user.name +
+                  ' Subscribed to event topic -> ' +
+                  event.topicName
+              );
+            })
+          );
+          for (const event of starredEvents) {
+            user.subscribedTopics.events.push(event.topicName);
+          }
+          // starredEvents.forEach(async event => {
+          //   await admin
+          //     .messaging()
+          //     .subscribeToTopic(user.fcmRegistrationToken, event.topicName);
+          //   user.subscribedTopics.events.push(event.topicName);
+          //   logger.debug(
+          //     'user ->' +
+          //       user.name +
+          //       ' Subscribed to event topic -> ' +
+          //       event.topicName
+          //   );
+          // });
+
+          await Promise.all(
+            subscribedBodies.map(async body => {
+              await admin
+                .messaging()
+                .subscribeToTopic(user.fcmRegistrationToken, body.topicName);
+              //user.subscribedTopics.bodies.push(body.topicName);
+              logger.debug(
+                'user ->' +
+                  user.name +
+                  ' Subscribed to body topic -> ' +
+                  body.topicName
+              );
+            })
+          );
+          for (const body of subscribedBodies) {
+            user.subscribedTopics.bodies.push(body.topicName);
+          }
+          // subscribedBodies.forEach(async body => {
+          //   await admin
+          //     .messaging()
+          //     .subscribeToTopic(user.fcmRegistrationToken, body.topicName);
+          //   user.subscribedTopics.bodies.push(body.topicName);
+          //   logger.debug(
+          //     'user ->' +
+          //       user.name +
+          //       ' Subscribed to event topic -> ' +
+          //       body.topicName
+          //   );
+          // });
         }
         // unsubscribe to the starred events
         else {
-          starredEvents.forEach(async event => {
-            await admin
-              .messaging()
-              .unsubscribeFromTopic(user.fcmRegistrationToken, event.topicName);
-            logger.debug(
-              'user ->' +
-                user.name +
-                ' UnSubscribed to body topic -> ' +
-                event.topicName
-            );
-          });
-          subscribedBodies.forEach(async body => {
-            await admin
-              .messaging()
-              .unsubscribeFromTopic(user.fcmRegistrationToken, body.topicName);
-            logger.debug(
-              'user ->' +
-                user.name +
-                ' UnSubscribed to body topic -> ' +
-                body.topicName
-            );
-          });
+          await Promise.all(
+            starredEvents.map(async event => {
+              await admin
+                .messaging()
+                .unsubscribeFromTopic(
+                  user.fcmRegistrationToken,
+                  event.topicName
+                );
+              // const ind = user.subscribedTopics.events.indexOf(event.topicName);
+              // if (ind !== -1) {
+              //   user.subscribedTopics.events.splice(ind, 1);
+              // }
+              logger.debug(
+                'user ->' +
+                  user.name +
+                  ' UnSubscribed to event topic -> ' +
+                  event.topicName
+              );
+            })
+          );
+          for (const event of starredEvents) {
+            const ind = user.subscribedTopics.events.indexOf(event.topicName);
+            if (ind !== -1) {
+              user.subscribedTopics.events.splice(ind, 1);
+            }
+          }
+          // starredEvents.forEach(async event => {
+          //   await admin
+          //     .messaging()
+          //     .unsubscribeFromTopic(user.fcmRegistrationToken, event.topicName);
+          //   const ind = user.subscribedTopics.events.indexOf(event.topicName);
+          //   if (ind !== -1) {
+          //     user.subscribedTopics.events.splice(ind, 1);
+          //   }
+          //   logger.debug(
+          //     'user ->' +
+          //       user.name +
+          //       ' UnSubscribed to body topic -> ' +
+          //       event.topicName
+          //   );
+          // });
+          await Promise.all(
+            subscribedBodies.map(async body => {
+              await admin
+                .messaging()
+                .unsubscribeFromTopic(
+                  user.fcmRegistrationToken,
+                  body.topicName
+                );
+
+              // const ind = user.subscribedTopics.bodies.indexOf(body.topicName);
+              // if (ind !== -1) {
+              //   user.subscribedTopics.bodies.splice(ind, 1);
+              // }
+              logger.debug(
+                'user ->' +
+                  user.name +
+                  ' UnSubscribed to body topic -> ' +
+                  body.topicName
+              );
+            })
+          );
+          for (const body of subscribedBodies) {
+            const ind = user.subscribedTopics.bodies.indexOf(body.topicName);
+            if (ind !== -1) {
+              user.subscribedTopics.bodies.splice(ind, 1);
+            }
+          }
+          // subscribedBodies.forEach(async body => {
+          //   await admin
+          //     .messaging()
+          //     .unsubscribeFromTopic(user.fcmRegistrationToken, body.topicName);
+
+          //   const ind = user.subscribedTopics.bodies.indexOf(body.topicName);
+          //   if (ind !== -1) {
+          //     user.subscribedTopics.bodies.splice(ind, 1);
+          //   }
+          //   logger.debug(
+          //     'user ->' +
+          //       user.name +
+          //       ' UnSubscribed to body topic -> ' +
+          //       body.topicName
+          //   );
+          // });
         }
       }
     }
+    await user.save();
     res.send(
       createResponse('Success', {
         message: 'toggled Successfully',
@@ -383,23 +483,28 @@ export const toggleStarEvent = async (
     const index = user.staredEvents.indexOf(new Types.ObjectId(req.params.id));
     if (index === -1) {
       user.staredEvents.push(new Types.ObjectId(req.params.id));
+      user.subscribedTopics.events.push(event.topicName);
       //Subscribe the user to this event
       if (
         process.env.NODE_ENV === 'production' &&
         user.notifications.eventNotifications
       ) {
-        admin
+        await admin
           .messaging()
           .subscribeToTopic(user.fcmRegistrationToken, event.topicName);
       }
     } else {
       user.staredEvents.splice(index, 1);
+      const ind = user.subscribedTopics.events.indexOf(event.topicName);
+      if (ind !== -1) {
+        user.subscribedTopics.events.splice(ind, 1);
+      }
       //UnSubscribe the user to this event
       if (
         process.env.NODE_ENV === 'production' &&
         user.notifications.eventNotifications
       ) {
-        admin
+        await admin
           .messaging()
           .unsubscribeFromTopic(user.fcmRegistrationToken, event.topicName);
       }

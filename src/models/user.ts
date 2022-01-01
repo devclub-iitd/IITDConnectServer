@@ -25,10 +25,18 @@ export interface UserImpl extends Document {
     newsNotifications: Boolean;
     eventNotifications: Boolean;
   };
+  subscribedTopics: {
+    events: string[];
+    bodies: string[];
+  };
   // eslint-disable-next-line @typescript-eslint/ban-types
   reminders: Object;
   isAdmin: boolean;
   isSuperAdmin: boolean;
+  courses: {
+    name: string;
+    slot: string;
+  }[];
 }
 
 const userSchema: Schema = new Schema(
@@ -137,6 +145,18 @@ const userSchema: Schema = new Schema(
         type: Boolean,
         default: true,
       },
+    },
+    //Recheck this
+    courses: [
+      {
+        _id: false,
+        name: String,
+        slot: String,
+      },
+    ],
+    subscribedTopics: {
+      events: [String],
+      bodies: [String],
     },
   },
   {timestamps: true}
