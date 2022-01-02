@@ -406,12 +406,14 @@ export const getTrendNews = async (
     }
     const limit =
       req.query.limit !== undefined ? parseInt(req.query.limit.toString()) : 20;
-
+    const skip =
+      req.query.skip !== undefined ? parseInt(req.query.skip.toString()) : 0;
     const news = await News.find(
       {visible: true},
       {},
       {
         limit: limit,
+        skip: skip,
         sort: {trendRate: -1},
       }
     );

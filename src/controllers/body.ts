@@ -6,6 +6,7 @@ import {Types} from 'mongoose';
 import {createResponse, createError} from '../utils/helpers';
 
 import User, {UserImpl} from '../models/user';
+import Event from '../models/event';
 import {Body, BodyMember, BodyImpl} from '../models/body';
 import * as admin from 'firebase-admin';
 // import {nextTick} from 'process';
@@ -430,5 +431,48 @@ export const updateMemberImage = async (
     res.send(createResponse('Member Updated Succesfully', bodyMember));
   } catch (error) {
     next(error);
+  }
+};
+
+export const deleteBody = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const [user, body] = await Promise.all([
+      User.findById(req.payload),
+      Body.findById(req.params.id),
+    ]);
+
+    if (user === null || body === null) {
+      throw createError(
+        401,
+        'Invalid User id or club id',
+        'Invalid credentials'
+      );
+    }
+    if (!user.superSuperAdmin) {
+      throw createError(401, 'Not Authorised', 'Only SuperSuperAdmin allowed');
+    }
+    const user_ad = await User.findById(body.superAdmin);
+    if (user_ad !== null) {
+      const ind = user_ad.superAdminOf.indexOf(
+        new Types.ObjectId(req.params.id)
+      );
+      if (ind !== -1) {
+        user_ad.superAdminOf.splice(ind, 1);
+      }
+    }
+    await Promise.all(
+      body.events.map(async eventID => {
+        await Event.findByIdAndDelete(eventID);
+      })
+    );
+    await body.remove();
+
+    res.send(createResponse('Success', 'Body deleted successfully'));
+  } catch (err) {
+    next(err);
   }
 };

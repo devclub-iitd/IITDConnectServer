@@ -10,6 +10,7 @@ import {
   updateMember,
   addMemberImage,
   updateMemberImage,
+  deleteBody,
 } from '../../controllers/body';
 import {upload} from '../../middleware/multer';
 // import {checkAccessBody} from '../../middleware/checkAccess';
@@ -30,6 +31,8 @@ router.put('/:id', auth, upload.single('bodyImage'), updateBody);
 //? Tested OK
 //! Google Firebase Integration is Left
 router.post('/:id/subscribe', auth, toggleSubscribeBody);
+
+router.post('/:id/delete', auth, deleteBody);
 
 // ?Tested Ok
 // Add members to the Body , Only by Superadmin

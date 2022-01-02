@@ -399,7 +399,10 @@ export const updatefcm = async (
     );
 
     if (process.env.NODE_ENV === 'production') {
-      if (user.fcmRegistrationToken) {
+      if (
+        user.fcmRegistrationToken &&
+        user.fcmRegistrationToken !== req.body.fcmRegistrationToken
+      ) {
         // resubscribe user to starred event topics and subscribed Bodies for notifications
         await Promise.all(
           starredEvents.map(async event => {
@@ -417,20 +420,6 @@ export const updatefcm = async (
             );
           })
         );
-        // starredEvents.forEach(async event => {
-        //   await admin
-        //     .messaging()
-        //     .unsubscribeFromTopic(user.fcmRegistrationToken, event.topicName);
-        //   await admin
-        //     .messaging()
-        //     .subscribeToTopic(req.body.fcmRegistrationToken, event.topicName);
-        //   logger.debug(
-        //     'user ->' +
-        //       user.name +
-        //       ' Resubscribed to event topic -> ' +
-        //       event.topicName
-        //   );
-        // });
         await Promise.all(
           subscribedBodies.map(async body => {
             await admin
@@ -447,20 +436,6 @@ export const updatefcm = async (
             );
           })
         );
-        // subscribedBodies.forEach(async body => {
-        //   await admin
-        //     .messaging()
-        //     .unsubscribeFromTopic(user.fcmRegistrationToken, body.topicName);
-        //   await admin
-        //     .messaging()
-        //     .subscribeToTopic(req.body.fcmRegistrationToken, body.topicName);
-        //   logger.debug(
-        //     'user ->' +
-        //       user.name +
-        //       ' Resubscribed to body topic -> ' +
-        //       body.topicName
-        //   );
-        // });
         if (user.notifications.newsNotifications) {
           await admin
             .messaging()
