@@ -105,7 +105,7 @@ export const postMakeSuperAdmin = async (
       throw createError(
         404,
         'Authorization',
-        'Not Authorized To Perform this Action'
+        'Either email or body does not exist'
       );
     }
     res.send(
@@ -126,36 +126,47 @@ export const updateSuperAdmin = async (
 ) => {
   try {
     const {clubId, userEmail} = req.body;
-    const user_next = await User.findOne({email: userEmail});
-    const body = await Body.findById(clubId);
-    const admin = await User.findById(req.payload);
-
+    const [admin, user_next, body] = await Promise.all([
+      User.findById(req.payload),
+      User.findOne({
+        email: userEmail,
+      }),
+      Body.findById(clubId),
+    ]);
     if (body !== null && user_next !== null && admin !== null) {
-      if (body.superAdmin.equals(user_next.id)) {
-        res.send(createResponse('Sucess', {}));
+      if (body.superAdmin && body.superAdmin.equals(user_next.id)) {
+        res.send(
+          createResponse(
+            'Success',
+            'Person is already the SuperAdmin of this club'
+          )
+        );
       } else {
         if (admin.superSuperAdmin === true) {
-          const user_prev = await User.findById(body.superAdmin);
-
-          if (user_prev !== null) {
-            const index = user_prev.superAdminOf.indexOf(body.id);
-            if (index !== -1) {
-              user_prev.superAdminOf.splice(index, 1);
+          let user_prev = null;
+          if (body.superAdmin) {
+            user_prev = await User.findById(body.superAdmin);
+            if (user_prev !== null) {
+              const index = user_prev.superAdminOf.indexOf(body.id);
+              if (index !== -1) {
+                user_prev.superAdminOf.splice(index, 1);
+              }
+              if (user_prev.superAdminOf.length === 0) {
+                user_prev.isSuperAdmin = false;
+              }
+              await user_prev.save();
             }
-            if (user_prev.superAdminOf.length === 0)
-              user_prev.isSuperAdmin = false;
           }
           body.superAdmin = user_next.id;
           user_next.superAdminOf.push(body.id);
           user_next.isSuperAdmin = true;
           await user_next.save();
           await body.save();
-          await user_prev?.save();
         } else {
           throw createError(
             404,
             'Authorization',
-            'Only superSuper Admin can perform This action'
+            'Only superSuperAdmin can perform This action'
           );
         }
       }
@@ -163,10 +174,15 @@ export const updateSuperAdmin = async (
       throw createError(
         404,
         'Authorization',
-        'Not Authorized To Perform this Action'
+        'Either email or body does not exist'
       );
     }
-    res.send(createResponse('Success ', {}));
+    res.send(
+      createResponse('Success', {
+        body: body,
+        superAdmin: user_next,
+      })
+    );
   } catch (e) {
     return next(e);
   }
@@ -187,7 +203,7 @@ export const postMakeAdmin = async (
     ]);
     const user_req = await User.findById(req.payload);
     if (user !== null && body !== null && user_req !== null) {
-      if (body.superAdmin.equals(req.payload) || user_req.superSuperAdmin) {
+      if (user_req.superSuperAdmin || body.superAdmin.equals(req.payload)) {
         user.adminOf.push(body.id);
         body.admins.push(user.id);
         user.isAdmin = true;
@@ -196,7 +212,7 @@ export const postMakeAdmin = async (
         throw createError(
           404,
           'Authorization',
-          'Require SuperAdmin status for the club'
+          'Require SSA or SuperAdmin status for the club'
         );
       }
     } else {

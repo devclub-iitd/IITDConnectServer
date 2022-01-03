@@ -172,7 +172,7 @@ export const deleteNews = async (
       );
     }
 
-    //If user is ONLY admin , he can delete only his news. SuperAdmins can delete all news
+    //Superadmins can delete only their news
     const news = await News.findById(req.params.id);
     if (
       news !== null &&
@@ -181,20 +181,19 @@ export const deleteNews = async (
     ) {
       fs.unlinkSync(news.imgUrl);
     }
-    // if (
-    //   user.isSuperAdmin === false &&
-    //   user.superSuperAdmin === false &&
-    //   user.isAdmin === true &&
-    //   news !== null
-    // ) {
-    //   if (!news.createdBy.equals(user._id)) {
-    //     throw createError(
-    //       401,
-    //       'Unauthorized',
-    //       'Admins can delete only their own news'
-    //     );
-    //   }
-    // }
+    if (
+      user.isSuperAdmin === true &&
+      user.superSuperAdmin === false &&
+      news !== null
+    ) {
+      if (!news.createdBy.equals(user._id)) {
+        throw createError(
+          401,
+          'Unauthorized',
+          'SuperAdmins can delete only their own news'
+        );
+      }
+    }
     await News.findByIdAndDelete(req.params.id);
     res.send(createResponse('News deleted Successfully', {}));
   } catch (error) {
@@ -210,6 +209,7 @@ export const updateNews = async (
   try {
     // verify user
     const user = await User.findById(req.payload);
+    const oldNews = await News.findById(req.params.id);
     if (user === null) {
       if (req.file !== undefined) {
         fs.unlinkSync(req.file.path);
@@ -227,25 +227,24 @@ export const updateNews = async (
       );
     }
 
-    //Admins can update ONLY their own news
+    //SuperAdmins can update ONLY their own news
     // const news = await News.findById(req.params.id);
-    // if (
-    //   user.isSuperAdmin === false &&
-    //   user.superSuperAdmin === false &&
-    //   user.isAdmin === true &&
-    //   news !== null
-    // ) {
-    //   if (!news.createdBy.equals(user._id)) {
-    //     if (req.file !== undefined) {
-    //       fs.unlinkSync(req.file.path);
-    //     }
-    //     throw createError(
-    //       401,
-    //       'Unauthorized',
-    //       'Admins can update only their own news'
-    //     );
-    //   }
-    // }
+    if (
+      user.isSuperAdmin === true &&
+      user.superSuperAdmin === false &&
+      oldNews !== null
+    ) {
+      if (!oldNews.createdBy.equals(user._id)) {
+        if (req.file !== undefined) {
+          fs.unlinkSync(req.file.path);
+        }
+        throw createError(
+          401,
+          'Unauthorized',
+          'SuperAdmins can update only their own news'
+        );
+      }
+    }
     // verify allowed fields
     const allowedUpdates = [
       'sourceName',
@@ -276,7 +275,6 @@ export const updateNews = async (
     }
     // Finally updating
     if (req.body.imgUrl !== undefined) {
-      const oldNews = await News.findById(req.params.id);
       if (
         oldNews !== null &&
         oldNews.imgUrl !== undefined &&
@@ -341,25 +339,24 @@ export const toggleVisibilityOfNews = async (
         'You are not authorized to toggleOffVisibility of news'
       );
     }
-    //Admins can toggle OFF ONLY their own news
+    //SuperAdmins can toggle OFF ONLY their own news
     const news = await News.findById(req.params.id);
     if (!news) {
       throw createError(400, 'field doesnt exist', 'News donot exists');
     }
-    // if (
-    //   user.isSuperAdmin === false &&
-    //   user.superSuperAdmin === false &&
-    //   user.isAdmin === true &&
-    //   news !== null
-    // ) {
-    //   if (!news.createdBy.equals(user._id)) {
-    //     throw createError(
-    //       401,
-    //       'Unauthorized',
-    //       'Admins can toggleOffVisibility only their own news'
-    //     );
-    //   }
-    // }
+    if (
+      user.isSuperAdmin === true &&
+      user.superSuperAdmin === false &&
+      news !== null
+    ) {
+      if (!news.createdBy.equals(user._id)) {
+        throw createError(
+          401,
+          'Unauthorized',
+          'SuperAdmins can toggleOffVisibility only their own news'
+        );
+      }
+    }
 
     news.visible = !news.visible;
     await news.save();
