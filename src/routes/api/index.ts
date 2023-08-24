@@ -2,7 +2,10 @@ import * as express from 'express';
 
 import userRouter from './users';
 import eventRouter from './event';
+import eventRouterWeb from './event-web';
 import bodyRouter from './body';
+import bodyRouterWeb from './body-web';
+// import lostFoundRouter from './lostfound';
 import newsRouter from './news';
 import calendarRouter from './calendar';
 import mapsrouter from './maps';
@@ -11,7 +14,10 @@ const router = express.Router();
 
 router.use('/', userRouter);
 router.use('/events', eventRouter);
+router.use('/web/events', eventRouterWeb);
 router.use('/body', bodyRouter);
+router.use('/web/body', bodyRouterWeb);
+// router.use('/lostfound', lostFoundRouter);
 router.use('/', newsRouter);
 router.use('/', calendarRouter);
 router.use('/maps', mapsrouter);
